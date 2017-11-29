@@ -8,7 +8,7 @@ project "aim-flex"
    kind "SharedLib"
    language "C++"
    architecture "x86"
-   targetdir "bin/%{cfg.buildcfg}"
+   targetdir "bin"
    systemversion "10.0.16299.0"
 
    files { "src/**.hpp", "src/**.cpp" }
