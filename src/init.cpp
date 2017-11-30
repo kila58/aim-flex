@@ -2,7 +2,10 @@
 
 #include "aim-flex.hpp"
 
+#include "interfaces.hpp"
+
 void Init()
 {
-    MessageBoxA(NULL, "rare", "rare", NULL);
+	if (interfaces.Init())
+		MessageBoxA(NULL, "rare", "rare", NULL);
 }
