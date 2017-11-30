@@ -8,9 +8,10 @@ project "aim-flex"
    kind "SharedLib"
    language "C++"
    architecture "x86"
-   targetdir "bin"
+   targetdir "bin/%{cfg.buildcfg}"
    systemversion "10.0.16299.0"
-
+   characterset "MBCS"
+   
    files { "src/**.hpp", "src/**.cpp" }
 
    filter "configurations:Release"
