@@ -14,7 +14,11 @@ private:
 public:
 	Hook(void* object, uint i, void* function) : index(i), table(*(void***)object), new_function(function) {}
 
+<<<<<<< HEAD
 	void* ReplaceVirtual()
+=======
+	void ReplaceVirtual()
+>>>>>>> 1ca4338319b59e3df8f6fdd429fca15760e6e890
 	{
 		DWORD original_protect;
 
@@ -25,8 +29,11 @@ public:
 		table[index] = new_function;
 
 		VirtualProtect(&table[index], sizeof(function), original_protect, NULL);
+<<<<<<< HEAD
 
 		return original_function;
+=======
+>>>>>>> 1ca4338319b59e3df8f6fdd429fca15760e6e890
 	}
 	void RevertVirtual()
 	{
