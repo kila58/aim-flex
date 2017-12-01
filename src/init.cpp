@@ -4,12 +4,14 @@
 
 #include "interfaces.hpp"
 
-#include "hooks\paint\paint.hpp"
+#include "hooks\hooks.hpp"
 
 void Init()
 {
 	if (interfaces.Init())
-		MessageBoxA(NULL, "rare", "rare", NULL);
+	{
+		hooks.Init();
 
-	PaintHook::Init();
+		MessageBox(NULL, "big epic", "big epic", NULL);
+	}
 }

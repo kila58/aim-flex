@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <cctype>
 #include <algorithm>
+#include <deque>
 
 #include "definitions.hpp"
 

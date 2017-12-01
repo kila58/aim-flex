@@ -4,41 +4,37 @@
 
 #include "definitions.hpp"
 
-class hook
+class Hook
 {
 private:
-	ptr* table;
-	int index;
-	DWORD original_protect;
-	DWORD original_function;
-	ptr* new_function;
-
+	void** table;
+	uint index;
+	void* new_function;
+	void* original_function;
 public:
-	hook::hook(ptr* vtable, int i, ptr* function)
+	Hook(void* object, uint i, void* function) : index(i), table(*(void***)object), new_function(function) {}
+
+	void ReplaceVirtual()
 	{
-		table = vtable;
-		index = i;
-		new_function = function;
+		DWORD original_protect;
+
+		void* function = &table[index];
+		VirtualProtect(function, sizeof(function), PAGE_READWRITE, &original_protect);
+
+		original_function = table[index];
+		table[index] = new_function;
+
+		VirtualProtect(&table[index], sizeof(function), original_protect, NULL);
 	}
-
-	ptr ReplaceVirtual()
-	{
-		VirtualProtect(&table[index], 4, PAGE_READWRITE, &original_protect);
-
-		original_function = (ptr)table[index];
-		table[index] = (ptr)new_function;
-
-		VirtualProtect(&table[index], 4, original_protect, NULL);
-
-		return original_function;
-	}
-
 	void RevertVirtual()
 	{
-		VirtualProtect(&table[index], 4, PAGE_READWRITE, &original_protect);
+		DWORD original_protect;
 
-		table[index] = (ptr)original_function;
+		void* function = &table[index];
+		VirtualProtect(function, sizeof(function), PAGE_READWRITE, &original_protect);
 
-		VirtualProtect(&table[index], 4, original_protect, NULL);
+		table[index] = original_function;
+
+		VirtualProtect(&table[index], sizeof(function), original_protect, NULL);
 	}
 };

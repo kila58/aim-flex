@@ -1,6 +1,4 @@
-#include "Paint.hpp"
-
-#include "../../aim-flex.hpp"
+#include "paint.hpp"
 
 void __fastcall Paint(void* instance, void*, int mode)
 {
