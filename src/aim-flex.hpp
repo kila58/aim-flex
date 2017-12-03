@@ -8,6 +8,7 @@
 #include "definitions.hpp"
 #include "color.hpp"
 #include "vmt.hpp"
+#include "sigscan.hpp"
 
 #include "sdk/CEngineClient.hpp"
 #include "sdk/CEngineVGui.hpp"
