@@ -12,8 +12,8 @@ void Features::Invoke(HookType type)
 {
 	for (auto& feature : BaseFeature::GetFeatures())
 	{
- 		if (feature->GetHookType() == type)
-			feature->Invoke();
+        if (feature->GetHookType() == type)
+            feature->Invoke();
 	}
 }
 
