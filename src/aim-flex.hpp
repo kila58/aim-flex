@@ -15,7 +15,14 @@
 #include "sdk/CEngineClient.hpp"
 #include "sdk/CEngineVGui.hpp"
 #include "sdk/CMatSystemSurface.hpp"
+#include "sdk/CGlobalVarsBase.hpp"
+#include "sdk/CBaseEntity.hpp"
+#include "sdk/IClientEntityList.hpp"
+#include "sdk/CHLClient.hpp"
 
 extern CEngineClient* g_EngineClient;
 extern CEngineVGui* g_EngineVGui;
 extern CMatSystemSurface* g_MatSystemSurface;
+extern IClientEntityList* entitylist;
+extern CHLClient* client;
+extern CGlobalVarsBase* gpGlobals;

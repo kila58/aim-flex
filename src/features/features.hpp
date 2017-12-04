@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <Windows.h>
 
 #include "../definitions.hpp"
 

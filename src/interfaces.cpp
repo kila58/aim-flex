@@ -13,6 +13,15 @@ bool Interfaces::Init()
 	if (!(g_MatSystemSurface = GetInterface<CMatSystemSurface*>("vguimatsurface.dll", "VGUI_Surface")))
 		return false;
 
+	if (!(entitylist = GetInterface<IClientEntityList*>("client.dll", "VClientEntityList")))
+		return false;
+
+	if (!(client = GetInterface<CHLClient*>("client.dll", "VClient")))
+		return false;
+
+	if (!(gpGlobals = **(CGlobalVarsBase***)(getvfunc(client, 11) + 10)))
+		return false;
+
 	return true;
 }
 
