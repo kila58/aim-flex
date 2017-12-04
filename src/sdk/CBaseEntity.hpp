@@ -3,8 +3,8 @@
 class CBaseEntity
 {
 public:
-	Vector GetAbsOrigin()
+	Vector& GetAbsOrigin()
 	{
-		return getvfunc<Vector(__thiscall*)(void*)>(this, 10)(this);
+		return getvfunc<Vector&(__thiscall*)(void*)>(this, 10)(this);
 	}
 };

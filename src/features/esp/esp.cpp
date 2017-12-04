@@ -23,9 +23,10 @@ void ESP::Invoke()
 			if (!g_EngineClient->GetPlayerInfo(i, &info))
 				continue;
 
+			Vector pos = p->GetAbsOrigin();
 			Vector screen;
 
-			if (WorldToScreen(p->GetAbsOrigin(), screen))
+			if (WorldToScreen(pos, screen))
 			{
 				g_MatSystemSurface->SetDrawColor(Color(255, 0, 0));
 				g_MatSystemSurface->DrawFilledRect((int)screen.x, (int)screen.y, 5, 5);
