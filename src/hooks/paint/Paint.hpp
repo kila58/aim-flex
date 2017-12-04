@@ -6,5 +6,5 @@ class PaintHook : public BaseHook
 {
 public:
 	void Init();
-	void Destory();
+	void Destroy();
 };

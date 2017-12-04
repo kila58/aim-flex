@@ -26,7 +26,7 @@ public:
 	InterfaceReg* next;
 };
 
-template<class T>
+template<typename T>
 T Interfaces::GetInterface(const char* module, const std::string& name)
 {
 	static ptr CreateInterface = (ptr)GetProcAddress(GetModuleHandle(module), "CreateInterface");

@@ -2,6 +2,8 @@
 
 #include "../../aim-flex.hpp"
 
+#include "../../features/features.hpp"
+
 using PaintType = void*(__thiscall*)(void*, int);
 PaintType original_function;
 
@@ -30,6 +32,8 @@ void __fastcall Paint(void* instance, void*, int mode)
 		g_MatSystemSurface->SetDrawColor(Color(72, 133, 237, 170));
 		g_MatSystemSurface->DrawFilledRect(0, 8, 8, 8);
 
+		features.Invoke(PAINT);
+
 		FinishDrawing(g_MatSystemSurface);
 	}
 }
@@ -40,9 +44,11 @@ void PaintHook::Init()
 	original_function = (PaintType)hook->ReplaceVirtual();
 }
 
-void PaintHook::Destory()
+void PaintHook::Destroy()
 {
 	hook->RevertVirtual();
+
+	delete hook;
 }
 
 PaintHook paint_hook;

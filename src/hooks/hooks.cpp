@@ -4,8 +4,8 @@ std::deque<BaseHook*> BaseHook::hooks;
 
 void Hooks::Init()
 {
-	for (auto& i : BaseHook::GetHooks())
-		i->Init();
+	for (auto& hook : BaseHook::GetHooks())
+		hook->Init();
 }
 
 Hooks hooks;

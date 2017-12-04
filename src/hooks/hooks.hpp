@@ -24,7 +24,7 @@ public:
 		hooks.emplace_back(hook);
 	}
 	virtual void Init() = 0;
-	virtual void Destory() = 0;
+	virtual void Destroy() = 0;
 };
 
 class Hooks
