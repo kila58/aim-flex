@@ -11,6 +11,7 @@
 #include "sigscan.hpp"
 #include "vector.hpp"
 #include "util.hpp"
+#include "netvar.hpp"
 
 #include "sdk/CEngineClient.hpp"
 #include "sdk/CEngineVGui.hpp"

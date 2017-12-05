@@ -11,3 +11,5 @@ enum HookType
 	INVALID = -1,
 	PAINT = 0
 };
+
+#define	LIFE_ALIVE 0
