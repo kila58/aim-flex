@@ -20,9 +20,9 @@
 #include "sdk/IClientEntityList.hpp"
 #include "sdk/CHLClient.hpp"
 
-extern CEngineClient* g_EngineClient;
-extern CEngineVGui* g_EngineVGui;
-extern CMatSystemSurface* g_MatSystemSurface;
+extern CEngineClient* engineclient;
+extern CEngineVGui* enginevgui;
+extern CMatSystemSurface* matsystemsurface;
 extern IClientEntityList* entitylist;
 extern CHLClient* client;
-extern CGlobalVarsBase* gpGlobals;
+extern CGlobalVarsBase* globals;

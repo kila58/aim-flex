@@ -18,29 +18,29 @@ void __fastcall Paint(void* instance, void*, int mode)
 
 	if (mode & 1)
 	{
-		StartDrawing(g_MatSystemSurface);
+		StartDrawing(matsystemsurface);
 
-		g_MatSystemSurface->SetDrawColor(Color(60, 186, 84, 170));
-		g_MatSystemSurface->DrawFilledRect(0, 0, 8, 8);
+		matsystemsurface->SetDrawColor(Color(60, 186, 84, 170));
+		matsystemsurface->DrawFilledRect(0, 0, 8, 8);
 
-		g_MatSystemSurface->SetDrawColor(Color(244, 194, 13, 170));
-		g_MatSystemSurface->DrawFilledRect(8, 0, 8, 8);
+		matsystemsurface->SetDrawColor(Color(244, 194, 13, 170));
+		matsystemsurface->DrawFilledRect(8, 0, 8, 8);
 
-		g_MatSystemSurface->SetDrawColor(Color(219, 50, 54, 170));
-		g_MatSystemSurface->DrawFilledRect(8, 8, 8, 8);
+		matsystemsurface->SetDrawColor(Color(219, 50, 54, 170));
+		matsystemsurface->DrawFilledRect(8, 8, 8, 8);
 
-		g_MatSystemSurface->SetDrawColor(Color(72, 133, 237, 170));
-		g_MatSystemSurface->DrawFilledRect(0, 8, 8, 8);
+		matsystemsurface->SetDrawColor(Color(72, 133, 237, 170));
+		matsystemsurface->DrawFilledRect(0, 8, 8, 8);
 
 		features.Invoke(PAINT);
 
-		FinishDrawing(g_MatSystemSurface);
+		FinishDrawing(matsystemsurface);
 	}
 }
 
 void PaintHook::Init()
 {
-	hook = new Hook(g_EngineVGui, 14, &Paint);
+	hook = new Hook(enginevgui, 14, &Paint);
 	original_function = (PaintType)hook->ReplaceVirtual();
 }
 

@@ -4,13 +4,13 @@
 
 bool Interfaces::Init()
 {
-	if (!(g_EngineClient = GetInterface<CEngineClient*>("engine.dll", "VEngineClient")))
+	if (!(engineclient = GetInterface<CEngineClient*>("engine.dll", "VEngineClient")))
 		return false;
 
-	if (!(g_EngineVGui = GetInterface<CEngineVGui*>("engine.dll", "VEngineVGui")))
+	if (!(enginevgui = GetInterface<CEngineVGui*>("engine.dll", "VEngineVGui")))
 		return false;
 
-	if (!(g_MatSystemSurface = GetInterface<CMatSystemSurface*>("vguimatsurface.dll", "VGUI_Surface")))
+	if (!(matsystemsurface = GetInterface<CMatSystemSurface*>("vguimatsurface.dll", "VGUI_Surface")))
 		return false;
 
 	if (!(entitylist = GetInterface<IClientEntityList*>("client.dll", "VClientEntityList")))
@@ -19,7 +19,7 @@ bool Interfaces::Init()
 	if (!(client = GetInterface<CHLClient*>("client.dll", "VClient")))
 		return false;
 
-	if (!(gpGlobals = **(CGlobalVarsBase***)(getvfunc(client, 11) + 10)))
+	if (!(globals = **(CGlobalVarsBase***)(getvfunc(client, 11) + 10)))
 		return false;
 
 	return true;

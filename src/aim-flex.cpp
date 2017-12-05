@@ -1,8 +1,8 @@
 #include "aim-flex.hpp"
 
-CEngineClient* g_EngineClient;
-CEngineVGui* g_EngineVGui;
-CMatSystemSurface* g_MatSystemSurface;
+CEngineClient* engineclient;
+CEngineVGui* enginevgui;
+CMatSystemSurface* matsystemsurface;
 IClientEntityList* entitylist;
 CHLClient* client;
-CGlobalVarsBase* gpGlobals;
+CGlobalVarsBase* globals;

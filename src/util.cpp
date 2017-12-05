@@ -4,7 +4,7 @@
 
 bool ScreenTransform(const Vector& point, Vector& screen)
 {
-	const VMatrix& matrix = g_EngineClient->WorldToScreenMatrix();
+	const VMatrix& matrix = engineclient->WorldToScreenMatrix();
 	float w;
 
 	screen.x = matrix[0][0] * point[0] + matrix[0][1] * point[1] + matrix[0][2] * point[2] + matrix[0][3];
@@ -39,7 +39,7 @@ bool WorldToScreen(const Vector& point, Vector& screen)
 	if (!ScreenTransform(point, screen))
 	{
 		int w, h;
-		g_EngineClient->GetScreenSize(&w, &h);
+		engineclient->GetScreenSize(&w, &h);
 
 		screen.x = (w * 0.5f) + (screen.x * w) * 0.5f;
 		screen.y = (h * 0.5f) - (screen.y * h) * 0.5f;

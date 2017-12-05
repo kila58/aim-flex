@@ -9,18 +9,23 @@ void ESP::Init()
 
 void ESP::Invoke()
 {
-	if (g_EngineClient->IsInGame())
+	if (engineclient->IsInGame())
 	{
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		auto lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+
+		for (int i = 1; i <= globals->maxClients; i++)
 		{
-			CBaseEntity* p = entitylist->GetClientEntity(i);
+			auto p = entitylist->GetClientEntity(i);
 
 			if (!p)
 				continue;
 
+			if (p == lp)
+				continue;
+
 			player_info_t info;
 
-			if (!g_EngineClient->GetPlayerInfo(i, &info))
+			if (!engineclient->GetPlayerInfo(i, &info))
 				continue;
 
 			Vector pos = p->GetAbsOrigin();
@@ -28,8 +33,8 @@ void ESP::Invoke()
 
 			if (WorldToScreen(pos, screen))
 			{
-				g_MatSystemSurface->SetDrawColor(Color(255, 0, 0));
-				g_MatSystemSurface->DrawFilledRect((int)screen.x, (int)screen.y, 5, 5);
+				matsystemsurface->SetDrawColor(Color(255, 0, 0));
+				matsystemsurface->DrawFilledRect((int)screen.x, (int)screen.y, 5, 5);
 			}
 		}
 	}
