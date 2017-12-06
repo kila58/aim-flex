@@ -2,17 +2,19 @@
 
 #include "../../aim-flex.hpp"
 
+unsigned long font;
+
 void ESP::Init()
 {
-
+	matsystemsurface->SetFontGlyphSet(font = matsystemsurface->CreateFont(), "Arial", 16, 500, 0, 0, FONTFLAG_OUTLINE);
 }
+
+player_info_t info;
 
 bool InvalidPlayer(int i, CBaseEntity* p, CBaseEntity* lp)
 {
 	if (!p)
 		return true;
-
-	static player_info_t info;
 
 	if (!engineclient->GetPlayerInfo(i, &info))
 		return true;
@@ -33,6 +35,9 @@ void ESP::Invoke()
 {
 	if (engineclient->IsInGame())
 	{
+		matsystemsurface->SetFont(font);
+		matsystemsurface->SetTextColor(Color(255, 255, 255));
+
 		auto lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 
 		for (int i = 1; i <= globals->maxClients; i++)
@@ -68,6 +73,15 @@ void ESP::Invoke()
 				matsystemsurface->SetDrawColor(Color(0, 0, 0, 235));
 				matsystemsurface->DrawOutlinedRect(x + 1, y + 1, w - 2, h - 2);
 				matsystemsurface->DrawOutlinedRect(x - 1, y - 1, w + 2, h + 2);
+
+				wchar_t name[128];
+				MultiByteToWideChar(CP_UTF8, 0, info.name, -1, name, 128);
+
+				int tw, th;
+				matsystemsurface->GetTextSize(font, name, tw, th);
+
+				matsystemsurface->SetTextPos(x + w / 2 - tw / 2, y - th - 2);
+				matsystemsurface->DrawPrintText(name, std::wcslen(name));
 			}
 		}
 	}
