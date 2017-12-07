@@ -8,9 +8,9 @@ public:
 	int command_number;
 	int tick_count;
 	Vector viewangles; //make angle type
-	Vector	aimdirection;
-	Vector	move;
-	int	buttons;
+	Vector aimdirection;
+	Vector move;
+	int buttons;
 	byte impulse;
 	int weaponselect;
 	int weaponsubtype;
