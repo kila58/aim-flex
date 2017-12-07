@@ -27,5 +27,5 @@ extern CEngineVGui* enginevgui;
 extern CMatSystemSurface* matsystemsurface;
 extern IClientEntityList* entitylist;
 extern CHLClient* client;
-extern void* clientmode;
+extern ptr* clientmode;
 extern CGlobalVarsBase* globals;
