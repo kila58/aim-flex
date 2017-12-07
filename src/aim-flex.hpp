@@ -20,7 +20,7 @@
 #include "sdk/C_BaseEntity.hpp"
 #include "sdk/IClientEntityList.hpp"
 #include "sdk/CHLClient.hpp"
-#include "sdk/usercmd.hpp"
+#include "sdk/CUserCmd.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;
