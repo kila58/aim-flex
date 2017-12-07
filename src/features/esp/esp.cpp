@@ -11,7 +11,7 @@ void ESP::Init()
 
 player_info_t info;
 
-bool InvalidPlayer(int i, CBaseEntity* p, CBaseEntity* lp)
+bool InvalidPlayer(int i, C_BaseEntity* p, C_BaseEntity* lp)
 {
 	if (!p)
 		return true;
@@ -64,13 +64,13 @@ void ESP::Invoke()
 				float w = width * 2;
 
 				if (p->GetTeam() == lp->GetTeam())
-					matsystemsurface->SetDrawColor(Color(72, 133, 237, 235));
+					matsystemsurface->SetDrawColor(Color(72, 133, 237));
 				else
-					matsystemsurface->SetDrawColor(Color(219, 50, 54, 235));
+					matsystemsurface->SetDrawColor(Color(219, 50, 54));
 
 				matsystemsurface->DrawOutlinedRect(x, y, w, h);
 
-				matsystemsurface->SetDrawColor(Color(0, 0, 0, 235));
+				matsystemsurface->SetDrawColor(Color(0, 0, 0));
 				matsystemsurface->DrawOutlinedRect(x + 1, y + 1, w - 2, h - 2);
 				matsystemsurface->DrawOutlinedRect(x - 1, y - 1, w + 2, h + 2);
 

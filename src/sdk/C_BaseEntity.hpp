@@ -13,7 +13,7 @@ public:
 	}
 };
 
-class CBaseEntity
+class C_BaseEntity
 {
 	template <typename T>
 	T GetNetVar(const char* name)

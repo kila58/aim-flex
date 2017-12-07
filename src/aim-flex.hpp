@@ -17,7 +17,7 @@
 #include "sdk/CEngineVGui.hpp"
 #include "sdk/CMatSystemSurface.hpp"
 #include "sdk/CGlobalVarsBase.hpp"
-#include "sdk/CBaseEntity.hpp"
+#include "sdk/C_BaseEntity.hpp"
 #include "sdk/IClientEntityList.hpp"
 #include "sdk/CHLClient.hpp"
 
