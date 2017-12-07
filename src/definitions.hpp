@@ -9,7 +9,8 @@ typedef unsigned long ulong;
 enum HookType
 {
 	INVALID = -1,
-	PAINT = 0
+	PAINT = 0,
+	MOVE = 0
 };
 
 #define	LIFE_ALIVE 0

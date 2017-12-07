@@ -20,10 +20,12 @@
 #include "sdk/C_BaseEntity.hpp"
 #include "sdk/IClientEntityList.hpp"
 #include "sdk/CHLClient.hpp"
+#include "sdk/usercmd.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;
 extern CMatSystemSurface* matsystemsurface;
 extern IClientEntityList* entitylist;
 extern CHLClient* client;
+extern void* clientmode;
 extern CGlobalVarsBase* globals;
