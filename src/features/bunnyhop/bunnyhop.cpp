@@ -9,7 +9,7 @@ void BunnyHop::Init()
 
 void BunnyHop::Invoke()
 {
-	MessageBoxA(NULL, "ok", NULL, NULL);
+	//MessageBoxA(NULL, "ok", NULL, NULL);
 }
 
 void BunnyHop::Destroy()

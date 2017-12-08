@@ -74,14 +74,29 @@ void ESP::Invoke()
 				matsystemsurface->DrawOutlinedRect(x + 1, y + 1, w - 2, h - 2);
 				matsystemsurface->DrawOutlinedRect(x - 1, y - 1, w + 2, h + 2);
 
-				wchar_t name[128];
-				MultiByteToWideChar(CP_UTF8, 0, info.name, -1, name, 128);
+				wchar_t wname[128];
+				MultiByteToWideChar(CP_UTF8, 0, info.name, -1, wname, 128);
 
 				int tw, th;
-				matsystemsurface->GetTextSize(font, name, tw, th);
+				matsystemsurface->GetTextSize(font, wname, tw, th);
 
 				matsystemsurface->SetTextPos(x + w / 2 - tw / 2, y - th - 2);
-				matsystemsurface->DrawPrintText(name, std::wcslen(name));
+				matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
+
+				auto weapon = p->GetWeapon();
+
+				if (weapon)
+				{
+					std::string name = std::string(weapon->GetCSWpnData()->szClassName).substr(7);
+
+					wchar_t wname[128];
+					MultiByteToWideChar(CP_UTF8, 0, name.c_str(), -1, wname, 128);
+
+					matsystemsurface->GetTextSize(font, wname, tw, th);
+
+					matsystemsurface->SetTextPos(x + w / 2 - tw / 2, y + h + 1);
+					matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
+				}
 			}
 		}
 	}

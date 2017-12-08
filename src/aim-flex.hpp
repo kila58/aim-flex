@@ -17,10 +17,11 @@
 #include "sdk/CEngineVGui.hpp"
 #include "sdk/CMatSystemSurface.hpp"
 #include "sdk/CGlobalVarsBase.hpp"
-#include "sdk/C_BaseEntity.hpp"
 #include "sdk/IClientEntityList.hpp"
+#include "sdk/C_BaseEntity.hpp"
 #include "sdk/CHLClient.hpp"
 #include "sdk/CUserCmd.hpp"
+#include "sdk/C_BaseCombatWeapon.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;

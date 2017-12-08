@@ -13,6 +13,11 @@ public:
 	}
 };
 
+class C_BaseCombatWeapon;
+class IClientEntityList;
+
+extern IClientEntityList* entitylist;
+
 class C_BaseEntity
 {
 	template <typename T>
@@ -41,5 +46,9 @@ public:
 	int GetTeam()
 	{
 		return GetNetVar<int>("m_iTeamNum");
+	}
+	C_BaseCombatWeapon* GetWeapon()
+	{
+		return (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(GetNetVar<unsigned long>("m_hActiveWeapon"));
 	}
 };
