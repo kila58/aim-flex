@@ -12,4 +12,4 @@ public:
 	void Destroy();
 };
 
-ESP esp;
+extern ESP esp;

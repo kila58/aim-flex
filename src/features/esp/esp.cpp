@@ -107,4 +107,4 @@ void ESP::Destroy()
 
 }
 
-extern ESP esp;
+ESP esp;
