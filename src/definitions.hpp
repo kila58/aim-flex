@@ -10,7 +10,7 @@ enum HookType
 {
 	INVALID = -1,
 	PAINT = 0,
-	MOVE = 1
+	CREATEMOVE = 1
 };
 
 #define	LIFE_ALIVE 0

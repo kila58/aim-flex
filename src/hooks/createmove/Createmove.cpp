@@ -1,35 +1,35 @@
-#include "Createmove.hpp"
+#include "CreateMove.hpp"
 
 #include "../../aim-flex.hpp"
 
 #include "../../features/features.hpp"	
 
-using CreatemoveType = void* (__thiscall*)(void*, float, CUserCmd*);
-CreatemoveType original_function;
+using CreateMoveType = void*(__thiscall*)(void*, float, CUserCmd*);
+CreateMoveType original_function;
 
-bool __fastcall Createmove(void* instance, void*, float inputSampleTime, CUserCmd* cmd)
+bool __fastcall CreateMove(void* instance, void*, float flInputSampleTime, CUserCmd* cmd)
 {
-	original_function(instance, inputSampleTime, cmd);
+	original_function(instance, flInputSampleTime, cmd);
 
 	if (!cmd->command_number)
 		return true;
 
-	features.Invoke(MOVE);
+	features.Invoke(CREATEMOVE);
 
 	return true;
 }
 
-void CreatemoveHook::Init()
+void CreateMoveHook::Init()
 {
-	hook = new Hook(clientmode, 24, &Createmove);
-	original_function = (CreatemoveType)hook->ReplaceVirtual();
+	hook = new Hook(clientmode, 24, &CreateMove);
+	original_function = (CreateMoveType)hook->ReplaceVirtual();
 }
 
-void CreatemoveHook::Destroy()
+void CreateMoveHook::Destroy()
 {
 	hook->RevertVirtual();
 
 	delete hook;
 }
 
-CreatemoveHook paint_hook;
+CreateMoveHook createmove_hook;

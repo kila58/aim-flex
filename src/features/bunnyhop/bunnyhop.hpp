@@ -5,11 +5,11 @@
 class BunnyHop : public BaseFeature
 {
 public:
-	BunnyHop() : BaseFeature(HookType::MOVE) {}
+	BunnyHop() : BaseFeature(HookType::CREATEMOVE) {}
 
 	void Init();
 	void Invoke();
 	void Destroy();
 };
 
-BunnyHop bunnyhop;
+extern BunnyHop bunnyhop;

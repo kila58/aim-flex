@@ -2,7 +2,7 @@
 
 #include "../hooks.hpp"
 
-class CreatemoveHook : public BaseHook
+class CreateMoveHook : public BaseHook
 {
 public:
 	void Init();

@@ -17,4 +17,4 @@ void BunnyHop::Destroy()
 
 }
 
-extern BunnyHop bunnyhop;
+BunnyHop bunnyhop;

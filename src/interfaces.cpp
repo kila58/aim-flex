@@ -19,7 +19,7 @@ bool Interfaces::Init()
 	if (!(client = GetInterface<CHLClient*>("client.dll", "VClient")))
 		return false;
 
-	if (!(clientmode = **(ptr***)(getvfunc(client, 10) + 5)))
+	if (!(clientmode = **(ClientModeShared***)(getvfunc(client, 10) + 5)))
 		return false;
 
 	if (!(globals = **(CGlobalVarsBase***)(getvfunc(client, 11) + 10)))

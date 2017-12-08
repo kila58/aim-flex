@@ -20,6 +20,7 @@
 #include "sdk/IClientEntityList.hpp"
 #include "sdk/C_BaseEntity.hpp"
 #include "sdk/CHLClient.hpp"
+#include "sdk/ClientModeShared.hpp"
 #include "sdk/CUserCmd.hpp"
 #include "sdk/C_BaseCombatWeapon.hpp"
 
@@ -28,5 +29,5 @@ extern CEngineVGui* enginevgui;
 extern CMatSystemSurface* matsystemsurface;
 extern IClientEntityList* entitylist;
 extern CHLClient* client;
-extern ptr* clientmode;
+extern ClientModeShared* clientmode;
 extern CGlobalVarsBase* globals;

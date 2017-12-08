@@ -5,5 +5,5 @@ CEngineVGui* enginevgui;
 CMatSystemSurface* matsystemsurface;
 IClientEntityList* entitylist;
 CHLClient* client;
-ptr* clientmode;
+ClientModeShared* clientmode;
 CGlobalVarsBase* globals;
