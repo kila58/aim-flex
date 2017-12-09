@@ -47,6 +47,10 @@ public:
 	{
 		return GetNetVar<int>("m_iTeamNum");
 	}
+	int GetHealth()
+	{
+		return GetNetVar<int>("m_iHealth");
+	}
 	C_BaseCombatWeapon* GetWeapon()
 	{
 		return (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(GetNetVar<unsigned long>("m_hActiveWeapon"));

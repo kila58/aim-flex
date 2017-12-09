@@ -74,6 +74,14 @@ void ESP::Invoke()
 				matsystemsurface->DrawOutlinedRect(x + 1, y + 1, w - 2, h - 2);
 				matsystemsurface->DrawOutlinedRect(x - 1, y - 1, w + 2, h + 2);
 
+				matsystemsurface->DrawFilledRect(x - 5, y - 1, 3, h + 2);
+
+				int hp = p->GetHealth();
+				int height = (int)((clamp((float)hp / 100.f, 0.f, 100.f)) * (float)h);
+
+				matsystemsurface->SetDrawColor(HSVtoRGB(hp / 100.f * 120.f, 1.f, 1.f));
+				matsystemsurface->DrawFilledRect(x - 4, y + (h - height), 1, height);
+
 				wchar_t wname[128];
 				MultiByteToWideChar(CP_UTF8, 0, info.name, -1, wname, 128);
 

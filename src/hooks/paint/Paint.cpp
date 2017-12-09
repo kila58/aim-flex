@@ -16,7 +16,7 @@ void __fastcall Paint(void* instance, void*, int mode)
 	static auto StartDrawing = (DrawingType)(SigScan("55 8B EC 83 E4 C0 83 EC 38", "vguimatsurface.dll"));
 	static auto FinishDrawing = (DrawingType)(SigScan("8B 0D ? ? ? ? 56 C6 05", "vguimatsurface.dll"));
 
-	if (mode & 1)
+	if (mode & PAINT_UIPANELS)
 	{
 		StartDrawing(matsystemsurface);
 

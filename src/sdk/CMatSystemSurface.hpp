@@ -17,10 +17,6 @@ public:
 	{
 		return getvfunc<void(__thiscall*)(void*, int, int, int, int)>(this, 18)(this, x, y, x + w, y + h);
 	}
-	void DrawOutlinedRect(float x, float y, float w, float h)
-	{
-		return DrawOutlinedRect((int)x, (int)y, (int)w, (int)h);
-	}
 	void SetFont(unsigned long font)
 	{
 		return getvfunc<void(__thiscall*)(void*, unsigned long)>(this, 23)(this, font);

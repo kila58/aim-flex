@@ -1,5 +1,7 @@
 #pragma once
 
+#pragma warning(disable : 4244)
+
 #include <Windows.h>
 #include <cctype>
 #include <algorithm>
