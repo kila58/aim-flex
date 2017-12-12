@@ -18,8 +18,6 @@ void BunnyHop::Invoke()
 		if (cmd->buttons & IN_JUMP)
 			cmd->buttons &= ~IN_JUMP;
 	}
-
-	cmd->move.x = 450.f;
 }
 
 void BunnyHop::Destroy()
