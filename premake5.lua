@@ -11,6 +11,7 @@ project "aim-flex"
    targetdir "bin/"
    systemversion "10.0.16299.0"
    characterset "MBCS"
+   cppdialect "C++17"
    
    files { "src/**.hpp", "src/**.cpp" }
 
