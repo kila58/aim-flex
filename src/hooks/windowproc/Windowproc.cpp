@@ -1,12 +1,8 @@
 #include "WindowProc.hpp"
 
-#include "../../aim-flex.hpp"
-
-#include "../../features/features.hpp"	
-
 WNDPROC original_function;
 
-long __stdcall WindowProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	if (handle == GetFocus())
 	{

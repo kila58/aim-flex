@@ -9,7 +9,17 @@ void BunnyHop::Init()
 
 void BunnyHop::Invoke()
 {
-	//MessageBoxA(NULL, "ok", NULL, NULL);
+	auto cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
+
+	auto lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+
+	if (lp && !lp->IsOnGround())
+	{
+		if (cmd->buttons & IN_JUMP)
+			cmd->buttons &= ~IN_JUMP;
+	}
+
+	cmd->move.x = 450.f;
 }
 
 void BunnyHop::Destroy()

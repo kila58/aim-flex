@@ -51,6 +51,10 @@ public:
 	{
 		return GetNetVar<int>("m_iHealth");
 	}
+	bool IsOnGround()
+	{
+		return GetNetVar<int>("m_fFlags") & FL_ONGROUND;
+	}
 	C_BaseCombatWeapon* GetWeapon()
 	{
 		return (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(GetNetVar<unsigned long>("m_hActiveWeapon"));

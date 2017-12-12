@@ -14,6 +14,7 @@ bool __fastcall CreateMove(void* instance, void*, float flInputSampleTime, CUser
 	if (!cmd->command_number)
 		return true;
 
+	BaseFeature::SetArguments(CREATEMOVE, cmd);
 	features.Invoke(CREATEMOVE);
 
 	return true;

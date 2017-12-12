@@ -1,6 +1,7 @@
 #include "features.hpp"
 
 std::deque<BaseFeature*> BaseFeature::features;
+std::unordered_map<HookType, ArgsArrayType> BaseFeature::arguments;
 
 void Features::Init()
 {
