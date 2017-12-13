@@ -2,6 +2,8 @@
 
 #include "../../aim-flex.hpp"
 
+#include "../../features/input/input.hpp"
+
 void BunnyHop::Init()
 {
 

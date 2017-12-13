@@ -10,7 +10,8 @@ enum HookType
 {
 	INVALID = -1,
 	PAINT = 0,
-	CREATEMOVE = 1
+	CREATEMOVE = 1,
+	WINDOWPROC = 2
 };
 
 // PaintMode_t

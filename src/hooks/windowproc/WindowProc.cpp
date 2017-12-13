@@ -1,15 +1,15 @@
 #include "WindowProc.hpp"
 
+#include "../../features/features.hpp"
+
 WNDPROC original_function;
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	if (handle == GetFocus())
 	{
-		if (msg == WM_KEYDOWN && wparam == VK_F11)
-		{
-			MessageBoxA(NULL, "bro..", NULL, NULL);
-		}
+		BaseFeature::SetArguments(WINDOWPROC, handle, msg, wparam, lparam);
+		features.Invoke(WINDOWPROC);
 	}
 
 	return CallWindowProc(original_function, handle, msg, wparam, lparam);
