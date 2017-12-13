@@ -31,6 +31,7 @@ class Hooks
 {
 public:
 	void Init();
+	void Destroy();
 };
 
 extern Hooks hooks;

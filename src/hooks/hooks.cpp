@@ -8,4 +8,10 @@ void Hooks::Init()
 		hook->Init();
 }
 
+void Hooks::Destroy()
+{
+	for (auto& hook : BaseHook::GetHooks())
+		hook->Destroy();
+}
+
 Hooks hooks;

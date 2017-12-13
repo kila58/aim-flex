@@ -22,7 +22,7 @@ void WindowProcHook::Init()
 
 void WindowProcHook::Destroy()
 {
-
+	(WNDPROC)SetWindowLong(FindWindow("Valve001", NULL), GWL_WNDPROC, (LONG)original_function);
 }
 
 WindowProcHook windowproc_hook;

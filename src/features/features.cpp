@@ -18,4 +18,12 @@ void Features::Invoke(HookType type)
 	}
 }
 
+void Features::Destroy()
+{
+	for (auto& feature : BaseFeature::GetFeatures())
+	{
+		feature->Destroy();
+	}
+}
+
 Features features;

@@ -59,6 +59,7 @@ class Features
 public:
 	void Init();
 	void Invoke(HookType type);
+	void Destroy();
 };
 
 extern Features features;

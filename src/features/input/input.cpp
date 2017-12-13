@@ -16,8 +16,20 @@ void Input::Invoke()
 	switch (msg)
 	{
 	case WM_KEYDOWN:
+	{
 		keys[wparam] = true;
+
+		for (auto& pair : callbacks)
+		{
+			for (auto& func : pair.second)
+			{
+				if (pair.first == wparam)
+					func();
+			}
+		}
+
 		break;
+	}
 	case WM_KEYUP:
 		keys[wparam] = false;
 		break;
@@ -31,10 +43,17 @@ bool Input::KeyDown(int key)
 		if (bool ret = keys[key])
 			return ret;
 	}
-	catch (const std::exception& e)
+	catch (...)
 	{
 		return false;
 	}
+
+	return false;
+}
+
+void Input::OnKey(int key, FunctionType func)
+{
+	callbacks[key].emplace_back(func);
 }
 
 void Input::Destroy()
