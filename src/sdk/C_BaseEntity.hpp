@@ -55,6 +55,14 @@ public:
 	{
 		return GetNetVar<int>("m_fFlags") & FL_ONGROUND;
 	}
+	Vector GetMins()
+	{
+		return GetNetVar<Vector>("m_vecMins");
+	}
+	Vector GetMaxs()
+	{
+		return GetNetVar<Vector>("m_vecMaxs");
+	}
 	C_BaseCombatWeapon* GetWeapon()
 	{
 		return (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(GetNetVar<unsigned long>("m_hActiveWeapon"));

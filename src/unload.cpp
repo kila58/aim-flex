@@ -20,6 +20,8 @@ void Unload::Poll(HMODULE module)
 
 	hooks.Destroy();
 
+	features.Destroy();
+
 	FreeLibraryAndExitThread(module, NULL);
 }
 

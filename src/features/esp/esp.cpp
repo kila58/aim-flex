@@ -49,6 +49,19 @@ void ESP::Invoke()
 
 			Vector pos = p->GetAbsOrigin();
 
+			Vector mins = p->GetMins();
+			Vector maxs = p->GetMaxs();
+
+			Vector min, max;
+			if (WorldToScreen(pos + mins, min) && WorldToScreen(pos + maxs, max))
+			{
+				matsystemsurface->SetDrawColor(Color(0, 0, 0));
+
+				matsystemsurface->DrawOutlinedRect(min.x, min.y, 2, 2);
+
+				matsystemsurface->DrawOutlinedRect(max.x, max.y, 2, 2);
+			}
+
 			Vector _bottom = (pos + Vector(0, 0, 1));
 			Vector _top = (pos + Vector(0, 0, 72));
 
