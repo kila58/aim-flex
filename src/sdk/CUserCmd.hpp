@@ -7,7 +7,7 @@ public:
 
 	int command_number;
 	int tick_count;
-	Vector viewangles; //make angle type
+	Angle viewangles;
 	Vector aimdirection;
 	Vector move;
 	int buttons;

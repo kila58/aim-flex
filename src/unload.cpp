@@ -8,19 +8,13 @@
 
 void Unload::Poll(HMODULE module)
 {
-	static bool unload = false;
-
-	input.OnKey(VK_F11, [&module]()
-	{
-		unload = true;
-	});
-
-	while (!unload)
+	while (!input.KeyDown(VK_F11))
 		Sleep(100);
 
 	hooks.Destroy();
-
 	features.Destroy();
+
+	Sleep(100);
 
 	FreeLibraryAndExitThread(module, NULL);
 }

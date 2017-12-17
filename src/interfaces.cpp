@@ -19,6 +19,12 @@ bool Interfaces::Init()
 	if (!(client = GetInterface<CHLClient*>("client.dll", "VClient")))
 		return false;
 
+	if (!(cvar = GetInterface<ICVar*>("vstdlib.dll", "VEngineCvar")))
+		return false;
+
+	if (!(modelinfo = GetInterface<IVModelInfo*>("engine.dll", "VModelInfoClient")))
+		return false;
+
 	if (!(clientmode = **(ClientModeShared***)(getvfunc(client, 10) + 5)))
 		return false;
 

@@ -2,6 +2,8 @@
 
 #include "../../aim-flex.hpp"
 
+#include "../settings/settings.hpp"
+
 unsigned long font;
 
 void ESP::Init()
@@ -33,7 +35,7 @@ bool InvalidPlayer(int i, C_BaseEntity* p, C_BaseEntity* lp)
 
 void ESP::Invoke()
 {
-	if (engineclient->IsInGame())
+	if (settings.Get<bool>("esp_enabled") && engineclient->IsInGame())
 	{
 		matsystemsurface->SetFont(font);
 		matsystemsurface->SetTextColor(Color(255, 255, 255));
@@ -49,6 +51,7 @@ void ESP::Invoke()
 
 			Vector pos = p->GetAbsOrigin();
 
+			/*
 			Vector mins = p->GetMins();
 			Vector maxs = p->GetMaxs();
 
@@ -61,6 +64,7 @@ void ESP::Invoke()
 
 				matsystemsurface->DrawOutlinedRect(max.x, max.y, 2, 2);
 			}
+			*/
 
 			Vector _bottom = (pos + Vector(0, 0, 1));
 			Vector _top = (pos + Vector(0, 0, 72));

@@ -11,7 +11,7 @@ void BunnyHop::Init()
 
 void BunnyHop::Invoke()
 {
-	auto cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
+	auto cmd = GetArg<CUserCmd*>(GetArguments(), 0);
 
 	auto lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 

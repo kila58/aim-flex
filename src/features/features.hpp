@@ -33,6 +33,10 @@ public:
 	{
 		return arguments[type];
 	}
+	const ArgsArrayType& GetArguments()
+	{
+		return arguments[type];
+	}
 	template<typename T>
 	static T GetArg(const ArgsArrayType& array, uint index)
 	{

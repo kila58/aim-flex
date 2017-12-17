@@ -13,6 +13,19 @@ public:
 	}
 };
 
+class IClientRenderable
+{
+public:
+	model_t* GetModel()
+	{
+		return getvfunc<model_t*(__thiscall*)(void*)>(this, 8)(this);
+	}
+	bool SetupBones(VMatrix* bones, float time)
+	{
+		return getvfunc<bool(__thiscall*)(void*, VMatrix*, int bones, int flag, float time)>(this, 13)(this, bones, 128, 256, time);
+	}
+};
+
 class C_BaseCombatWeapon;
 class IClientEntityList;
 
@@ -27,9 +40,13 @@ class C_BaseEntity
 		return *(T*)(this + offset);
 	}
 public:
+	inline IClientRenderable* GetRenderable()
+	{
+		return (IClientRenderable*)(this + 4);
+	}
 	inline IClientNetworkable* GetNetworkable()
 	{
-		return (IClientNetworkable*)(this + 0x8);
+		return (IClientNetworkable*)(this + 8);
 	}
 	Vector& GetAbsOrigin()
 	{
@@ -63,8 +80,28 @@ public:
 	{
 		return GetNetVar<Vector>("m_vecMaxs");
 	}
+	int GetTickBase()
+	{
+		return GetNetVar<int>("m_nTickBase");
+	}
+	int GetHitboxSet()
+	{
+		return GetNetVar<int>("m_nHitboxSet");
+	}
+	Vector GetEyeOffset()
+	{
+		return GetNetVar<Vector>("m_vecViewOffset[0]");
+	}
 	C_BaseCombatWeapon* GetWeapon()
 	{
 		return (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(GetNetVar<unsigned long>("m_hActiveWeapon"));
+	}
+	inline bool SetupBones(VMatrix* bones, float time)
+	{
+		return GetRenderable()->SetupBones(bones, time);
+	}
+	inline model_t* GetModel()
+	{
+		return GetRenderable()->GetModel();
 	}
 };
