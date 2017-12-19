@@ -92,37 +92,6 @@ bool FindTarget(Angle& ang)
 		VectorAngles(center - lpeyepos, ang);
 
 		return true;
-
-		//auto model = p->GetModel();
-		//studiohdr_t* hdr = modelinfo->GetStudiomodel(model);
-
-		//if (!hdr)
-		//	continue;
-
-		//mstudiohitboxset_t* set = hdr->hitboxset(0);
-
-		//if (!set)
-		//	continue;
-
-		//for (int h = 0; h < set->numhitboxes; h++)
-		//{
-			//auto hitbox = set->hitbox(0);
-
-			//if (!hitbox/* && hitbox->radius*/)
-			//	continue;
-
-			//Vector min, max;
-			//float mod = hitbox->radius != -1.f ? hitbox->radius : 0.f;
-
-			//VectorTransform(hitbox->bbmin - Vector(mod, mod, 0), bones[hitbox->bone], min);
-			//VectorTransform(hitbox->bbmax + Vector(mod, mod, 0), bones[hitbox->bone], max);
-
-			//Vector forward = ((min + max) * 0.5f) - lpeyepos;
-
-			//VectorAngles(forward, ang);
-
-		//	return true;
-		//}
 	}
 
 	return false;
