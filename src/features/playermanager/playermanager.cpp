@@ -7,6 +7,9 @@ bool InvalidPlayer(int i, C_BaseEntity* p, C_BaseEntity* lp)
 	if (!p)
 		return true;
 
+	if (!p->GetRenderable())
+		return true;
+
 	static player_info_t info;
 
 	if (!engineclient->GetPlayerInfo(i, &info))
@@ -36,7 +39,7 @@ void PlayerManager::Invoke()
 {
 	players.clear();
 
-	auto lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 	Vector lporigin = lp->GetAbsOrigin();
 
 	for (int i = 1; i <= globals->maxClients; i++)

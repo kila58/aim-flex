@@ -10,7 +10,7 @@ RunCommandType original_function;
 
 void __fastcall RunCommand(void* instance, void*, C_BaseEntity* player, CUserCmd* cmd, IMoveHelper* movehelper)
 {
-	auto lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 
 	if (player == lp)
 		predict.movehelper = movehelper;

@@ -10,19 +10,22 @@ void Aimbot::Init()
 
 }
 
-C_BaseEntity* lastplayer;
-
 void Aimbot::Invoke()
 {
 	rage.Invoke();
 
 	lastplayer = nullptr;
+	lp = nullptr;
 }
 
-static Vector empty = Vector(0, 0, 0);
+static Vector empty = Vector();
 Vector Aimbot::GetHitbox(C_BaseEntity* p, int hitboxindex)
 {
-	studiohdr_t* hdr = modelinfo->GetStudiomodel(p->GetModel());
+	model_t* model = p->GetModel();
+	if (!model)
+		return empty;
+
+	studiohdr_t* hdr = modelinfo->GetStudiomodel(model);
 	if (!hdr)
 		return empty;
 
@@ -49,6 +52,18 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int hitboxindex)
 	return ((min + max) * 0.5f);
 }
 
+void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
+{
+	static Vector lpeyepos;
+
+	if (!lp)
+	{
+		lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
+	}
+	
+	VectorAngles(pos - lpeyepos, out);
+}
 
 void Aimbot::Destroy()
 {

@@ -40,7 +40,7 @@ void ESP::Invoke()
 		matsystemsurface->SetFont(font);
 		matsystemsurface->SetTextColor(Color(255, 255, 255));
 
-		auto lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+		C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 
 		for (int i = 1; i <= globals->maxClients; i++)
 		{

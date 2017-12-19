@@ -13,7 +13,7 @@ void BunnyHop::Invoke()
 {
 	auto cmd = GetArg<CUserCmd*>(GetArguments(), 0);
 
-	auto lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 
 	if (lp && !lp->IsOnGround())
 	{

@@ -12,9 +12,7 @@ void Rage::Init()
 
 bool FindTarget(Angle& ang)
 {
-	auto lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
-	Vector lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
-
+	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 	auto& targets = playermanager.GetPlayers();
 
 	for (auto& target : targets)
@@ -22,10 +20,15 @@ bool FindTarget(Angle& ang)
 		C_BaseEntity* p = target.ent;
 		Vector& center = aimbot.GetHitbox(p, 0);
 
-		VectorAngles(center - lpeyepos, ang);
-		ang -= (lp->GetAimPunch() * 2);
+		if (!center.IsZero())
+		{
+			aimbot.CalculateAngle(center, ang);
 
-		return true;
+			ang -= (lp->GetAimPunch() * 2);
+			ang.r = 0.f;
+
+			return true;
+		}
 	}
 
 	return false;

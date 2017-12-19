@@ -2,10 +2,12 @@
 
 typedef float VMatrix[3][4];
 
+static const float pi = 3.14159265358979323846f;
+
 class Vector
 {
 public:
-	Vector() {}
+	Vector() : x(0), y(0), z(0) {}
 	Vector(float x, float y, float z) : x(x), y(y), z(z) {}
 
 	float x, y, z;
@@ -18,6 +20,8 @@ public:
 	Vector operator*(const float) const;
 	Vector operator+(const Vector&) const;
 	Vector operator+(const float) const;
+
+	bool IsZero() const;
 
 	float Length() const;
 	float Length2D() const;
@@ -63,6 +67,11 @@ inline Vector Vector::operator+(const float f) const
 	return Vector(x + f, y + f, z + f);
 }
 
+inline bool Vector::IsZero() const
+{
+	return x == 0.f && y == 0.f && z == 0.f;
+}
+
 inline float Vector::Length() const
 {
 	return std::sqrt((x * x) + (y * y) + (z * z));
@@ -104,8 +113,6 @@ inline void VectorTransform(const Vector& in, const VMatrix& matrix, Vector& out
 	out.y = in.Dot(Vector(matrix[1][0], matrix[1][1], matrix[1][2])) + matrix[1][3];
 	out.z = in.Dot(Vector(matrix[2][0], matrix[2][1], matrix[2][2])) + matrix[2][3];
 }
-
-static const float pi = 3.14159265358979323846f;
 
 inline float Rad2Deg(float rad)
 {
