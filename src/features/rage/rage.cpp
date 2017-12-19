@@ -23,6 +23,7 @@ bool FindTarget(Angle& ang)
 		Vector& center = aimbot.GetHitbox(p, 0);
 
 		VectorAngles(center - lpeyepos, ang);
+		ang = ang - (lp->GetAimPunch() * 2);
 
 		return true;
 	}
@@ -36,7 +37,11 @@ void Rage::Invoke()
 
 	Angle ang;
 	if (FindTarget(ang))
+	{
 		cmd->viewangles = ang;
+
+		cvar->ConsoleColorPrintf(std::to_string(ang.y) + "\n");
+	}
 }
 
 void Rage::Destroy()

@@ -92,6 +92,10 @@ public:
 	{
 		return GetNetVar<Vector>("m_vecViewOffset[0]");
 	}
+	Angle GetAimPunch()
+	{
+		return GetNetVar<Angle>("m_aimPunchAngle");
+	}
 	C_BaseCombatWeapon* GetWeapon()
 	{
 		return (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(GetNetVar<unsigned long>("m_hActiveWeapon"));

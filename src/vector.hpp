@@ -17,6 +17,7 @@ public:
 	Vector operator-(const float) const;
 	Vector operator*(const float) const;
 	Vector operator+(const Vector&) const;
+	Vector operator+(const float) const;
 
 	float Length() const;
 	float Length2D() const;
@@ -55,6 +56,11 @@ inline Vector Vector::operator*(const float f) const
 inline Vector Vector::operator+(const Vector& vec) const
 {
 	return Vector(x + vec.x, y + vec.y, z + vec.z);
+}
+
+inline Vector Vector::operator+(const float f) const
+{
+	return Vector(x + f, y + f, z + f);
 }
 
 inline float Vector::Length() const
