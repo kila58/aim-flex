@@ -73,12 +73,12 @@ void ESP::Invoke()
 
 			if (WorldToScreen(_bottom, bottom) && WorldToScreen(_top, top))
 			{
-				float h = (bottom.y - top.y);
-				float width = (h / 4);
+				int h = ceil(bottom.y - top.y);
+				int width = ceil(h / 4);
 
-				float x = top.x - width;
-				float y = top.y;
-				float w = width * 2;
+				int x = ceil(top.x - width);
+				int y = ceil(top.y);
+				int w = ceil(width * 2);
 
 				if (p->GetTeam() == lp->GetTeam())
 					matsystemsurface->SetDrawColor(Color(72, 133, 237));
@@ -94,7 +94,7 @@ void ESP::Invoke()
 				matsystemsurface->DrawFilledRect(x - 5, y - 1, 3, h + 2);
 
 				int hp = p->GetHealth();
-				int height = (int)((clamp((float)hp / 100.f, 0.f, 100.f)) * (float)h);
+				int height = (int)((clamp((float)hp / 100.f, 0.f, 100.f)) * h);
 
 				matsystemsurface->SetDrawColor(HSVtoRGB(hp / 100.f * 120.f, 1.f, 1.f));
 				matsystemsurface->DrawFilledRect(x - 4, y + (h - height), 1, height);

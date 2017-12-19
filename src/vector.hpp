@@ -92,7 +92,7 @@ inline float Vector::Dot(const Vector& vec) const
 	return x * vec.x + y * vec.y + z * vec.z;
 }
 
-inline void VectorTransform(Vector in, VMatrix& matrix, Vector& out)
+inline void VectorTransform(const Vector& in, const VMatrix& matrix, Vector& out)
 {
 	out.x = in.Dot(Vector(matrix[0][0], matrix[0][1], matrix[0][2])) + matrix[0][3];
 	out.y = in.Dot(Vector(matrix[1][0], matrix[1][1], matrix[1][2])) + matrix[1][3];
