@@ -14,7 +14,7 @@ void Features::Init()
 
 	std::sort(features.begin(), features.end(), [](BaseFeature* a, BaseFeature* b)
 	{
-		return a->GetPriority() > b->GetPriority();
+		return a->GetPriority() < b->GetPriority();
 	});
 }
 

@@ -34,7 +34,7 @@ protected:
 		AddFeature(this);
 	}
 public:
-	static std::deque<BaseFeature*> GetFeatures()
+	static std::deque<BaseFeature*>& GetFeatures()
 	{
 		return features;
 	};
