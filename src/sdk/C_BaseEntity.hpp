@@ -20,9 +20,9 @@ public:
 	{
 		return getvfunc<model_t*(__thiscall*)(void*)>(this, 8)(this);
 	}
-	bool SetupBones(VMatrix* bones, float time)
+	bool SetupBones(VMatrix* bones, float time, int _bones = 128, int _flag = 256)
 	{
-		return getvfunc<bool(__thiscall*)(void*, VMatrix*, int bones, int flag, float time)>(this, 13)(this, bones, 128, 256, time);
+		return getvfunc<bool(__thiscall*)(void*, VMatrix*, int bones, int flag, float time)>(this, 13)(this, bones, _bones, _flag, time);
 	}
 };
 
@@ -96,7 +96,7 @@ public:
 	{
 		return (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(GetNetVar<unsigned long>("m_hActiveWeapon"));
 	}
-	inline bool SetupBones(VMatrix* bones, float time)
+	inline bool SetupBones(VMatrix* bones, float time = 0.f)
 	{
 		return GetRenderable()->SetupBones(bones, time);
 	}

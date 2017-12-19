@@ -5,7 +5,7 @@
 class ESP : public BaseFeature
 {
 public:
-	ESP() : BaseFeature(HookType::PAINT) {}
+	ESP() : BaseFeature(PAINT) {}
 
 	void Init();
 	void Invoke();

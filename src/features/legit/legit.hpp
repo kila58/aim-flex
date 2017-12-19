@@ -5,7 +5,7 @@
 class Legit : public BaseFeature
 {
 public:
-	Legit() : BaseFeature(HookType::CREATEMOVE) {}
+	Legit() : BaseFeature() {}
 
 	void Init();
 	void Invoke();

@@ -12,7 +12,7 @@ private:
 	std::unordered_map<int, bool> keys;
 	std::unordered_map<int, std::deque<FunctionType>> callbacks;
 public:
-	Input() : BaseFeature(HookType::WINDOWPROC) {}
+	Input() : BaseFeature(WINDOWPROC) {}
 
 	void Init();
 	void Invoke();

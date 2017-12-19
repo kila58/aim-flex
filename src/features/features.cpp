@@ -1,12 +1,21 @@
 #include "features.hpp"
 
+#include <algorithm>
+
 std::deque<BaseFeature*> BaseFeature::features;
 std::unordered_map<HookType, ArgsArrayType> BaseFeature::arguments;
 
 void Features::Init()
 {
-	for (auto& feature : BaseFeature::GetFeatures())
+	auto& features = BaseFeature::GetFeatures();
+
+	for (auto& feature : features)
 		feature->Init();
+
+	std::sort(features.begin(), features.end(), [](BaseFeature* a, BaseFeature* b)
+	{
+		return a->GetPriority() > b->GetPriority();
+	});
 }
 
 void Features::Invoke(HookType type)

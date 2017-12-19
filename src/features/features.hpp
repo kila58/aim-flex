@@ -12,11 +12,24 @@ class BaseFeature
 {
 private:
 	HookType type = INVALID;
+	uint priority = 0;
 	static std::deque<BaseFeature*> features;
 	// todo: multiple dispatch instead of this solution for arguments
 	static std::unordered_map<HookType, ArgsArrayType> arguments;
 protected:
+	BaseFeature(HookType type, uint priority) : type(type), priority(priority)
+	{
+		AddFeature(this);
+	}
 	BaseFeature(HookType type) : type(type)
+	{
+		AddFeature(this);
+	}
+	BaseFeature(uint priority) : priority(priority)
+	{
+		AddFeature(this);
+	}
+	BaseFeature()
 	{
 		AddFeature(this);
 	}
@@ -52,6 +65,10 @@ public:
 	virtual HookType GetHookType()
 	{
 		return type;
+	}
+	virtual uint GetPriority()
+	{
+		return priority;
 	}
 	virtual void Init() = 0;
 	virtual void Invoke() = 0;

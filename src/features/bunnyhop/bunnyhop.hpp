@@ -5,7 +5,7 @@
 class BunnyHop : public BaseFeature
 {
 public:
-	BunnyHop() : BaseFeature(HookType::CREATEMOVE) {}
+	BunnyHop() : BaseFeature(CREATEMOVE, 1u) {}
 
 	void Init();
 	void Invoke();

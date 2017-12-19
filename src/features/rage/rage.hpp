@@ -5,11 +5,11 @@
 class Rage : public BaseFeature
 {
 public:
-	Rage() : BaseFeature(HookType::CREATEMOVE) {}
+	Rage() : BaseFeature() {}
 
 	void Init();
 	void Invoke();
 	void Destroy();
 };
 
-extern Rage legit;
+extern Rage rage;

@@ -13,7 +13,7 @@ void ESP::Init()
 
 player_info_t info;
 
-bool InvalidPlayer(int i, C_BaseEntity* p, C_BaseEntity* lp)
+bool InvalidPlayerESP(int i, C_BaseEntity* p, C_BaseEntity* lp)
 {
 	if (!p)
 		return true;
@@ -46,7 +46,7 @@ void ESP::Invoke()
 		{
 			auto p = entitylist->GetClientEntity(i);
 
-			if (InvalidPlayer(i, p, lp))
+			if (InvalidPlayerESP(i, p, lp))
 				continue;
 
 			Vector pos = p->GetAbsOrigin();

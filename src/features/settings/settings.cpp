@@ -2,7 +2,7 @@
 
 #include "../../aim-flex.hpp"
 
-Settings::Settings() : BaseFeature(HookType::PAINT)
+Settings::Settings() : BaseFeature(PAINT)
 {
 	jsettings =
 	{
