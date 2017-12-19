@@ -71,8 +71,10 @@ bool FindTarget(Angle& ang)
 
 		studiohdr_t* hdr = modelinfo->GetStudiomodel(p->GetModel());
 
+		float curtime = lp->GetTickBase() * globals->interval_per_tick;
+
 		VMatrix bones[128];
-		if (!p->SetupBones(bones, lp->GetTickBase() * globals->interval_per_tick))
+		if (!p->SetupBones(bones, curtime))
 			continue;
 
 		mstudiobbox_t* hitbox = hdr->GetHitbox(0, 0);

@@ -51,32 +51,6 @@ void ESP::Invoke()
 
 			Vector pos = p->GetAbsOrigin();
 
-			studiohdr_t* hdr = modelinfo->GetStudiomodel(p->GetModel());
-
-			VMatrix bones[128];
-			if (!p->SetupBones(bones, lp->GetTickBase() * globals->interval_per_tick))
-				continue;
-
-			mstudiobbox_t* hitbox = hdr->GetHitbox(0, 0);
-
-			if (!hitbox)
-				continue;
-
-			float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
-
-			Vector min, max, center;
-			VectorTransform(hitbox->bbmin - Vector(mod, mod, mod), bones[hitbox->bone], min);
-			VectorTransform(hitbox->bbmax + Vector(mod, mod, mod), bones[hitbox->bone], max);
-			center = (min + max) * 0.5f;
-
-			Vector screen;
-			if (WorldToScreen(center, screen))
-			{
-				matsystemsurface->SetDrawColor(Color(255, 255, 255));
-
-				matsystemsurface->DrawOutlinedRect(screen.x, screen.y, 2, 2);
-			}
-
 			/*
 			Vector mins = p->GetMins();
 			Vector maxs = p->GetMaxs();
