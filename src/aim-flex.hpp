@@ -29,6 +29,9 @@
 #include "sdk/CUserCmd.hpp"
 #include "sdk/C_BaseCombatWeapon.hpp"
 #include "sdk/ICVar.hpp"
+#include "sdk/IMoveHelper.hpp"
+#include "sdk/CGameMovement.hpp"
+#include "sdk/IPrediction.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;
@@ -39,3 +42,5 @@ extern ICVar* cvar;
 extern IVModelInfo* modelinfo;
 extern ClientModeShared* clientmode;
 extern CGlobalVarsBase* globals;
+extern CGameMovement* gamemovement;
+extern IPrediction* prediction;

@@ -9,3 +9,5 @@ ICVar* cvar;
 IVModelInfo* modelinfo;
 ClientModeShared* clientmode;
 CGlobalVarsBase* globals;
+CGameMovement* gamemovement;
+IPrediction* prediction;

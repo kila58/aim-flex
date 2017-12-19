@@ -8,7 +8,7 @@ class C_BaseEntity;
 class Aimbot : public BaseFeature
 {
 public:
-	Aimbot() : BaseFeature(CREATEMOVE, 3u) {}
+	Aimbot() : BaseFeature(CREATEMOVE, 4u) {}
 
 	void Init();
 	void Invoke();

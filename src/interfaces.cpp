@@ -25,6 +25,12 @@ bool Interfaces::Init()
 	if (!(modelinfo = GetInterface<IVModelInfo*>("engine.dll", "VModelInfoClient")))
 		return false;
 
+	if (!(gamemovement = GetInterface<CGameMovement*>("client.dll", "GameMovement")))
+		return false;
+
+	if (!(prediction = GetInterface<IPrediction*>("client.dll", "VClientPrediction")))
+		return false;
+
 	if (!(clientmode = **(ClientModeShared***)(getvfunc(client, 10) + 5)))
 		return false;
 

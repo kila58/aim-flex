@@ -37,11 +37,7 @@ void Rage::Invoke()
 
 	Angle ang;
 	if (FindTarget(ang))
-	{
 		cmd->viewangles = ang;
-
-		cvar->ConsoleColorPrintf(std::to_string(ang.y) + "\n");
-	}
 }
 
 void Rage::Destroy()

@@ -18,7 +18,7 @@ class PlayerManager : public BaseFeature
 private:
 	std::deque<Player> players;
 public:
-	PlayerManager() : BaseFeature(CREATEMOVE, 2u) {}
+	PlayerManager() : BaseFeature(CREATEMOVE, 3u) {}
 
 	void Init();
 	void Invoke();
