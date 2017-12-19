@@ -23,7 +23,7 @@ bool FindTarget(Angle& ang)
 		Vector& center = aimbot.GetHitbox(p, 0);
 
 		VectorAngles(center - lpeyepos, ang);
-		ang = ang - (lp->GetAimPunch() * 2);
+		ang -= (lp->GetAimPunch() * 2);
 
 		return true;
 	}

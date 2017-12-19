@@ -9,14 +9,25 @@ public:
 	float p, y, r;
 
 	Angle operator-(const Angle&) const;
+	Angle& operator-=(const Angle & ang);
 	Angle operator-(const float) const;
 	Angle operator*(const float) const;
 	Angle operator+(const Angle&) const;
+	Angle& operator+=(const Angle&);
 };
 
 inline Angle Angle::operator-(const Angle& ang) const
 {
 	return Angle(p - ang.p, y - ang.y, r - ang.r);
+}
+
+inline Angle& Angle::operator-=(const Angle& ang)
+{
+	p -= ang.p;
+	y -= ang.y;
+	r -= ang.r;
+
+	return *this;
 }
 
 inline Angle Angle::operator-(const float f) const
@@ -32,4 +43,13 @@ inline Angle Angle::operator*(const float f) const
 inline Angle Angle::operator+(const Angle& ang) const
 {
 	return Angle(p + ang.p, y + ang.y, r + ang.r);
+}
+
+inline Angle& Angle::operator+=(const Angle& ang)
+{
+	p += ang.p;
+	y += ang.y;
+	r += ang.r;
+
+	return *this;
 }

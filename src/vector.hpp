@@ -122,13 +122,9 @@ inline void VectorAngles(const Vector &vec, Angle &angles)
 	if (vec.x == 0.0f && vec.y == 0.0f)
 	{
 		if (vec.z > 0.0f)
-		{
-			angles.p = -90.0f;
-		}
+			angles.p = 270.f;
 		else
-		{
 			angles.p = 90.0f;
-		}
 	}
 	else
 	{
