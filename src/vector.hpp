@@ -1,6 +1,6 @@
 #pragma once
 
-typedef float VMatrix[4][4];
+typedef float VMatrix[3][4];
 
 class Vector
 {
@@ -92,11 +92,11 @@ inline float Vector::Dot(const Vector& vec) const
 	return x * vec.x + y * vec.y + z * vec.z;
 }
 
-inline void VectorTransform(const Vector& vec, const VMatrix& matrix, Vector& out)
+inline void VectorTransform(Vector in, VMatrix& matrix, Vector& out)
 {
-	out.x = vec.Dot(Vector(matrix[0][0], matrix[0][1], matrix[0][2])) + matrix[0][3];
-	out.y = vec.Dot(Vector(matrix[1][0], matrix[1][1], matrix[1][2])) + matrix[1][3];
-	out.z = vec.Dot(Vector(matrix[2][0], matrix[2][1], matrix[2][2])) + matrix[2][3];
+	out.x = in.Dot(Vector(matrix[0][0], matrix[0][1], matrix[0][2])) + matrix[0][3];
+	out.y = in.Dot(Vector(matrix[1][0], matrix[1][1], matrix[1][2])) + matrix[1][3];
+	out.z = in.Dot(Vector(matrix[2][0], matrix[2][1], matrix[2][2])) + matrix[2][3];
 }
 
 static const float pi = 3.14159265358979323846f;

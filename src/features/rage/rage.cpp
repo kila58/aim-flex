@@ -69,30 +69,25 @@ bool FindTarget(Angle& ang)
 	{
 		C_BaseEntity* p = target.ent;
 
-		if (!p->SetupBones(bones, curtime))
+		studiohdr_t* hdr = modelinfo->GetStudiomodel(p->GetModel());
+
+		VMatrix bones[128];
+		if (!p->SetupBones(bones, lp->GetTickBase() * globals->interval_per_tick))
 			continue;
 
-		studiohdr_t* hdr =  modelinfo->GetStudiomodel(p->GetModel());
-		mstudiohitboxset_t* set = hdr->GetHitboxSet(0);
-
-		mstudiobbox_t* hitbox = set->GetHitbox(0);
+		mstudiobbox_t* hitbox = hdr->GetHitbox(0, 0);
 
 		if (!hitbox)
 			continue;
 
-		Vector vMin, vMax, vCenter, sCenter;
-		VectorTransform(hitbox->bbmin, bones[hitbox->bone], vMin);
-		VectorTransform(hitbox->bbmax, bones[hitbox->bone], vMax);
-		vCenter = (vMin + vMax) * 0.5f;
+		float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
 
-		cvar->ConsoleColorPrintf(
-			std::to_string(int((ceil(vCenter.y * 100.f)) / 100.f)) + ", " +
-			std::to_string(int((ceil(vCenter.z * 100.f)) / 100.f)) + ", " +
-			std::to_string(int((ceil(vCenter.x * 100.f)) / 100.f)) + "\n");
+		Vector min, max, center;
+		VectorTransform(hitbox->bbmin - Vector(mod, mod, mod), bones[hitbox->bone], min);
+		VectorTransform(hitbox->bbmax + Vector(mod, mod, mod), bones[hitbox->bone], max);
+		center = (min + max) * 0.5f;
 
-		Vector forward = Vector(vCenter.y, vCenter.z, vCenter.x) - lpeyepos;
-
-		VectorAngles(forward, ang);
+		VectorAngles(center - lpeyepos, ang);
 
 		return true;
 

@@ -102,9 +102,8 @@ struct mstudiobbox_t
 	Vector bbmin;
 	Vector bbmax;
 	int szhitboxnameindex;
-	int m_iPad01[3];
+	int pad[3];
 	float m_flRadius;
-	int m_iPad02[4];
 };
 struct mstudiohitboxset_t
 {
@@ -141,7 +140,7 @@ struct studiohdr_t
 {
 	int id;
 	int version;
-	int checksum;
+	long checksum;
 	char name[64];
 	int length;
 	Vector eyeposition;
