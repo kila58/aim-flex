@@ -21,15 +21,7 @@ void Aimbot::Invoke()
 static Vector empty = Vector();
 Vector Aimbot::GetHitbox(C_BaseEntity* p, int hitboxindex)
 {
-	static VMatrix bones[128];
-
-	if (lastplayer != p)
-	{
-		if (!p->SetupBones(bones))
-			return empty;
-	}
-
-	const model_t* model = p->GetModel();
+	model_t* model = p->GetModel();
 	if (!model)
 		return empty;
 
@@ -40,6 +32,14 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int hitboxindex)
 	mstudiobbox_t* hitbox = hdr->GetHitbox(hitboxindex, 0);
 	if (!hitbox)
 		return empty;
+
+	static VMatrix bones[128];
+
+	if (lastplayer != p)
+	{
+		if (!p->SetupBones(bones))
+			return empty;
+	}
 
 	float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
 

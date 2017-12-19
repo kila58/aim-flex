@@ -16,9 +16,9 @@ public:
 class IClientRenderable
 {
 public:
-	const model_t* GetModel()
+	model_t* GetModel()
 	{
-		return getvfunc<const model_t*(__thiscall*)(void*)>(this, 8)(this);
+		return getvfunc<model_t*(__thiscall*)(void*)>(this, 8)(this);
 	}
 	bool SetupBones(VMatrix* bones, float time, int _bones = 128, int _flag = 256)
 	{
@@ -104,7 +104,7 @@ public:
 	{
 		return GetRenderable()->SetupBones(bones, time);
 	}
-	inline const model_t* GetModel()
+	inline model_t* GetModel()
 	{
 		return GetRenderable()->GetModel();
 	}
