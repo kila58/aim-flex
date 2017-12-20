@@ -24,8 +24,11 @@ bool MultiBox(C_BaseEntity* p, Vector& hitbox)
 
 		std::deque<Vector> hitboxes;
 
-		for (int i = 0; i <= hdr->GetHitboxCount(0); i++)
+		for (int i = 0; i < hdr->GetHitboxCount(0); i++)
 		{
+			if (i == 14)
+				continue;
+
 			Vector pos = aimbot.GetHitbox(p, i);
 			if (pos.IsZero())
 				continue;

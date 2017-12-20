@@ -12,12 +12,12 @@ bool __fastcall CreateMove(void* instance, void*, float flInputSampleTime, CUser
 	original_function(instance, flInputSampleTime, cmd);
 
 	if (!cmd->command_number)
-		return true;
+		return false;
 
 	BaseFeature::SetArguments(CREATEMOVE, cmd);
 	features.Invoke(CREATEMOVE);
 
-	return true;
+	return false;
 }
 
 void CreateMoveHook::Init()
