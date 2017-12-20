@@ -108,7 +108,7 @@ class IEngineTrace
 public:
 	void TraceRay(const Ray_t& ray, unsigned int fMask, ITraceFilter* filter, trace_t* trace)
 	{
-		return getvfunc<void(__thiscall*)(void*, const Ray_t&, unsigned int, ITraceFilter*, trace_t*)>(this, 13)(this, ray, fMask, filter, trace);
+		return getvfunc<void(__thiscall*)(void*, const Ray_t&, unsigned int, ITraceFilter*, trace_t*)>(this, 5)(this, ray, fMask, filter, trace);
 	}
 };
 
