@@ -95,7 +95,10 @@ bool Aimbot::CanShoot()
 	if (!(weapon->GetAmmo() > 0))
 		return false;
 
-	return lp->GetNextPrimaryAttack(weapon) <= globals->curtime;
+	if (lp->GetNextPrimaryAttack(weapon) > globals->curtime)
+		return false;
+
+	return true;
 }
 
 void Aimbot::Destroy()
