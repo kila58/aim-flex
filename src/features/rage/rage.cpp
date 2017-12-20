@@ -10,13 +10,6 @@ void Rage::Init()
 
 }
 
-struct hbox
-{
-	hbox(Vector pos) :pos(pos) {}
-
-	Vector pos;
-};
-
 bool MultiBox(C_BaseEntity* p, Vector& hitbox)
 {
 	if (!aimbot.IsVisible(p, hitbox))
@@ -29,7 +22,7 @@ bool MultiBox(C_BaseEntity* p, Vector& hitbox)
 		if (!hdr)
 			return false;
 
-		std::deque<hbox> hitboxes;
+		std::deque<Vector> hitboxes;
 
 		for (int i = 0; i <= hdr->GetHitboxCount(0); i++)
 		{
@@ -43,14 +36,14 @@ bool MultiBox(C_BaseEntity* p, Vector& hitbox)
 			hitboxes.emplace_back(pos);
 		}
 
-		std::sort(hitboxes.begin(), hitboxes.end(), [hitbox](const hbox& a, const hbox& b)
+		std::sort(hitboxes.begin(), hitboxes.end(), [hitbox](const Vector& a, const Vector& b)
 		{
-			return a.pos.Distance(hitbox) < b.pos.Distance(hitbox);
+			return a.Distance(hitbox) < b.Distance(hitbox);
 		});
 
 		if (hitboxes.size() > 0)
 		{
-			hitbox = hitboxes[0].pos;
+			hitbox = hitboxes[0];
 
 			return true;
 		}
