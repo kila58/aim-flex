@@ -54,8 +54,6 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int hitboxindex)
 
 void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
 {
-	static Vector lpeyepos;
-
 	if (!lp)
 	{
 		lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
@@ -63,6 +61,52 @@ void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
 	}
 	
 	VectorAngles(pos - lpeyepos, out);
+}
+
+bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos)
+{
+	if (!lp)
+	{
+		lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
+	}
+
+	static CTraceFilterDouble filter;
+	static trace_t tr;
+	static Ray_t ray;
+
+	ray.Init(lpeyepos, pos);
+	filter.pSkip1 = lp;
+	filter.pSkip2 = p;
+	enginetrace->TraceRay(ray, 0x46004003, &filter, &tr);
+
+	return (tr.m_pEnt == p || tr.fraction == 1);
+}
+
+bool Aimbot::CanShoot()
+{
+	static C_BaseCombatWeapon* weapon;
+
+	if (!lp)
+	{
+		lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
+	}
+
+	if (!weapon)
+	{
+		if (!lp->IsAlive() || !(weapon = lp->GetWeapon()))
+		{
+			weapon = nullptr;
+
+			return false;
+		}
+	}
+
+	if (!(weapon->GetAmmo() > 0))
+		return false;
+	
+	return lp->GetNextPrimaryAttack(weapon) <= globals->curtime;
 }
 
 void Aimbot::Destroy()

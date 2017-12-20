@@ -33,6 +33,7 @@ extern IClientEntityList* entitylist;
 
 class C_BaseEntity
 {
+protected:
 	template <typename T>
 	T GetNetVar(const char* name)
 	{
@@ -99,6 +100,10 @@ public:
 	C_BaseCombatWeapon* GetWeapon()
 	{
 		return (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(GetNetVar<unsigned long>("m_hActiveWeapon"));
+	}
+	float GetNextPrimaryAttack(C_BaseCombatWeapon* weapon)
+	{
+		return ((C_BaseEntity*)weapon)->GetNetVar<float>("m_flNextPrimaryAttack");
 	}
 	inline bool SetupBones(VMatrix* bones, float time = 0.f)
 	{

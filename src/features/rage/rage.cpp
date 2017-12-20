@@ -20,7 +20,7 @@ bool FindTarget(Angle& ang)
 		C_BaseEntity* p = target.ent;
 		Vector& center = aimbot.GetHitbox(p, 0);
 
-		if (!center.IsZero())
+		if (!center.IsZero() && aimbot.IsVisible(p, center))
 		{
 			aimbot.CalculateAngle(center, ang);
 
@@ -38,9 +38,14 @@ void Rage::Invoke()
 {
 	auto cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
 
+	//cvar->ConsoleColorPrintf(std::to_string(aimbot.CanShoot()) + "\n");
+
 	Angle ang;
-	if (FindTarget(ang))
+	if (aimbot.CanShoot() && FindTarget(ang))
+	{
 		cmd->viewangles = ang;
+		cmd->buttons |= IN_ATTACK;
+	}
 }
 
 void Rage::Destroy()

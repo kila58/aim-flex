@@ -103,6 +103,24 @@ public:
 	void* pSkip;
 };
 
+class CTraceFilterDouble : public ITraceFilter
+{
+public:
+	bool ShouldHitEntity(void* pEntityHandle, int contentsMask)
+	{
+		return !(pEntityHandle == pSkip1 || pEntityHandle == pSkip2);
+	}
+
+	TraceType_t GetTraceType() const
+	{
+		return TRACE_EVERYTHING;
+	}
+
+	void* pSkip1;
+	void* pSkip2;
+};
+
+
 class IEngineTrace
 {
 public:

@@ -2,12 +2,17 @@
 
 struct FileWeaponInfo_t;
 
-class C_BaseCombatWeapon
+class C_BaseCombatWeapon : public C_BaseEntity
 {
+
 public:
 	FileWeaponInfo_t* GetCSWpnData()
 	{
 		return getvfunc<FileWeaponInfo_t*(__thiscall*)(void*)>(this, 446)(this);
+	}
+	int GetAmmo()
+	{
+		return GetNetVar<int>("m_iClip1");
 	}
 };
 
