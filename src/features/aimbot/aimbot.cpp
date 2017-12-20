@@ -42,7 +42,7 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int hitboxindex)
 		return empty;
 
 	mstudiobbox_t* hitbox = hdr->GetHitbox(hitboxindex, 0);
-	if (!hitbox || hitbox->group > 7)
+	if (!hitbox || std::abs(hitbox->group) > 7)
 		return empty;
 
 	static VMatrix bones[128];
