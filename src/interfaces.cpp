@@ -31,6 +31,9 @@ bool Interfaces::Init()
 	if (!(prediction = GetInterface<IPrediction*>("client.dll", "VClientPrediction")))
 		return false;
 
+	if (!(enginetrace = GetInterface<IEngineTrace*>("engine.dll", "EngineTraceClient")))
+		return false;
+
 	if (!(clientmode = **(ClientModeShared***)(getvfunc(client, 10) + 5)))
 		return false;
 

@@ -32,6 +32,7 @@
 #include "sdk/IMoveHelper.hpp"
 #include "sdk/CGameMovement.hpp"
 #include "sdk/IPrediction.hpp"
+#include "sdk/IEngineTrace.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;
@@ -44,3 +45,4 @@ extern ClientModeShared* clientmode;
 extern CGlobalVarsBase* globals;
 extern CGameMovement* gamemovement;
 extern IPrediction* prediction;
+extern IEngineTrace* enginetrace;
