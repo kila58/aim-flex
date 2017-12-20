@@ -10,12 +10,24 @@ void Aimbot::Init()
 
 }
 
+void Aimbot::UpdateCache()
+{
+	if (!lp)
+	{
+		lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
+		weapon = lp->GetWeapon();
+	}
+}
+
 void Aimbot::Invoke()
 {
-	rage.Invoke();
+	if (entitylist->GetClientEntity(engineclient->GetLocalPlayer())->IsAlive())
+		rage.Invoke();
 
 	lastplayer = nullptr;
 	lp = nullptr;
+	weapon = nullptr;
 }
 
 static Vector empty = Vector();
@@ -30,7 +42,7 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int hitboxindex)
 		return empty;
 
 	mstudiobbox_t* hitbox = hdr->GetHitbox(hitboxindex, 0);
-	if (!hitbox)
+	if (!hitbox || hitbox->group > 7)
 		return empty;
 
 	static VMatrix bones[128];
@@ -54,22 +66,12 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int hitboxindex)
 
 void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
 {
-	if (!lp)
-	{
-		lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
-		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
-	}
-	
 	VectorAngles(pos - lpeyepos, out);
 }
 
 bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos)
 {
-	if (!lp)
-	{
-		lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
-		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
-	}
+	UpdateCache();
 
 	static CTraceFilterDouble filter;
 	static trace_t tr;
@@ -85,27 +87,14 @@ bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos)
 
 bool Aimbot::CanShoot()
 {
-	static C_BaseCombatWeapon* weapon;
-
-	if (!lp)
-	{
-		lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
-		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
-	}
+	UpdateCache();
 
 	if (!weapon)
-	{
-		if (!lp->IsAlive() || !(weapon = lp->GetWeapon()))
-		{
-			weapon = nullptr;
-
-			return false;
-		}
-	}
+		return false;
 
 	if (!(weapon->GetAmmo() > 0))
 		return false;
-	
+
 	return lp->GetNextPrimaryAttack(weapon) <= globals->curtime;
 }
 

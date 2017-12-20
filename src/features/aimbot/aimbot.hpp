@@ -6,6 +6,7 @@
 #include "../../vector.hpp"
 
 class C_BaseEntity;
+class C_BaseCombatWeapon;
 
 class Aimbot : public BaseFeature
 {
@@ -13,6 +14,9 @@ private:
 	C_BaseEntity* lastplayer;
 	C_BaseEntity* lp;
 	Vector lpeyepos;
+	C_BaseCombatWeapon* weapon;
+
+	void UpdateCache();
 public:
 	Aimbot() : BaseFeature(CREATEMOVE, 4u) {}
 

@@ -69,7 +69,7 @@ inline Vector Vector::operator+(const float f) const
 
 inline bool Vector::IsZero() const
 {
-	return x == 0.f && y == 0.f && z == 0.f;
+	return (x == 0.f && y == 0.f && z == 0.f);
 }
 
 inline float Vector::Length() const
