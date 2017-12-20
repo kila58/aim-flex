@@ -95,7 +95,9 @@ bool Aimbot::CanShoot()
 	if (!(weapon->GetAmmo() > 0))
 		return false;
 
-	if (lp->GetNextPrimaryAttack(weapon) > globals->curtime)
+	float curtime = lp->GetTickBase() * globals->interval_per_tick;
+
+	if (lp->GetNextPrimaryAttack(weapon) > curtime)
 		return false;
 
 	return true;

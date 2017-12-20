@@ -10,6 +10,55 @@ void Rage::Init()
 
 }
 
+struct hbox
+{
+	hbox(Vector pos) :pos(pos) {}
+
+	Vector pos;
+};
+
+bool MultiBox(C_BaseEntity* p, Vector& hitbox)
+{
+	if (!aimbot.IsVisible(p, hitbox))
+	{
+		model_t* model = p->GetModel();
+		if (!model)
+			return false;
+
+		studiohdr_t* hdr = modelinfo->GetStudiomodel(model);
+		if (!hdr)
+			return false;
+
+		std::deque<hbox> hitboxes;
+
+		for (int i = 0; i <= hdr->GetHitboxCount(0); i++)
+		{
+			Vector pos = aimbot.GetHitbox(p, i);
+			if (pos.IsZero())
+				continue;
+
+			if (!aimbot.IsVisible(p, pos))
+				continue;
+
+			hitboxes.emplace_back(pos);
+		}
+
+		std::sort(hitboxes.begin(), hitboxes.end(), [hitbox](const hbox& a, const hbox& b)
+		{
+			return a.pos.Distance(hitbox) < b.pos.Distance(hitbox);
+		});
+
+		if (hitboxes.size() > 0)
+		{
+			hitbox = hitboxes[0].pos;
+
+			return true;
+		}
+
+		return false;
+	}
+}
+
 bool FindTarget(Angle& ang)
 {
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
@@ -19,6 +68,8 @@ bool FindTarget(Angle& ang)
 	{
 		C_BaseEntity* p = target.ent;
 		Vector& center = aimbot.GetHitbox(p, 0);
+
+		MultiBox(p, center);
 
 		if (!center.IsZero() && aimbot.IsVisible(p, center))
 		{
