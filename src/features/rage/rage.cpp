@@ -41,9 +41,9 @@ bool MultiBox(C_BaseEntity* p, Vector& hitbox)
 			return a.Distance(hitbox) < b.Distance(hitbox);
 		});
 
-		if (hitboxes.size() > 0)
+		if (!hitboxes.empty())
 		{
-			hitbox = hitboxes[0];
+			hitbox = hitboxes.front();
 
 			return true;
 		}
