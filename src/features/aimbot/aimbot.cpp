@@ -11,51 +11,47 @@ void Aimbot::Init()
 
 }
 
-void Aimbot::UpdateCache()
-{
-	if (!lp)
-	{
-		lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
-		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
-		weapon = lp->GetWeapon();
-	}
-}
-
 void Aimbot::Invoke()
 {
-	if (entitylist->GetClientEntity(engineclient->GetLocalPlayer())->IsAlive())
-	{
-		rage.Invoke();
-		predict.End();
-	}
+	lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 
-	lastplayer = nullptr;
-	lp = nullptr;
-	weapon = nullptr;
+	if (lp->IsAlive())
+	{
+		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
+		cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
+		before = cmd->viewangles;
+		weapon = lp->GetWeapon();
+
+		rage.Invoke();
+	}
 }
 
-static Vector empty = Vector();
-Vector Aimbot::GetHitbox(C_BaseEntity* p, int hitboxindex)
+static Vector empty(0, 0, 0);
+Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
 {
-	model_t* model = p->GetModel();
-	if (!model)
-		return empty;
-
-	studiohdr_t* hdr = modelinfo->GetStudiomodel(model);
-	if (!hdr)
-		return empty;
-
-	mstudiobbox_t* hitbox = hdr->GetHitbox(hitboxindex, 0);
-	if (!hitbox || std::abs(hitbox->group) > 7)
-		return empty;
-
+	static const model_t* model;
+	static studiohdr_t* hdr;
 	static VMatrix bones[128];
-
 	if (lastplayer != p)
 	{
-		if (!p->SetupBones(bones))
+		lastplayer = p;
+
+		model = p->GetModel();
+		if (!model)
+			return empty;
+
+		hdr = modelinfo->GetStudiomodel(model);
+		if (!hdr)
+			return empty;
+
+		bones[128];
+		if (!p->SetupBones(bones, globals->curtime))
 			return empty;
 	}
+
+	static mstudiobbox_t* hitbox = hdr->GetHitbox(index, 0);
+	if (!hitbox)
+		return empty;
 
 	float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
 
@@ -63,9 +59,7 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int hitboxindex)
 	VectorTransform(hitbox->bbmin - mod, bones[hitbox->bone], min);
 	VectorTransform(hitbox->bbmax + mod, bones[hitbox->bone], max);
 
-	lastplayer = p;
-
-	return ((min + max) * 0.5f);
+	return (min + max) * 0.5f;
 }
 
 void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
@@ -75,8 +69,6 @@ void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
 
 bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos)
 {
-	UpdateCache();
-
 	static CTraceFilterDouble filter;
 	static trace_t tr;
 	static Ray_t ray;
@@ -89,20 +81,46 @@ bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos)
 	return (tr.m_pEnt == p || tr.fraction == 1);
 }
 
+void Aimbot::MovementFix()
+{
+	Vector move(cmd->move.x, cmd->move.y, 0);
+	float speed = move.Length2D();
+
+	Angle view = cmd->viewangles;
+	view.p = clamp(view.p, -89.f, 89.f);
+	view.y = clamp(normalize(view.y), -180.f, 180.f);
+
+	float yaw = Rad2Deg(atan2(move.y, move.x));
+	yaw = Deg2Rad(view.y - before.y + yaw);
+
+	cmd->move.x = cos(yaw) * speed;
+	cmd->move.y = sin(yaw) * speed;
+}
+
 bool Aimbot::CanShoot()
 {
-	UpdateCache();
-
 	if (!weapon)
 		return false;
 
-	if (!(weapon->GetAmmo() > 0))
-		return false;
-
-	if (lp->GetNextPrimaryAttack(weapon) > globals->curtime)
+	if (lp->GetNextPrimaryAttack(weapon) > predict.pred_time)
 		return false;
 
 	return true;
+}
+
+void Aimbot::NoRecoil()
+{
+	cmd->viewangles -= (lp->GetAimPunch() * 2);
+	cmd->viewangles.r = 0.f;
+}
+
+void Aimbot::End()
+{
+	lp = nullptr;
+	lastplayer = nullptr;
+	lpeyepos = empty;
+	before = Angle(0, 0, 0);
+	weapon = nullptr;
 }
 
 void Aimbot::Destroy()

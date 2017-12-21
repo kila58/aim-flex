@@ -14,10 +14,10 @@ public:
 
 	void Init();
 	void Invoke();
-	void End();
 	void Destroy();
 
 	IMoveHelper* movehelper;
+	float pred_time;
 };
 
 extern Prediction predict;

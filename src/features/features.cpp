@@ -25,6 +25,12 @@ void Features::Invoke(HookType type)
 		if (feature->GetHookType() == type)
 			feature->Invoke();
 	}
+
+	for (auto& feature : BaseFeature::GetFeatures())
+	{
+		if (feature->GetHookType() == type)
+			feature->End();
+	}
 }
 
 void Features::Destroy()

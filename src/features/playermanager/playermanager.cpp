@@ -7,9 +7,6 @@ bool InvalidPlayer(int i, C_BaseEntity* p, C_BaseEntity* lp)
 	if (!p)
 		return true;
 
-	if (!p->GetRenderable())
-		return true;
-
 	static player_info_t info;
 
 	if (!engineclient->GetPlayerInfo(i, &info))

@@ -70,9 +70,10 @@ public:
 	{
 		return priority;
 	}
-	virtual void Init() = 0;
-	virtual void Invoke() = 0;
-	virtual void Destroy() = 0;
+	virtual void Init() {};
+	virtual void Invoke() {};
+	virtual void End() {};
+	virtual void Destroy() {};
 };
 
 class Features
