@@ -107,7 +107,7 @@ public:
 	}
 	inline bool SetupBones(VMatrix* bones, float time = 0.f)
 	{
-		*(BYTE*)(this + 0x270) = 0;
+		*(ptr*)(this + 0x270) = 0;
 
 		return GetRenderable()->SetupBones(bones, time);
 	}

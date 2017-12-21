@@ -4,6 +4,7 @@
 
 #include "../rage/rage.hpp"
 #include "../legit/legit.hpp"
+#include "../prediction/prediction.hpp"
 
 void Aimbot::Init()
 {
@@ -23,7 +24,10 @@ void Aimbot::UpdateCache()
 void Aimbot::Invoke()
 {
 	if (entitylist->GetClientEntity(engineclient->GetLocalPlayer())->IsAlive())
+	{
 		rage.Invoke();
+		predict.End();
+	}
 
 	lastplayer = nullptr;
 	lp = nullptr;
@@ -95,9 +99,7 @@ bool Aimbot::CanShoot()
 	if (!(weapon->GetAmmo() > 0))
 		return false;
 
-	float curtime = lp->GetTickBase() * globals->interval_per_tick;
-
-	if (lp->GetNextPrimaryAttack(weapon) > curtime)
+	if (lp->GetNextPrimaryAttack(weapon) > globals->curtime)
 		return false;
 
 	return true;
