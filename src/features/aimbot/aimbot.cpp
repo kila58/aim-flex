@@ -23,6 +23,7 @@ void Aimbot::Invoke()
 		weapon = lp->GetWeapon();
 
 		rage.Invoke();
+		Clamp();
 	}
 }
 
@@ -111,7 +112,16 @@ bool Aimbot::CanShoot()
 void Aimbot::NoRecoil()
 {
 	cmd->viewangles -= (lp->GetAimPunch() * 2);
-	cmd->viewangles.r = 0.f;
+}
+
+void Aimbot::Clamp()
+{
+	if (cmd)
+	{
+		cmd->viewangles.p = clamp(cmd->viewangles.p, -89.f, 89.f);
+		cmd->viewangles.y = clamp(normalize(cmd->viewangles.y), -180.f, 180.f);
+		cmd->viewangles.r = 0.f;
+	}
 }
 
 void Aimbot::End()

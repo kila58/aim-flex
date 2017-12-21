@@ -26,9 +26,10 @@ public:
 	Vector GetHitbox(C_BaseEntity* p, int index);
 	void CalculateAngle(const Vector& pos, Angle& out);
 	bool IsVisible(C_BaseEntity* p, const Vector& pos);
+	void MovementFix();
 	bool CanShoot();
 	void NoRecoil();
-	void MovementFix();
+	void Clamp();
 	void End();
 	void Destroy();
 };

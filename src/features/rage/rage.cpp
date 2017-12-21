@@ -37,7 +37,7 @@ void Rage::Invoke()
 	auto cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
 
 	Angle ang;
-	if (aimbot.CanShoot() && FindTarget(ang))
+	if (lp->IsAlive() && aimbot.CanShoot() && FindTarget(ang))
 	{
 		cmd->viewangles = ang;
 		aimbot.NoRecoil();
