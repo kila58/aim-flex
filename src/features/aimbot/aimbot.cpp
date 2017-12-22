@@ -37,6 +37,9 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
 	{
 		lastplayer = p;
 
+		if (!p->IsAlive())
+			return empty;
+
 		model = p->GetModel();
 		if (!model)
 			return empty;

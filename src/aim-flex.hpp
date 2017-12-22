@@ -6,6 +6,7 @@
 #include <cctype>
 #include <algorithm>
 #include <deque>
+#include <experimental/deque>
 #include <string>
 
 #include "definitions.hpp"
@@ -33,6 +34,7 @@
 #include "sdk/CGameMovement.hpp"
 #include "sdk/IPrediction.hpp"
 #include "sdk/IEngineTrace.hpp"
+#include "sdk/INetChannel.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;

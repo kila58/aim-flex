@@ -11,13 +11,30 @@ void Rage::Init()
 
 }
 
-bool FindTarget(Angle& ang)
+bool FindTarget(CUserCmd* cmd, Angle& ang)
 {
-	auto& targets = playermanager.GetPlayers();
-
-	for (auto& target : targets)
+	for (auto& target : playermanager.GetPlayers())
 	{
 		C_BaseEntity* p = target.ent;
+
+		if (target.backtrackinfo.ticks.size() > 1)
+		{
+			auto& first = target.backtrackinfo.ticks.back();
+			auto& last = target.backtrackinfo.ticks.front();
+
+			if (!first.head.IsZero() && !last.head.IsZero())
+			{
+				if (!aimbot.IsVisible(p, first.head) && aimbot.IsVisible(p, last.head))
+				{
+					aimbot.CalculateAngle(last.head, ang);
+					backtrack.BacktrackToTick(cmd, last);
+
+					return true;
+				}
+			}
+		}
+
+		/*
 		Vector pos = aimbot.GetHitbox(p, 0);
 		
 		if (!pos.IsZero() && (aimbot.IsVisible(p, pos)))
@@ -26,6 +43,7 @@ bool FindTarget(Angle& ang)
 
 			return true;
 		}
+		*/
 	}
 
 	return false;
@@ -37,7 +55,7 @@ void Rage::Invoke()
 	auto cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
 
 	Angle ang;
-	if (lp->IsAlive() && aimbot.CanShoot() && FindTarget(ang))
+	if (lp->IsAlive() && aimbot.CanShoot() && FindTarget(cmd, ang))
 	{
 		cmd->viewangles = ang;
 		aimbot.NoRecoil();

@@ -39,7 +39,7 @@ bool WorldToScreen(const Vector& point, Vector& screen)
 	if (!ScreenTransform(point, screen))
 	{
 		int w, h;
-		engineclient->GetScreenSize(&w, &h);
+		engineclient->GetScreenSize(w, h);
 
 		screen.x = (w * 0.5f) + (screen.x * w) * 0.5f;
 		screen.y = (h * 0.5f) - (screen.y * h) * 0.5f;

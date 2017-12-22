@@ -3,6 +3,7 @@
 #include "../../aim-flex.hpp"
 
 #include "../settings/settings.hpp"
+#include "../playermanager/playermanager.hpp"
 
 unsigned long font;
 
@@ -122,6 +123,31 @@ void ESP::Invoke()
 					matsystemsurface->SetTextPos(x + w / 2 - tw / 2, y + h + 1);
 					matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
 				}
+			}
+		}
+
+		for (auto& p : playermanager.GetPlayers())
+		{
+			Vector lastscreen;
+			bool prev = false;
+
+			auto& first = p.backtrackinfo.ticks.back();
+			auto& last = p.backtrackinfo.ticks.front();
+
+			for (auto& tick : p.backtrackinfo.ticks)
+			{
+				Vector center = tick.head;
+				Vector screen;
+
+				if (WorldToScreen(center, screen) && prev)
+				{
+					matsystemsurface->SetDrawColor(Color(255, 255, 255));
+					matsystemsurface->DrawLine(lastscreen.x, lastscreen.y, screen.x, screen.y);
+				}
+
+				lastscreen = screen;
+
+				prev = true;
 			}
 		}
 	}

@@ -49,6 +49,10 @@ public:
 	{
 		return (IClientNetworkable*)(this + 8);
 	}
+	Vector& GetOrigin()
+	{
+		return GetNetVar<Vector>("m_vecOrigin");
+	}
 	Vector& GetAbsOrigin()
 	{
 		return getvfunc<Vector&(__thiscall*)(void*)>(this, 10)(this);
@@ -104,6 +108,10 @@ public:
 	float GetNextPrimaryAttack(C_BaseCombatWeapon* weapon)
 	{
 		return ((C_BaseEntity*)weapon)->GetNetVar<float>("m_flNextPrimaryAttack");
+	}
+	float GetSimulationTime()
+	{
+		return GetNetVar<float>("m_flSimulationTime");
 	}
 	inline bool SetupBones(VMatrix* bones, float time = 0.f)
 	{

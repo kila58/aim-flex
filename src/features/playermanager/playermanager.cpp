@@ -2,6 +2,8 @@
 
 #include "../../aim-flex.hpp"
 
+#include "../backtrack/backtrack.hpp"
+
 bool InvalidPlayer(int i, C_BaseEntity* p, C_BaseEntity* lp)
 {
 	if (!p)
@@ -32,26 +34,50 @@ void PlayerManager::Init()
 
 }
 
+bool hey()
+{
+	return true;
+}
+
 void PlayerManager::Invoke()
 {
-	players.clear();
+	//players.clear();
 
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 	Vector lporigin = lp->GetAbsOrigin();
+
+	std::experimental::erase_if(players, [&lp](const Player& ply)
+	{
+		return InvalidPlayer(ply.index, ply.ent, lp);
+	});
 
 	for (int i = 1; i <= globals->maxClients; i++)
 	{
 		auto p = entitylist->GetClientEntity(i);
 
-		// todo: maybe use Distance2DSqr? (it will produce massive numbers, needs benchmark)
 		if (!InvalidPlayer(i, p, lp))
-			players.emplace_back(p, lporigin.Distance(p->GetAbsOrigin()));
+		{
+			static player_info_t info;
+			if (!engineclient->GetPlayerInfo(i, &info))
+				continue;
+
+			// todo: maybe use Distance2DSqr? (it will produce massive numbers, needs benchmark)
+			if (!PlayerExists(info.userID))
+				players.emplace_back(i, info.userID, p, lporigin.Distance(p->GetAbsOrigin()));
+		}
 	}
 
 	std::sort(players.begin(), players.end(), [](const Player& a, const Player& b)
 	{
 		return a.compare < b.compare;
 	});
+}
+
+bool PlayerManager::PlayerExists(int uid)
+{
+	auto it = std::find(players.begin(), players.end(), uid);
+
+	return (it != players.end());
 }
 
 std::deque<Player>& PlayerManager::GetPlayers()

@@ -9,7 +9,7 @@ public:
 	float p, y, r;
 
 	Angle operator-(const Angle&) const;
-	Angle& operator-=(const Angle & ang);
+	Angle& operator-=(const Angle&);
 	Angle operator-(const float) const;
 	Angle operator*(const float) const;
 	Angle operator+(const Angle&) const;
