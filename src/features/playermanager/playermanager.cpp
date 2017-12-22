@@ -34,11 +34,6 @@ void PlayerManager::Init()
 
 }
 
-bool hey()
-{
-	return true;
-}
-
 void PlayerManager::Invoke()
 {
 	//players.clear();
