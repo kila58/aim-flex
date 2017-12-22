@@ -79,10 +79,7 @@ void Backtrack::Invoke()
 
 void Backtrack::BacktrackToTick(CUserCmd* cmd, const Tick& tick)
 {
-	auto lol = TIME_TO_TICKS(tick.time + GetLerpTime());
-	cvar->ConsoleColorPrintf("difference: " + std::to_string((cmd->tick_count) - lol) + "\n");
-
-	cmd->tick_count = lol;
+	cmd->tick_count = TIME_TO_TICKS(tick.time + GetLerpTime());
 }
 
 void Backtrack::Destroy()

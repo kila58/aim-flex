@@ -49,7 +49,7 @@ public:
 	{
 		return (IClientNetworkable*)(this + 8);
 	}
-	Vector& GetOrigin()
+	Vector GetOrigin()
 	{
 		return GetNetVar<Vector>("m_vecOrigin");
 	}
