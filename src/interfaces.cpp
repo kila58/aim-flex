@@ -34,6 +34,9 @@ bool Interfaces::Init()
 	if (!(enginetrace = GetInterface<IEngineTrace*>("engine.dll", "EngineTraceClient")))
 		return false;
 
+	if (!(eventmanager = GetInterface<IGameEventListener2*>("engine.dll", "GAMEEVENTSMANAGER002")))
+		return false;
+
 	if (!(clientmode = **(ClientModeShared***)(getvfunc(client, 10) + 5)))
 		return false;
 

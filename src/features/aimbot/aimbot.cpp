@@ -23,8 +23,9 @@ void Aimbot::Invoke()
 		weapon = lp->GetWeapon();
 
 		rage.Invoke();
-		Clamp();
 	}
+
+	Clamp();
 }
 
 static Vector empty(0, 0, 0);
@@ -36,9 +37,6 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
 	if (lastplayer != p)
 	{
 		lastplayer = p;
-
-		if (!p->IsAlive())
-			return empty;
 
 		model = p->GetModel();
 		if (!model)

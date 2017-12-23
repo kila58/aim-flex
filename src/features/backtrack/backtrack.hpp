@@ -25,7 +25,7 @@ struct BacktrackInfo
 class Backtrack : public BaseFeature
 {
 public:
-	Backtrack() : BaseFeature(FRAMESTAGENOTIFY) {}
+	Backtrack() : BaseFeature(FRAMESTAGENOTIFY, 2u) {}
 
 	void Init();
 	float GetServerTickCount();

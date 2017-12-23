@@ -35,6 +35,7 @@
 #include "sdk/IPrediction.hpp"
 #include "sdk/IEngineTrace.hpp"
 #include "sdk/INetChannel.hpp"
+#include "sdk/IGameEvent.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;
@@ -48,3 +49,4 @@ extern CGlobalVarsBase* globals;
 extern CGameMovement* gamemovement;
 extern IPrediction* prediction;
 extern IEngineTrace* enginetrace;
+extern IGameEventListener2* eventmanager;

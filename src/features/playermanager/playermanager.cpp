@@ -36,8 +36,6 @@ void PlayerManager::Init()
 
 void PlayerManager::Invoke()
 {
-	//players.clear();
-
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 	Vector lporigin = lp->GetAbsOrigin();
 
@@ -73,6 +71,14 @@ bool PlayerManager::PlayerExists(int uid)
 	auto it = std::find(players.begin(), players.end(), uid);
 
 	return (it != players.end());
+}
+
+void PlayerManager::RemovePlayer(int uid)
+{
+	std::experimental::erase_if(players, [&uid](const Player& ply)
+	{
+		return ply.userid == uid;
+	});
 }
 
 std::deque<Player>& PlayerManager::GetPlayers()

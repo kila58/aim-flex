@@ -19,7 +19,7 @@ private:
 	CUserCmd* cmd;
 	C_BaseCombatWeapon* weapon;
 public:
-	Aimbot() : BaseFeature(CREATEMOVE, 4u) {}
+	Aimbot() : BaseFeature(CREATEMOVE, 3u) {}
 
 	void Init();
 	void Invoke();

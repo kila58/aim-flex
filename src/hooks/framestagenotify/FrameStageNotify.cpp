@@ -4,13 +4,16 @@
 
 #include "../../features/features.hpp"	
 
-using FrameStageNotifyType = void*(__thiscall*)(void*, ClientFrameStage_t*);
+using FrameStageNotifyType = void*(__thiscall*)(void*, ClientFrameStage_t);
 FrameStageNotifyType original_function;
 
-void __fastcall FrameStageNotify(void* instance, void*, ClientFrameStage_t* stage)
+void __fastcall FrameStageNotify(void* instance, void*, ClientFrameStage_t stage)
 {
-	BaseFeature::SetArguments(FRAMESTAGENOTIFY, stage);
-	features.Invoke(FRAMESTAGENOTIFY);
+	if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
+	{
+		BaseFeature::SetArguments(FRAMESTAGENOTIFY, stage);
+		features.Invoke(FRAMESTAGENOTIFY);
+	}
 
 	original_function(instance, stage);
 }

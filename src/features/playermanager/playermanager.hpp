@@ -27,11 +27,12 @@ class PlayerManager : public BaseFeature
 private:
 	std::deque<Player> players;
 public:
-	PlayerManager() : BaseFeature(CREATEMOVE, 3u) {}
+	PlayerManager() : BaseFeature(FRAMESTAGENOTIFY, 1u) {}
 
 	void Init();
 	void Invoke();
 	bool PlayerExists(int uid);
+	void RemovePlayer(int uid);
 	std::deque<Player>& GetPlayers();
 	void Destroy();
 };

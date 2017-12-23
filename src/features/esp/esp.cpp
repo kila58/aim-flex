@@ -131,9 +131,6 @@ void ESP::Invoke()
 			Vector lastscreen;
 			bool prev = false;
 
-			auto& first = p.backtrackinfo.ticks.back();
-			auto& last = p.backtrackinfo.ticks.front();
-
 			for (auto& tick : p.backtrackinfo.ticks)
 			{
 				Vector center = tick.head;
