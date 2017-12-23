@@ -111,12 +111,12 @@ public:
 	}
 	inline bool SetupBones(VMatrix* bones, float time = 0.f)
 	{
-		//auto old = *(ptr*)(this + 0x270);
-		//*(ptr*)(this + 0x270) = 0;
+		auto old = *(ptr*)(this + 0x270);
+		*(ptr*)(this + 0x270) = 0;
 
 		auto ret = GetRenderable()->SetupBones(bones, time);
 
-		//*(ptr*)(this + 0x270) = old;
+		*(ptr*)(this + 0x270) = old;
 
 		return ret;
 	}
