@@ -31,28 +31,6 @@ void Aimbot::Invoke()
 static Vector empty(0, 0, 0);
 Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
 {
-	/*
-	static const model_t* model;
-	static studiohdr_t* hdr;
-	static VMatrix bones[128];
-	if (lastplayer != p)
-	{
-		lastplayer = p;
-
-		model = p->GetModel();
-		if (!model)
-			return empty;
-
-		hdr = modelinfo->GetStudiomodel(model);
-		if (!hdr)
-			return empty;
-
-		bones[128];
-		if (!p->SetupBones(bones, globals->curtime))
-			return empty;
-	}
-	*/
-
 	const model_t* model = p->GetModel();
 	if (!model)
 		return empty;
@@ -66,12 +44,8 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
 		return empty;
 
 	mstudiobbox_t* hitbox = hdr->GetHitbox(index, 0);
-	if (!hitbox || hitbox->bone > 128 || hitbox->bone < 0)
-	{
-		cvar->ConsoleColorPrintf("index: " + std::to_string((int)index) + " is bad!\n");
-
+	if (!hitbox || hitbox->bone > 128 || hitbox->bone < 0 || hitbox->group > 7)
 		return empty;
-	}
 
 	float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
 

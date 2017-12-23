@@ -17,44 +17,6 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 	{
 		C_BaseEntity* p = target.ent;
 
-		/*
-		const model_t* model = p->GetModel();
-		if (!model)
-			continue;
-
-		studiohdr_t* hdr = modelinfo->GetStudiomodel(model);
-		if (!hdr)
-			continue;
-
-		VMatrix bones[128];
-		if (!p->SetupBones(bones, globals->curtime))
-			continue;
-
-		mstudiobbox_t* hitbox = hdr->GetHitbox(3, 0);
-		if (!hitbox)
-			continue;
-
-		float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
-
-		Vector min, max;
-		VectorTransform(hitbox->bbmin - mod, bones[hitbox->bone], min);
-		VectorTransform(hitbox->bbmax + mod, bones[hitbox->bone], max);
-
-		Vector pos = (min + max) * 0.5f;
-
-		static CTraceFilterDouble filter;
-		static trace_t tr;
-		static Ray_t ray;
-
-		if (aimbot.IsVisible(p, pos))
-		{
-			aimbot.CalculateAngle(pos, ang);
-
-			return true;
-		}
-		*/
-
-		/*
 		Hitboxes hitboxes;
 		if (aimbot.GetHitboxes(p, hitboxes))
 		{
@@ -70,9 +32,7 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 				}
 			}
 		}
-		*/
 
-		/*
 		if (target.backtrackinfo.ticks.size() > 1)
 		{
 			auto& first = target.backtrackinfo.ticks.back();
@@ -88,16 +48,6 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 					return true;
 				}
 			}
-		}
-		*/
-
-		Vector pos = aimbot.GetHitbox(p, 3);
-		
-		if (!pos.IsZero()/* && (aimbot.IsVisible(p, pos))*/)
-		{
-			aimbot.CalculateAngle(pos, ang);
-
-			return true;
 		}
 	}
 
@@ -117,7 +67,7 @@ void Rage::Invoke()
 
 		cmd->buttons |= IN_ATTACK;
 
-		//aimbot.MovementFix();
+		aimbot.MovementFix();
 	}
 }
 
