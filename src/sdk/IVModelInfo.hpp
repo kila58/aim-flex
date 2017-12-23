@@ -102,8 +102,9 @@ struct mstudiobbox_t
 	Vector bbmin;
 	Vector bbmax;
 	int szhitboxnameindex;
-	int pad[3];
+	char pad1[0xC];
 	float m_flRadius;
+	char pad2[0x10];
 };
 struct mstudiohitboxset_t
 {
