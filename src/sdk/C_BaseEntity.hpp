@@ -40,6 +40,10 @@ protected:
 		int offset = netvars.Get(name, GetNetworkable()->GetClientClass()->m_pRecvTable);
 		return *(T*)(this + offset);
 	}
+	int GetOffset(const char* name)
+	{
+		return netvars.Get(name, GetNetworkable()->GetClientClass()->m_pRecvTable);
+	}
 public:
 	inline IClientRenderable* GetRenderable()
 	{

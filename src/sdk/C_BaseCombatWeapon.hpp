@@ -14,6 +14,10 @@ public:
 	{
 		return GetNetVar<int>("m_iClip1");
 	}
+	Activity GetActivity()
+	{
+		return *(Activity*)(this + GetOffset("m_iClip1") + 0x30);
+	}
 };
 
 struct FileWeaponInfo_t

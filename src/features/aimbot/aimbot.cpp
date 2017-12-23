@@ -104,15 +104,15 @@ void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
 bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos)
 {
 	static CTraceFilterDouble filter;
-	static trace_t tr;
+	static trace_t trace;
 	static Ray_t ray;
 
 	ray.Init(lpeyepos, pos);
 	filter.pSkip1 = lp;
 	filter.pSkip2 = p;
-	enginetrace->TraceRay(ray, 0x46004003, &filter, &tr);
+	enginetrace->TraceRay(ray, 0x46004003, &filter, &trace);
 
-	return (tr.m_pEnt == p || tr.fraction == 1);
+	return (trace.m_pEnt == p || trace.fraction == 1);
 }
 
 void Aimbot::MovementFix()
@@ -134,6 +134,13 @@ void Aimbot::MovementFix()
 bool Aimbot::CanShoot()
 {
 	if (!weapon)
+		return false;
+
+	if (!(weapon->GetAmmo() > 0))
+		return false;
+
+	Activity act = weapon->GetActivity();
+	if (act == ACT_RESET || act == ACT_VM_DRAW || act == ACT_VM_RELOAD)
 		return false;
 
 	if (lp->GetNextPrimaryAttack(weapon) > predict.pred_time)
