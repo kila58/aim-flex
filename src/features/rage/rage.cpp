@@ -17,9 +17,23 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 	{
 		C_BaseEntity* p = target.ent;
 
+		Vector pos = aimbot.GetHitbox(p, 0);
+
+		if (!pos.IsZero() && (aimbot.IsVisible(p, pos)))
+		{
+			aimbot.CalculateAngle(pos, ang);
+
+			return true;
+		}
+
 		Hitboxes hitboxes;
 		if (aimbot.GetHitboxes(p, hitboxes))
 		{
+			std::sort(hitboxes.begin(), hitboxes.end(), [pos](const Hitbox& a, const Hitbox& b)
+			{
+				return a.center.Distance(pos) < b.center.Distance(pos);
+			});
+
 			for (auto& hitbox : hitboxes)
 			{
 				Vector& pos = hitbox.center;
