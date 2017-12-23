@@ -86,6 +86,11 @@ std::deque<Player>& PlayerManager::GetPlayers()
 	return players;
 }
 
+void PlayerManager::ClearPlayers()
+{
+	players.clear();
+}
+
 void PlayerManager::Destroy()
 {
 

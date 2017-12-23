@@ -34,6 +34,7 @@ public:
 	bool PlayerExists(int uid);
 	void RemovePlayer(int uid);
 	std::deque<Player>& GetPlayers();
+	void ClearPlayers();
 	void Destroy();
 };
 

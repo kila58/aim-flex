@@ -81,7 +81,19 @@ bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes)
 			hitboxes.emplace_back(pos, h);
 	}
 
-	return (!hitboxes.empty());
+	if (!hitboxes.empty())
+	{
+		Vector& top = hitboxes.front().center;
+
+		std::sort(hitboxes.begin(), hitboxes.end(), [&top](const Hitbox& a, const Hitbox& b)
+		{
+			return a.center.Distance(top) < b.center.Distance(top);
+		});
+
+		return true;
+	}
+
+	return false;
 }
 
 void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
