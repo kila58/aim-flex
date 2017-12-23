@@ -31,6 +31,7 @@ void Aimbot::Invoke()
 static Vector empty(0, 0, 0);
 Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
 {
+	/*
 	static const model_t* model;
 	static studiohdr_t* hdr;
 	static VMatrix bones[128];
@@ -50,10 +51,27 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
 		if (!p->SetupBones(bones, globals->curtime))
 			return empty;
 	}
+	*/
 
-	static mstudiobbox_t* hitbox = hdr->GetHitbox(index, 0);
-	if (!hitbox)
+	const model_t* model = p->GetModel();
+	if (!model)
 		return empty;
+
+	studiohdr_t* hdr = modelinfo->GetStudiomodel(model);
+	if (!hdr)
+		return empty;
+
+	VMatrix bones[128];
+	if (!p->SetupBones(bones, globals->curtime))
+		return empty;
+
+	mstudiobbox_t* hitbox = hdr->GetHitbox(index, 0);
+	if (!hitbox || hitbox->bone > 128 || hitbox->bone < 0)
+	{
+		cvar->ConsoleColorPrintf("index: " + std::to_string((int)index) + " is bad!\n");
+
+		return empty;
+	}
 
 	float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
 
@@ -62,6 +80,34 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
 	VectorTransform(hitbox->bbmax + mod, bones[hitbox->bone], max);
 
 	return (min + max) * 0.5f;
+}
+
+bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes)
+{
+	static const model_t* model;
+	static studiohdr_t* hdr;
+	if (lastplayer2 != p)
+	{
+		lastplayer2 = p;
+
+		model = p->GetModel();
+		if (!model)
+			return false;
+
+		hdr = modelinfo->GetStudiomodel(model);
+		if (!hdr)
+			return false;
+	}
+
+	for (int h = 0; h < hdr->GetHitboxCount(0); h++)
+	{
+		Vector pos = GetHitbox(p, h);
+
+		if (!pos.IsZero())
+			hitboxes.emplace_back(pos, h);
+	}
+
+	return (!hitboxes.empty());
 }
 
 void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
@@ -129,6 +175,7 @@ void Aimbot::End()
 {
 	lp = nullptr;
 	lastplayer = nullptr;
+	lastplayer2 = nullptr;
 	lpeyepos = empty;
 	before = Angle(0, 0, 0);
 	weapon = nullptr;

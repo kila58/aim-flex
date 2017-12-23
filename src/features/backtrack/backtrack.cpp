@@ -70,10 +70,14 @@ void Backtrack::Invoke()
 		C_BaseEntity* p = target.ent;
 
 		Vector head = aimbot.GetHitbox(p, 0);
-		head -= p->GetAbsOrigin();
-		head += p->GetOrigin();
 
-		target.backtrackinfo.ticks.emplace_back(p->GetSimulationTime(), head);
+		if (!head.IsZero())
+		{
+			head -= p->GetAbsOrigin();
+			head += p->GetOrigin();
+
+			target.backtrackinfo.ticks.emplace_back(p->GetSimulationTime(), head);
+		}
 	}
 }
 
