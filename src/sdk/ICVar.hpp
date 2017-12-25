@@ -97,16 +97,16 @@ public:
 class ConCommandBase
 {
 public:
-	virtual						~ConCommandBase(void) = 0;
-	virtual	bool				IsCommand(void) = 0;
+	virtual							~ConCommandBase(void) = 0;
+	virtual	bool					IsCommand(void) = 0;
 	virtual bool					IsFlagSet(int flag) = 0;
 	virtual void					AddFlags(int flags) = 0;
 	virtual void					RemoveFlags(int flags) = 0;
-	virtual int					GetFlags() = 0;
-	virtual const char*			GetName(void) = 0;
-	virtual const char*			GetHelpText(void) = 0;
+	virtual int						GetFlags() = 0;
+	virtual const char*				GetName(void) = 0;
+	virtual const char*				GetHelpText(void) = 0;
 	virtual bool					IsRegistered(void) = 0;
-	virtual int					GetDLLIdentifier() = 0;
+	virtual int						GetDLLIdentifier() = 0;
 	virtual void					Create(const char *pName, const char *pHelpString = 0, int flags = 0) = 0;
 	virtual void					Init() = 0;
 
@@ -127,23 +127,23 @@ class ConVar : public ConCommandBase, public IConVar
 public:
 	typedef ConCommandBase BaseClass;
 
-	virtual							~ConVar(void) = 0;
+	virtual					~ConVar(void) = 0;
 
-	virtual bool					IsFlagSet(int flag) = 0;
-	virtual const char*				GetHelpText(void) = 0;
-	virtual bool					IsRegistered(void) = 0;
-	virtual const char*				GetName(void) = 0;
-	virtual const char*				GetBaseName(void) = 0;
-	virtual int						GetSplitScreenPlayerSlot() = 0;
-	virtual void					AddFlags(int flags) = 0;
-	virtual int						GetFlags() = 0;
-	virtual	bool					IsCommand(void) = 0;
-	virtual float                   GetFloat(void) = 0;
-	virtual int						GetInt(void) = 0;
-	virtual void					SetValue(const char *value) = 0;
-	virtual void					SetValue(float value) = 0;
-	virtual void					SetValue(int value) = 0;
-	virtual void					SetValue(Color value) = 0;
+	virtual bool			IsFlagSet(int flag) = 0;
+	virtual const char*		GetHelpText(void) = 0;
+	virtual bool			IsRegistered(void) = 0;
+	virtual const char*		GetName(void) = 0;
+	virtual const char*		GetBaseName(void) = 0;
+	virtual int				GetSplitScreenPlayerSlot() = 0;
+	virtual void			AddFlags(int flags) = 0;
+	virtual int				GetFlags() = 0;
+	virtual	bool			IsCommand(void) = 0;
+	virtual float			GetFloat(void) = 0;
+	virtual int				GetInt(void) = 0;
+	virtual void			SetValue(const char *value) = 0;
+	virtual void			SetValue(float value) = 0;
+	virtual void			SetValue(int value) = 0;
+	virtual void			SetValue(Color value) = 0;
 
 	struct CVValue_t
 	{
@@ -153,16 +153,14 @@ public:
 		int		m_nValue;
 	};
 
-	virtual void					InternalSetValue(const char *value) = 0;
-	virtual void					InternalSetFloatValue(float fNewValue) = 0;
-	virtual void					InternalSetIntValue(int nValue) = 0;
-	virtual void					InternalSetColorValue(Color value) = 0;
-	virtual bool					ClampValue(float& value) = 0;
-	virtual void					ChangeStringValue(const char *tempVal, float flOldValue) = 0;
-	virtual void					Create(const char *pName, const char *pDefaultValue, int flags = 0,
-		const char *pHelpString = 0, bool bMin = false, float fMin = 0.0,
-		bool bMax = false, float fMax = false, FnChangeCallback_t callback = 0) = 0;
-	virtual void					Init() = 0;
+	virtual void			InternalSetValue(const char *value) = 0;
+	virtual void			InternalSetFloatValue(float fNewValue) = 0;
+	virtual void			InternalSetIntValue(int nValue) = 0;
+	virtual void			InternalSetColorValue(Color value) = 0;
+	virtual bool			ClampValue(float& value) = 0;
+	virtual void			ChangeStringValue(const char *tempVal, float flOldValue) = 0;
+	virtual void			Create(const char *pName, const char *pDefaultValue, int flags = 0, const char *pHelpString = 0, bool bMin = false, float fMin = 0.0, bool bMax = false, float fMax = false, FnChangeCallback_t callback = 0) = 0;
+	virtual void			Init() = 0;
 
 	ConVar*					m_pParent;
 	const char*				m_pszDefaultValue;
@@ -173,19 +171,13 @@ public:
 	float					m_fMaxVal;
 	FnChangeCallback_t		m_fnChangeCallback;
 
-	float xor_value_float(void) const
+	// add int support
+	template<typename T>
+	T value()
 	{
-		auto temp = *(int*)(&m_Value.m_fValue);
-		auto temp_result = (int)(temp ^ (DWORD)this);
+		int xor = *(int*)(&m_Value.m_fValue);
+		int result = (int)(xor ^ (ptr)this);
 
-		return *(float*)(&temp_result);
-	}
-
-	int xor_value_int(void) const
-	{
-		auto temp = *(int*)(&m_Value.m_nValue);
-		auto temp_result = (int)(temp ^ (DWORD)this);
-
-		return *(int*)(&temp_result);
+		return *(T*)(&result);
 	}
 };

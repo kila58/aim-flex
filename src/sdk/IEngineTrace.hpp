@@ -1,5 +1,4 @@
 #pragma once
-#define  Assert( _exp ) ((void)0)
 
 struct Ray_t
 {
@@ -40,6 +39,7 @@ struct cplane_t
 	byte signbits;
 	byte pad[2];
 };
+
 struct trace_t
 {
 	Vector start;
@@ -58,6 +58,7 @@ struct trace_t
 	C_BaseEntity* m_pEnt;
 	int hitbox;
 };
+
 enum TraceType_t
 {
 	TRACE_EVERYTHING = 0,
@@ -82,8 +83,8 @@ enum hitgroup
 class ITraceFilter
 {
 public:
-	virtual bool			ShouldHitEntity(void* pEntity, int mask) = 0;
-	virtual TraceType_t            GetTraceType() const = 0;
+	virtual bool		ShouldHitEntity(void* pEntity, int mask) = 0;
+	virtual TraceType_t	GetTraceType() const = 0;
 };
 
 
@@ -130,7 +131,6 @@ public:
 	}
 };
 
-// lower bits are stronger, and will eat weaker brushes completely
 #define	CONTENTS_EMPTY			0		// No contents
 
 #define	CONTENTS_SOLID			0x1		// an eye is never valid in a solid
@@ -206,8 +206,6 @@ public:
 #define SURF_NOPAINT	SURF_NODECALS	// the surface can not have paint placed on it
 #define SURF_NOCHOP		0x4000	// Don't subdivide patches on this surface 
 #define SURF_HITBOX		0x8000	// surface is part of a hitbox
-
-
 
 // -----------------------------------------------------
 // spatial content masks - used for spatial queries (traceline,etc.)

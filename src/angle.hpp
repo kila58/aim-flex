@@ -3,7 +3,7 @@
 class Angle
 {
 public:
-	Angle() {}
+	Angle() : p(0), y(0), r(0) {}
 	Angle(float p, float y, float r) : p(p), y(y), r(r) {}
 
 	float p, y, r;

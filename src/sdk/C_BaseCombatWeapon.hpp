@@ -23,6 +23,6 @@ public:
 struct FileWeaponInfo_t
 {
 public:
-	char pad001[4];
+	char pad1[4];
 	char* szClassName;
 };

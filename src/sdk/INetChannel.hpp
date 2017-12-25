@@ -7,7 +7,6 @@
 class INetChannelInfo
 {
 public:
-
 	enum {
 		GENERIC = 0,	// must be first and is default group
 		LOCALPLAYER,	// bytes for local player entity update
@@ -134,4 +133,3 @@ public:
 	bool m_bIsValveDS; //0x42D8
 	char pad_42D9[65]; //0x42D9
 }; //Size: 0x431A
-

@@ -2,7 +2,7 @@
 
 struct player_info_t
 {
-	unsigned __int64 pad001;
+	unsigned __int64 pad1;
 	unsigned __int64 xuid;
 	char name[128];
 	int userID;
@@ -134,7 +134,6 @@ public:
 	virtual bool                  MapHasLightMapAlphaData(void) = 0;
 	virtual int                   GetAppID() = 0;
 	virtual Vector                GetLightForPointFast(const Vector &pos, bool bClamp) = 0;
-	virtual void                  ClientCmd_Unrestricted1(char  const*, int, bool);
 	virtual void                  ClientCmd_Unrestricted(const char *szCmdString, bool no = false) = 0;
 	virtual void                  SetRestrictServerCommands(bool bRestrict) = 0;
 	virtual void                  SetRestrictClientCommands(bool bRestrict) = 0;
@@ -213,7 +212,6 @@ public:
 	virtual void                  SpherePaintSurface(const void* model, const Vector& location, unsigned char chr, float fl1, float fl2) = 0;
 	virtual bool                  HasPaintmap(void) = 0;
 	virtual void                  EnablePaintmapRender() = 0;
-	//virtual void                TracePaintSurface( const model_t *model, const Vector& position, float radius, CUtlVector<Color>& surfColors ) = 0;
 	virtual void                  SphereTracePaintSurface(const void* model, const Vector& position, const Vector &vec2, float radius, /*CUtlVector<unsigned char, CUtlMemory<unsigned char, int>>*/ int& utilVecShit) = 0;
 	virtual void                  RemoveAllPaint() = 0;
 	virtual void                  PaintAllSurfaces(unsigned char uchr) = 0;

@@ -1,7 +1,5 @@
 #pragma once
 
-// todo: clean up this file
-
 struct studiohdr_t;
 struct model_t;
 struct cplane_t;
@@ -106,6 +104,7 @@ struct mstudiobbox_t
 	float m_flRadius;
 	char pad2[0x10];
 };
+
 struct mstudiohitboxset_t
 {
 	int	sznameindex;
@@ -114,6 +113,7 @@ struct mstudiohitboxset_t
 	int	hitboxindex;
 	inline mstudiobbox_t*   GetHitbox(int i) const { return (mstudiobbox_t*)(((byte*)this) + hitboxindex) + i; };
 };
+
 struct mstudiobone_t
 {
 	int sznameindex;
@@ -137,6 +137,7 @@ struct mstudiobone_t
 	int contents;			   // See BSPFlags.h for the contents flags
 	int	unused[8];			  // remove as appropriate
 };
+
 struct studiohdr_t
 {
 	int id;
@@ -178,7 +179,6 @@ struct studiohdr_t
 			return 0;
 		return s->numhitboxes;
 	}
-
 	inline mstudiobone_t *pBone(int i) const { return (mstudiobone_t *)(((byte *)this) + boneindex) + i; };
 
 	int numlocalanim;

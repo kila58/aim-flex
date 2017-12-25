@@ -25,15 +25,15 @@ float Backtrack::GetServerTickCount()
 
 float Backtrack::GetLerpTime()
 {
-	float interp = cvar->FindVar("cl_interp")->xor_value_float();
+	float interp = cvar->FindVar("cl_interp")->value<float>();
 
-	float updaterate = cvar->FindVar("cl_updaterate")->xor_value_float();
-	float min_updaterate = cvar->FindVar("sv_minupdaterate")->xor_value_float();
-	float max_updaterate = cvar->FindVar("sv_maxupdaterate")->xor_value_float();
+	float updaterate = cvar->FindVar("cl_updaterate")->value<float>();
+	float minupdaterate = cvar->FindVar("sv_minupdaterate")->value<float>();
+	float maxupdaterate = cvar->FindVar("sv_maxupdaterate")->value<float>();
 
-	float interp_ratio = cvar->FindVar("cl_interp_ratio")->xor_value_float();
-	float min_interp_ratio = cvar->FindVar("sv_client_min_interp_ratio")->xor_value_float();
-	float max_interp_ratio = cvar->FindVar("sv_client_max_interp_ratio")->xor_value_float();
+	float interp_ratio = cvar->FindVar("cl_interp_ratio")->value<float>();
+	float min_interp_ratio = cvar->FindVar("sv_client_min_interp_ratio")->value<float>();
+	float max_interp_ratio = cvar->FindVar("sv_client_max_interp_ratio")->value<float>();
 
 	if (min_interp_ratio > interp_ratio)
 		interp_ratio = min_interp_ratio;
@@ -41,11 +41,11 @@ float Backtrack::GetLerpTime()
 	if (interp_ratio > max_interp_ratio)
 		interp_ratio = max_interp_ratio;
 
-	if (max_updaterate <= updaterate)
-		updaterate = max_updaterate;
+	if (maxupdaterate <= updaterate)
+		updaterate = maxupdaterate;
 
-	if (min_updaterate > updaterate)
-		updaterate = min_updaterate;
+	if (minupdaterate > updaterate)
+		updaterate = minupdaterate;
 
 	float result = interp_ratio / updaterate;
 
