@@ -6,10 +6,12 @@
 #include "../playermanager/playermanager.hpp"
 
 unsigned long font;
+unsigned long font2;
 
 void ESP::Init()
 {
 	matsystemsurface->SetFontGlyphSet(font = matsystemsurface->CreateFont(), "Arial", 16, 500, 0, 0, FONTFLAG_OUTLINE);
+	matsystemsurface->SetFontGlyphSet(font2 = matsystemsurface->CreateFont(), "Arial", 12, 500, 0, 0, FONTFLAG_OUTLINE);
 }
 
 player_info_t info;
@@ -36,9 +38,10 @@ bool InvalidPlayerESP(int i, C_BaseEntity* p, C_BaseEntity* lp)
 
 void ESP::Invoke()
 {
+	bool antiaiminfo = settings.Get<bool>("esp_antiaiminfo");
+
 	if (settings.Get<bool>("esp_enabled") && engineclient->IsInGame())
 	{
-		matsystemsurface->SetFont(font);
 		matsystemsurface->SetTextColor(Color(255, 255, 255));
 
 		C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
@@ -50,6 +53,8 @@ void ESP::Invoke()
 			if (InvalidPlayerESP(i, p, lp))
 				continue;
 
+			auto& player = playermanager.GetPlayer(info.userID);
+
 			Vector pos = p->GetAbsOrigin();
 
 			/*
@@ -59,11 +64,11 @@ void ESP::Invoke()
 			Vector min, max;
 			if (WorldToScreen(pos + mins, min) && WorldToScreen(pos + maxs, max))
 			{
-				matsystemsurface->SetDrawColor(Color(0, 0, 0));
+			matsystemsurface->SetDrawColor(Color(0, 0, 0));
 
-				matsystemsurface->DrawOutlinedRect(min.x, min.y, 2, 2);
+			matsystemsurface->DrawOutlinedRect(min.x, min.y, 2, 2);
 
-				matsystemsurface->DrawOutlinedRect(max.x, max.y, 2, 2);
+			matsystemsurface->DrawOutlinedRect(max.x, max.y, 2, 2);
 			}
 			*/
 
@@ -74,6 +79,8 @@ void ESP::Invoke()
 
 			if (WorldToScreen(_bottom, bottom) && WorldToScreen(_top, top))
 			{
+				matsystemsurface->SetFont(font);
+
 				int h = ceil(bottom.y - top.y);
 				int width = ceil(h / 4);
 
@@ -109,6 +116,42 @@ void ESP::Invoke()
 				matsystemsurface->SetTextPos(x + w / 2 - tw / 2, y - th - 2);
 				matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
 
+				matsystemsurface->SetFont(font2);
+
+				if (player && antiaiminfo)
+				{
+					int addy = 0;
+				
+					for (int i = 0; i < 3; i++)
+					{
+						float thing;
+
+						if (i == 0)
+							thing = p->LowerBodyYaw();
+						else if (i == 1)
+							thing = player.resolverinfo.eye.y;
+						else if (i == 2)
+						{
+							float diff = p->LowerBodyYaw() - player.resolverinfo.eye.y;
+							diff = clamp(normalize(diff), -180.f, 180.f);
+
+							thing = std::abs(diff);
+						}
+
+						wchar_t wname[128];
+						MultiByteToWideChar(CP_UTF8, 0, std::to_string((int)thing).c_str(), -1, wname, 128);
+
+						matsystemsurface->SetTextPos(x + w + 3, y - 2 + addy);
+						matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
+
+						matsystemsurface->GetTextSize(font, wname, tw, th);
+
+						addy += (th / 2) + 2;
+					}
+				}
+
+				matsystemsurface->SetFont(font);
+
 				auto weapon = p->GetWeapon();
 
 				if (weapon)
@@ -120,7 +163,11 @@ void ESP::Invoke()
 
 					matsystemsurface->GetTextSize(font, wname, tw, th);
 
-					matsystemsurface->SetTextPos(x + w / 2 - tw / 2, y + h + 1);
+					if (player && antiaiminfo)
+						matsystemsurface->SetTextPos(x + w - tw, y + h + 1);
+					else
+						matsystemsurface->SetTextPos(x + w / 2 - tw / 2, y + h + 1);
+
 					matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
 				}
 			}

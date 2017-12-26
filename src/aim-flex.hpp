@@ -36,6 +36,7 @@
 #include "sdk/IEngineTrace.hpp"
 #include "sdk/INetChannel.hpp"
 #include "sdk/IGameEvent.hpp"
+#include "sdk/CInput.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;
@@ -44,9 +45,10 @@ extern IClientEntityList* entitylist;
 extern CHLClient* client;
 extern ICVar* cvar;
 extern IVModelInfo* modelinfo;
-extern ClientModeShared* clientmode;
-extern CGlobalVarsBase* globals;
 extern CGameMovement* gamemovement;
 extern IPrediction* prediction;
 extern IEngineTrace* enginetrace;
 extern IGameEventListener2* eventmanager;
+extern ClientModeShared* clientmode;
+extern CGlobalVarsBase* globals;
+extern CInput* cmdinput;

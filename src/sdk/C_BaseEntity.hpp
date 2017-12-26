@@ -3,7 +3,7 @@
 class IClientNetworkable
 {
 public:
-	ClientClass* GetClientClass()
+	ClientClass * GetClientClass()
 	{
 		return getvfunc<ClientClass*(__thiscall*)(void*)>(this, 2)(this);
 	}
@@ -30,6 +30,7 @@ class C_BaseCombatWeapon;
 class IClientEntityList;
 
 extern IClientEntityList* entitylist;
+extern CEngineClient* engineclient;
 
 class C_BaseEntity
 {
@@ -45,6 +46,10 @@ protected:
 		return netvars.Get(name, GetNetworkable()->GetClientClass()->m_pRecvTable);
 	}
 public:
+	const unsigned long& GetRefEHandle()
+	{
+		return getvfunc<const unsigned long&(__thiscall*)(void*)>(this, 2)(this);
+	}
 	inline IClientRenderable* GetRenderable()
 	{
 		return (IClientRenderable*)(this + 4);
@@ -101,6 +106,10 @@ public:
 	{
 		return GetNetVar<Angle>("m_aimPunchAngle");
 	}
+	void SetViewAngle(const Angle& ang)
+	{
+		*(Angle*)(this + GetOffset("deadflag") + 0x4) = ang;
+	}
 	C_BaseCombatWeapon* GetWeapon()
 	{
 		return (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(GetNetVar<unsigned long>("m_hActiveWeapon"));
@@ -127,5 +136,31 @@ public:
 	inline const model_t* GetModel()
 	{
 		return GetRenderable()->GetModel();
+	}
+	int GetEntryIndex()
+	{
+		return GetRefEHandle() & 0xFFF;
+	}
+	// todo: cache this
+	int GetUserID()
+	{
+		player_info_t info;
+		//info = *(player_info_t*)(this + GetOffset("m_szLastPlaceName") + 64 + 0x4); CPlayerInfo->GetUserID might be faster? or access m_pUserInfoTable directly in clientstate
+		if (!engineclient->GetPlayerInfo(GetEntryIndex(), &info))
+			return NULL;
+
+		return info.userID;
+	}
+	float LowerBodyYaw()
+	{
+		return GetNetVar<float>("m_flLowerBodyYawTarget");
+	}
+	Angle GetEyeAngle()
+	{
+		return GetNetVar<Angle>("m_angEyeAngles[0]");
+	}
+	void SetEyeAngle(const Angle& ang)
+	{
+		*(Angle*)(this + GetOffset("m_angEyeAngles[0]")) = ang;
 	}
 };

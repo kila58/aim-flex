@@ -8,6 +8,7 @@ Settings::Settings() : BaseFeature(PAINT)
 	{
 		{"bhop_enabled", true},
 		{"esp_enabled", true},
+		{"esp_antiaiminfo", true},
 		{"legit_enabled", false},
 		{"rage_enabled", true}
 	};

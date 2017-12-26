@@ -3,7 +3,7 @@
 class Color
 {
 public:
-	inline Color() {}
+	inline Color() : r(255), g(255), b(255), a(255) {}
 	inline Color(int r, int g, int b) : r(r), g(g), b(b), a(255) {}
 	inline Color(int r, int g, int b, int a) : r(r), g(g), b(b), a(a) {}
 

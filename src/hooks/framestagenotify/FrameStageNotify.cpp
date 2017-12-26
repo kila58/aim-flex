@@ -4,6 +4,9 @@
 
 #include "../../features/features.hpp"	
 
+#include "../../features/antiaim/antiaim.hpp"
+#include "../../features/resolver/resolver.hpp"
+
 using FrameStageNotifyType = void*(__thiscall*)(void*, ClientFrameStage_t);
 FrameStageNotifyType original_function;
 
@@ -13,6 +16,12 @@ void __fastcall FrameStageNotify(void* instance, void*, ClientFrameStage_t stage
 	{
 		BaseFeature::SetArguments(FRAMESTAGENOTIFY, stage);
 		features.Invoke(FRAMESTAGENOTIFY);
+
+		resolver.Invoke();
+	}
+	else if (stage == FRAME_RENDER_START)
+	{
+		antiaim.SetThirdPersonAngle();
 	}
 
 	original_function(instance, stage);

@@ -3,7 +3,7 @@
 class CUserCmd
 {
 public:
-	virtual ~CUserCmd() = 0;
+	char constructor[4];
 
 	int command_number;
 	int tick_count;

@@ -6,11 +6,15 @@
 
 #include "hooks/hooks.hpp"
 
-void Unload::Poll(HMODULE module)
+void Unload::Poll(HMODULE module, bool force)
 {
-	while (!input.KeyDown(VK_F11))
-		Sleep(100);
+	if (!force)
+	{
+		while (!input.KeyDown(VK_F11))
+			Sleep(100);
+	}
 
+	netvars.Destroy();
 	hooks.Destroy();
 	features.Destroy();
 

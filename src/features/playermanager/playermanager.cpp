@@ -86,6 +86,37 @@ std::deque<Player>& PlayerManager::GetPlayers()
 	return players;
 }
 
+static Player bad;
+Player& PlayerManager::GetPlayer(int uid)
+{
+	if (players.empty())
+		return bad;
+
+	auto it = std::find(players.begin(), players.end(), uid);
+
+	if (it == players.end())
+		return bad;
+
+	return players[std::distance(players.begin(), it)];
+}
+
+Player& PlayerManager::GetPlayer(C_BaseEntity* player)
+{
+	if (players.empty())
+		return bad;
+
+	int uid = player->GetUserID();
+	if (!uid)
+		return bad;
+
+	auto it = std::find(players.begin(), players.end(), player->GetUserID());
+
+	if (it == players.end())
+		return bad;
+
+	return players[std::distance(players.begin(), it)];
+}
+
 void PlayerManager::ClearPlayers()
 {
 	players.clear();

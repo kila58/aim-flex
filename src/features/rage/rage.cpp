@@ -5,6 +5,7 @@
 #include "../playermanager/playermanager.hpp"
 #include "../aimbot/aimbot.hpp"
 #include "../prediction/prediction.hpp"
+#include "../antiaim/antiaim.hpp"
 
 void Rage::Init()
 {
@@ -33,20 +34,14 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 			}
 		}
 
-		if (target.backtrackinfo.ticks.size() > 1)
+		for (auto& tick : target.backtrackinfo.ticks)
 		{
-			auto& first = target.backtrackinfo.ticks.back();
-			auto& last = target.backtrackinfo.ticks.front();
-
-			if (!first.head.IsZero() && !last.head.IsZero())
+			if (aimbot.IsVisible(p, tick.head))
 			{
-				if (!aimbot.IsVisible(p, first.head) && aimbot.IsVisible(p, last.head))
-				{
-					aimbot.CalculateAngle(last.head, ang);
-					backtrack.BacktrackToTick(cmd, last);
+				aimbot.CalculateAngle(tick.head, ang);
+				backtrack.BacktrackToTick(cmd, tick);
 
-					return true;
-				}
+				return true;
 			}
 		}
 	}
@@ -60,12 +55,18 @@ void Rage::Invoke()
 	auto cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
 
 	Angle ang;
-	if (lp->IsAlive() && aimbot.CanShoot() && FindTarget(cmd, ang))
+	if (aimbot.CanShoot() && FindTarget(cmd, ang))
 	{
 		cmd->viewangles = ang;
 		aimbot.NoRecoil();
 
 		cmd->buttons |= IN_ATTACK;
+
+		aimbot.MovementFix();
+	}
+	else
+	{
+		antiaim.Invoke();
 
 		aimbot.MovementFix();
 	}

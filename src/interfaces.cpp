@@ -43,6 +43,9 @@ bool Interfaces::Init()
 	if (!(globals = **(CGlobalVarsBase***)(getvfunc(client, 11) + 10)))
 		return false;
 
+	if (!(cmdinput = *(CInput**)(getvfunc(client, 15) + 1)))
+		return false;
+
 	return true;
 }
 
