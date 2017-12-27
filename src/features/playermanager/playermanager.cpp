@@ -36,6 +36,11 @@ void PlayerManager::Init()
 
 void PlayerManager::Invoke()
 {
+	// FRAME_NET_UPDATE_POSTDATAUPDATE_START
+	int stage = GetArg<int>(GetArguments(), 0);
+	if (stage != FRAME_NET_UPDATE_POSTDATAUPDATE_START)
+		return;
+
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 	Vector lporigin = lp->GetAbsOrigin();
 

@@ -12,17 +12,11 @@ FrameStageNotifyType original_function;
 
 void __fastcall FrameStageNotify(void* instance, void*, ClientFrameStage_t stage)
 {
-	if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
-	{
-		BaseFeature::SetArguments(FRAMESTAGENOTIFY, stage);
-		features.Invoke(FRAMESTAGENOTIFY);
-
-		resolver.Invoke();
-	}
-	else if (stage == FRAME_RENDER_START)
-	{
+	BaseFeature::SetArguments(FRAMESTAGENOTIFY, (int)stage);
+	features.Invoke(FRAMESTAGENOTIFY);
+	
+	if (stage == FRAME_RENDER_START)
 		antiaim.SetThirdPersonAngle();
-	}
 
 	original_function(instance, stage);
 }

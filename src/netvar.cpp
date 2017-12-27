@@ -83,18 +83,14 @@ RecvProp* NetVar::GetRecvProp(const char* name, RecvTable* table)
 RecvTable* NetVar::GetTable(const char* tablename)
 {
 	RecvTable* table = nullptr;
-	ClientClass* clientclass = client->GetAllClasses();
+	ClientClass* clientclass;
 	
-	for (; clientclass; clientclass = clientclass->m_pNext)
+	for (clientclass = client->GetAllClasses(); clientclass; clientclass = clientclass->m_pNext)
 	{
 		table = clientclass->m_pRecvTable;
 
 		if (table && std::strcmp(table->m_pNetTableName, tablename) == 0)
-		{
 			return table;
-
-			break;
-		}
 	}
 
 	return nullptr;

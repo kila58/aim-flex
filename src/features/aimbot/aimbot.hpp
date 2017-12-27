@@ -35,6 +35,7 @@ public:
 	void Init();
 	void Invoke();
 	Vector GetHitbox(C_BaseEntity* p, int index);
+	Vector GetBodyAim(C_BaseEntity* p);
 	bool GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes);
 	void CalculateAngle(const Vector& pos, Angle& out);
 	bool IsVisible(C_BaseEntity* p, const Vector& pos);

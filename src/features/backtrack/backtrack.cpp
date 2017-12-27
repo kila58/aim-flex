@@ -57,6 +57,10 @@ float Backtrack::GetLerpTime()
 
 void Backtrack::Invoke()
 {
+	int stage = GetArg<int>(GetArguments(), 0);
+	if (stage != FRAME_NET_UPDATE_POSTDATAUPDATE_START)
+		return;
+
 	float time = GetServerTickCount();
 	float lerp = GetLerpTime();
 
@@ -69,7 +73,8 @@ void Backtrack::Invoke()
 
 		C_BaseEntity* p = target.ent;
 
-		Vector head = aimbot.GetHitbox(p, 0);
+		//Vector head = aimbot.GetHitbox(p, 0);
+		Vector head = aimbot.GetBodyAim(p);
 
 		if (!head.IsZero())
 		{

@@ -8,6 +8,7 @@
 #include <deque>
 #include <experimental/deque>
 #include <string>
+#include <numeric>
 
 #include "definitions.hpp"
 #include "color.hpp"

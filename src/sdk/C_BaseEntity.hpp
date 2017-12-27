@@ -24,6 +24,10 @@ public:
 	{
 		return getvfunc<bool(__thiscall*)(void*, VMatrix*, int bones, int flag, float time)>(this, 13)(this, bones, _bones, _flag, time);
 	}
+	void GetRenderBounds(Vector& mins, Vector& maxs)
+	{
+		return getvfunc<void(__thiscall*)(void*, Vector&, Vector&)>(this, 17)(this, mins, maxs);
+	}
 };
 
 class C_BaseCombatWeapon;
@@ -106,6 +110,10 @@ public:
 	{
 		return GetNetVar<Angle>("m_aimPunchAngle");
 	}
+	Vector GetVelocity()
+	{
+		return GetNetVar<Vector>("m_vecVelocity[0]");
+	}
 	void SetViewAngle(const Angle& ang)
 	{
 		*(Angle*)(this + GetOffset("deadflag") + 0x4) = ang;
@@ -140,6 +148,16 @@ public:
 	int GetEntryIndex()
 	{
 		return GetRefEHandle() & 0xFFF;
+	}
+	// only use for debugging, slow
+	std::string GetName()
+	{
+		player_info_t info;
+		//info = *(player_info_t*)(this + GetOffset("m_szLastPlaceName") + 64 + 0x4); CPlayerInfo->GetUserID might be faster? or access m_pUserInfoTable directly in clientstate
+		if (!engineclient->GetPlayerInfo(GetEntryIndex(), &info))
+			return NULL;
+
+		return info.name;
 	}
 	// todo: cache this
 	int GetUserID()

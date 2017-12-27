@@ -56,6 +56,17 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
 	return (min + max) * 0.5f;
 }
 
+Vector Aimbot::GetBodyAim(C_BaseEntity* p)
+{
+	Vector mins, maxs;
+	p->GetRenderable()->GetRenderBounds(mins, maxs);
+
+	Vector origin = p->GetAbsOrigin();
+	origin.z += ((mins.z + maxs.z) * 0.5f);
+
+	return origin;
+}
+
 bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes)
 {
 	static const model_t* model;

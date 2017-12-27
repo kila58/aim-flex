@@ -36,6 +36,57 @@ bool InvalidPlayerESP(int i, C_BaseEntity* p, C_BaseEntity* lp)
 	return false;
 }
 
+bool ESP::CreateBox(C_BaseEntity* p, int& x, int& y, int& w, int& h)
+{
+	static const Vector edges[4] =
+	{
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(-1.0f, 1.0f, 1.0f),
+		Vector(1.0f, -1.0f, 1.0f),
+		Vector(-1.0f, -1.0f, 1.0f),
+	};
+
+	Vector origin = p->GetAbsOrigin();
+
+	Angle rot = Angle(0, p->GetEyeAngle().y, 0);
+
+	const model_t* model = p->GetModel();
+	if (!model)
+		return false;
+
+	Vector mins, maxs;
+	modelinfo->GetModelRenderBounds(model, mins, maxs);
+
+	int screenw, screeh;
+	engineclient->GetScreenSize(screenw, screeh);
+	
+	x = screenw;
+	y = screeh;
+	w = -screenw;
+	h = -screeh;
+
+	for (int i = 0; i < 4; i++)
+	{
+		Vector mins2d, maxs2d;
+
+		if (!WorldToScreen(origin + (mins * edges[i].Rotate(rot)), mins2d))
+			return false;
+
+		if (!WorldToScreen(origin + (maxs * edges[i].Rotate(rot)), maxs2d))
+			return false;
+
+		x = std::min<int>(x, (int)ceil(std::min(mins2d.x, maxs2d.x)));
+		y = std::min<int>(y, (int)ceil(std::min(mins2d.y, maxs2d.y)));
+		w = std::max<int>(w, (int)ceil(std::max(mins2d.x, maxs2d.x)));
+		h = std::max<int>(h, (int)ceil(std::max(mins2d.y, maxs2d.y)));
+	}
+
+	w -= x;
+	h -= y;
+
+	return true;
+}
+
 void ESP::Invoke()
 {
 	bool antiaiminfo = settings.Get<bool>("esp_antiaiminfo");
@@ -55,38 +106,10 @@ void ESP::Invoke()
 
 			auto& player = playermanager.GetPlayer(info.userID);
 
-			Vector pos = p->GetAbsOrigin();
-
-			/*
-			Vector mins = p->GetMins();
-			Vector maxs = p->GetMaxs();
-
-			Vector min, max;
-			if (WorldToScreen(pos + mins, min) && WorldToScreen(pos + maxs, max))
-			{
-			matsystemsurface->SetDrawColor(Color(0, 0, 0));
-
-			matsystemsurface->DrawOutlinedRect(min.x, min.y, 2, 2);
-
-			matsystemsurface->DrawOutlinedRect(max.x, max.y, 2, 2);
-			}
-			*/
-
-			Vector _bottom = (pos + Vector(0, 0, 1));
-			Vector _top = (pos + Vector(0, 0, 72));
-
-			Vector bottom, top;
-
-			if (WorldToScreen(_bottom, bottom) && WorldToScreen(_top, top))
+			int x, y, w, h;
+			if (CreateBox(p, x, y, w, h))
 			{
 				matsystemsurface->SetFont(font);
-
-				int h = ceil(bottom.y - top.y);
-				int width = ceil(h / 4);
-
-				int x = ceil(top.x - width);
-				int y = ceil(top.y);
-				int w = ceil(width * 2);
 
 				if (p->GetTeam() == lp->GetTeam())
 					matsystemsurface->SetDrawColor(Color(72, 133, 237));
@@ -122,8 +145,10 @@ void ESP::Invoke()
 				{
 					int addy = 0;
 				
-					for (int i = 0; i < 3; i++)
+					//for (int i = 0; i < 3; i++)
+					for (int i = 0; i < 1; i++)
 					{
+						/*
 						float thing;
 
 						if (i == 0)
@@ -145,7 +170,18 @@ void ESP::Invoke()
 						matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
 
 						matsystemsurface->GetTextSize(font, wname, tw, th);
+						*/
 
+						matsystemsurface->SetTextPos(x + w + 3, y - 2 + addy);
+
+						if (player.resolverinfo.fakerecord.first == REAL)
+							matsystemsurface->DrawPrintText(L"R", std::wcslen(L"R"));
+						else if (player.resolverinfo.fakerecord.first == FAKE)
+							matsystemsurface->DrawPrintText(L"F", std::wcslen(L"F"));
+						else if (player.resolverinfo.fakerecord.first == UNDETERMINED)
+							matsystemsurface->DrawPrintText(L"U", std::wcslen(L"U"));
+
+						matsystemsurface->GetTextSize(font, wname, tw, th);
 						addy += (th / 2) + 2;
 					}
 				}
@@ -164,7 +200,7 @@ void ESP::Invoke()
 					matsystemsurface->GetTextSize(font, wname, tw, th);
 
 					if (player && antiaiminfo)
-						matsystemsurface->SetTextPos(x + w - tw, y + h + 1);
+						matsystemsurface->SetTextPos(x + w - tw + 1, y + h + 1);
 					else
 						matsystemsurface->SetTextPos(x + w / 2 - tw / 2, y + h + 1);
 

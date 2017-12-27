@@ -18,6 +18,18 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 	{
 		C_BaseEntity* p = target.ent;
 
+		for (auto& tick : target.backtrackinfo.ticks)
+		{
+			if (aimbot.IsVisible(p, tick.head))
+			{
+				aimbot.CalculateAngle(tick.head, ang);
+				backtrack.BacktrackToTick(cmd, tick);
+
+				return true;
+			}
+		}
+
+		/*
 		Hitboxes hitboxes;
 		if (aimbot.GetHitboxes(p, hitboxes))
 		{
@@ -33,17 +45,7 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 				}
 			}
 		}
-
-		for (auto& tick : target.backtrackinfo.ticks)
-		{
-			if (aimbot.IsVisible(p, tick.head))
-			{
-				aimbot.CalculateAngle(tick.head, ang);
-				backtrack.BacktrackToTick(cmd, tick);
-
-				return true;
-			}
-		}
+		*/
 	}
 
 	return false;
