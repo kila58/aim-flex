@@ -30,7 +30,7 @@ private:
 	CUserCmd* cmd;
 	C_BaseCombatWeapon* weapon;
 public:
-	Aimbot() : BaseFeature(CREATEMOVE, 3u) {}
+	Aimbot() : BaseFeature(CREATEMOVE, 5u) {}
 
 	void Init();
 	bool SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones);

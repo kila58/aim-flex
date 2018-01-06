@@ -11,20 +11,6 @@ void Backtrack::Init()
 
 }
 
-float Backtrack::GetServerTickCount()
-{
-	auto nci = engineclient->GetNetChannelInfo();
-
-	float outgoing = 0.f;
-	float incoming = 0.f;
-
-	if (nci)
-		outgoing = nci->GetLatency(FLOW_OUTGOING), incoming = nci->GetLatency(FLOW_INCOMING);
-
-	//return floor(TIME_TO_TICKS(outgoing + incoming)) + /*TIME_TO_TICKS(globals->curtime)*/globals->tickcount + 1;
-	return floor(TIME_TO_TICKS(outgoing + incoming)) + TIME_TO_TICKS(globals->curtime) + 1;
-}
-
 float Backtrack::GetLerpTime()
 {
 	float interp = cvar->FindVar("cl_interp")->value<float>();
@@ -57,23 +43,33 @@ float Backtrack::GetLerpTime()
 	return result;
 }
 
+bool Backtrack::TickIsValid(const Tick& tick, float lerp)
+{
+	float correct = 0;
+
+	correct += engineclient->GetNetChannelInfo()->GetLatency(FLOW_OUTGOING);
+	correct += engineclient->GetNetChannelInfo()->GetLatency(FLOW_INCOMING);
+	correct += lerp;
+
+	float sv_maxunlag = cvar->FindVar("sv_maxunlag")->value<float>();
+	correct = clamp(correct, 0.f, sv_maxunlag);
+
+	float delta = correct - (predict.pred_time - tick.time);
+
+	return !(fabsf(delta) > 0.2f);
+}
+
 void Backtrack::Invoke()
 {
-	int stage = GetArg<int>(GetArguments(), 0);
-	if (stage != FRAME_NET_UPDATE_POSTDATAUPDATE_START)
-		return;
-
-	float time = GetServerTickCount();
-	float lerp = GetLerpTime();
+	auto lerp = GetLerpTime();
 
 	for (auto& target : playermanager.GetPlayers())
 	{
 		//cvar->ConsoleColorPrintf(target.ent->GetName() + ": " + std::to_string(target.ent->GetAbsAngles().y - target.ent->GetEyeAngle().y) + "\n");
 
-		// todo: account for ping again
-		std::experimental::erase_if(target.backtrackinfo.ticks, [&time, &lerp](const Tick& tick)
+		std::experimental::erase_if(target.backtrackinfo.ticks, [this, &lerp](const Tick& tick)
 		{ 
-			return (((globals->curtime + lerp) - TICKS_TO_TIME(tick.tickcount)) > 0.2f);
+			return !TickIsValid(tick, lerp);
 		});
 
 		C_BaseEntity* p = target.ent;

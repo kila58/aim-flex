@@ -1,7 +1,5 @@
 #pragma once
 
-#include <array>
-
 #include "../features.hpp"
 
 #include "../backtrack/backtrack.hpp"

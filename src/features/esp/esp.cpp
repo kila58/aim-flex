@@ -64,7 +64,7 @@ bool ESP::CreateBox(C_BaseEntity* p, int& x, int& y, int& w, int& h)
 
 	int screenw, screeh;
 	engineclient->GetScreenSize(screenw, screeh);
-	
+
 	x = screenw;
 	y = screeh;
 	w = -screenw;
@@ -149,19 +149,25 @@ void ESP::Invoke()
 				if (player && antiaiminfo)
 				{
 					int addy = 0;
-				
+
 					for (int i = 0; i < 2; i++)
 					{
 						matsystemsurface->SetTextPos(x + w + 3, y - 2 + addy);
 
 						if (i == 0)
 						{
-							if (player.resolverinfo.fakerecord.first == REAL)
+							switch (player.resolverinfo.fakerecord.first)
+							{
+							case REAL:
 								matsystemsurface->DrawPrintText(L"R", std::wcslen(L"R"));
-							else if (player.resolverinfo.fakerecord.first == FAKE)
+								break;
+							case FAKE:
 								matsystemsurface->DrawPrintText(L"F", std::wcslen(L"F"));
-							else if (player.resolverinfo.fakerecord.first == UNDETERMINED)
+								break;
+							case UNDETERMINED:
 								matsystemsurface->DrawPrintText(L"U", std::wcslen(L"U"));
+								break;
+							}
 						}
 						else if (i == 1)
 						{

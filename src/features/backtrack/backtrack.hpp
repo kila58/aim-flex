@@ -34,11 +34,11 @@ public:
 class Backtrack : public BaseFeature
 {
 public:
-	Backtrack() : BaseFeature(FRAMESTAGENOTIFY, 3u) {}
+	Backtrack() : BaseFeature(CREATEMOVE, 3u) {}
 
 	void Init();
-	float GetServerTickCount();
 	float GetLerpTime();
+	bool TickIsValid(const Tick& tick, float lerp);
 	void Invoke();
 	void BacktrackToTick(CUserCmd* cmd, const Tick& tick);
 	void Destroy();

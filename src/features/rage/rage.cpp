@@ -18,6 +18,7 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 	{
 		C_BaseEntity* p = target.ent;
 
+		/*
 		for (auto& tick : target.backtrackinfo.ticks)
 		{
 			if (aimbot.IsVisible(p, tick.head))
@@ -28,6 +29,7 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 				return true;
 			}
 		}
+		*/
 
 		/*
 		Vector head = aimbot.GetHitbox(p, 0);
@@ -39,7 +41,6 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 		}
 		*/
 
-		/*
 		Vector head = aimbot.GetHitbox(p, 0);
 		if (!head.IsZero() && !aimbot.IsVisible(p, head) && target.backtrackinfo.ticks.size() > 1)
 		{
@@ -59,7 +60,6 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 					break;
 			}
 		}
-		*/
 
 		/*
 		auto& sim = target.backtrackinfo.FindTick(p, p->GetSimulationTime());
@@ -144,7 +144,7 @@ void Rage::Invoke()
 	}
 	else
 	{
-		antiaim.Invoke();
+		//antiaim.Invoke();
 
 		aimbot.MovementFix();
 	}

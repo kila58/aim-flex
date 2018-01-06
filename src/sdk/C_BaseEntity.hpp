@@ -76,17 +76,17 @@ protected:
 		return *(T*)(this + offset);
 	}
 	template <typename T>
-	void Set(const T& what, uint offset)
+	void Set(const T& what, int offset)
 	{
 		*(T*)(this + offset) = what;
 	}
 	template <typename T, typename B>
-	void Set(const T& what, uint offset, uint size)
+	void Set(const T& what, int offset, uint size)
 	{
 		std::memcpy(this + offset, what, sizeof(B) * size);
 	}
 	template <typename T, typename B>
-	void Get(const T& what, uint offset, uint size)
+	void Get(const T& what, int offset, uint size)
 	{
 		std::memcpy(what, this + offset, sizeof(B) * size);
 	}
@@ -237,7 +237,7 @@ public:
 		return Get<ptr>(0x270);
 	}
 	// todo: change this from hardcoded
-	inline void SetPVSFlag(ptr flag)
+	inline void SetPVSFlag(int flag)
 	{
 		Set<ptr>(flag, 0x270);
 	}

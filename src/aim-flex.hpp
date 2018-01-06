@@ -9,7 +9,6 @@
 #include <experimental/deque>
 #include <string>
 #include <numeric>
-#include <array>
 
 #include "definitions.hpp"
 #include "color.hpp"
