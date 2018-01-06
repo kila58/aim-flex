@@ -116,9 +116,6 @@ void NetVar::Destroy()
 {
 	old_eyeangles_pitch.first->m_ProxyFn = old_eyeangles_pitch.second;
 	old_eyeangles_yaw.first->m_ProxyFn = old_eyeangles_yaw.second;
-
-	old_eyeangles_pitch.first = nullptr;
-	old_eyeangles_yaw.first = nullptr;
 }
 
 NetVar netvars;

@@ -9,6 +9,7 @@
 #include <experimental/deque>
 #include <string>
 #include <numeric>
+#include <array>
 
 #include "definitions.hpp"
 #include "color.hpp"
@@ -19,12 +20,14 @@
 #include "util.hpp"
 #include "netvar.hpp"
 
+#include "sdk/CUtlVector.hpp"
 #include "sdk/CEngineClient.hpp"
 #include "sdk/CEngineVGui.hpp"
 #include "sdk/CMatSystemSurface.hpp"
 #include "sdk/CGlobalVarsBase.hpp"
 #include "sdk/IClientEntityList.hpp"
 #include "sdk/IVModelInfo.hpp"
+#include "sdk/IPlayerAnimState.hpp"
 #include "sdk/C_BaseEntity.hpp"
 #include "sdk/CHLClient.hpp"
 #include "sdk/ClientModeShared.hpp"

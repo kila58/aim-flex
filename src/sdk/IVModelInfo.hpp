@@ -138,6 +138,12 @@ struct mstudiobone_t
 	int	unused[8];			  // remove as appropriate
 };
 
+class CStudioHdr
+{
+public:
+	studiohdr_t* studio;
+};
+
 struct studiohdr_t
 {
 	int id;

@@ -4,6 +4,7 @@
 
 #include "../playermanager/playermanager.hpp"
 #include "../aimbot/aimbot.hpp"
+#include "../prediction/prediction.hpp"
 
 void Backtrack::Init()
 {
@@ -15,12 +16,13 @@ float Backtrack::GetServerTickCount()
 	auto nci = engineclient->GetNetChannelInfo();
 
 	float outgoing = 0.f;
-	//float incoming = 0.f;
+	float incoming = 0.f;
 
 	if (nci)
-		outgoing = nci->GetAvgLatency(FLOW_OUTGOING)/*, incoming = nci->GetAvgLatency(FLOW_INCOMING)*/;
+		outgoing = nci->GetLatency(FLOW_OUTGOING), incoming = nci->GetLatency(FLOW_INCOMING);
 
-	return floor(TIME_TO_TICKS(outgoing)) + globals->tickcount + 1;
+	//return floor(TIME_TO_TICKS(outgoing + incoming)) + /*TIME_TO_TICKS(globals->curtime)*/globals->tickcount + 1;
+	return floor(TIME_TO_TICKS(outgoing + incoming)) + TIME_TO_TICKS(globals->curtime) + 1;
 }
 
 float Backtrack::GetLerpTime()
@@ -66,23 +68,20 @@ void Backtrack::Invoke()
 
 	for (auto& target : playermanager.GetPlayers())
 	{
+		//cvar->ConsoleColorPrintf(target.ent->GetName() + ": " + std::to_string(target.ent->GetAbsAngles().y - target.ent->GetEyeAngle().y) + "\n");
+
+		// todo: account for ping again
 		std::experimental::erase_if(target.backtrackinfo.ticks, [&time, &lerp](const Tick& tick)
-		{
-			return (((TICKS_TO_TIME(time) + lerp) - tick.time) > 0.2f);
+		{ 
+			return (((globals->curtime + lerp) - TICKS_TO_TIME(tick.tickcount)) > 0.2f);
 		});
 
 		C_BaseEntity* p = target.ent;
 
-		//Vector head = aimbot.GetHitbox(p, 0);
-		Vector head = aimbot.GetBodyAim(p);
+		Vector head = aimbot.GetHitbox(p, 0, false);
 
 		if (!head.IsZero())
-		{
-			head -= p->GetAbsOrigin();
-			head += p->GetOrigin();
-
-			target.backtrackinfo.ticks.emplace_back(p->GetSimulationTime(), head);
-		}
+			target.backtrackinfo.ticks.emplace_back(p->GetSimulationTime(), globals->curtime, head, globals->tickcount);
 	}
 }
 
@@ -94,6 +93,25 @@ void Backtrack::BacktrackToTick(CUserCmd* cmd, const Tick& tick)
 void Backtrack::Destroy()
 {
 
+}
+
+static Tick badtick;
+Tick& BacktrackInfo::FindTick(C_BaseEntity* p, float simulation)
+{
+	auto& player = playermanager.GetPlayer(p);
+	if (!player)
+		return badtick;
+
+	auto& ticks = player.backtrackinfo.ticks;
+	if (ticks.empty())
+		return badtick;
+
+	auto it = std::find(ticks.begin(), ticks.end(), simulation);
+
+	if (it == ticks.end())
+		return badtick;
+
+	return ticks[std::distance(ticks.begin(), it)];
 }
 
 Backtrack backtrack;

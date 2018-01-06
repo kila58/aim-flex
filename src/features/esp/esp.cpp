@@ -5,6 +5,8 @@
 #include "../settings/settings.hpp"
 #include "../playermanager/playermanager.hpp"
 
+#include "../aimbot/aimbot.hpp"
+
 unsigned long font;
 unsigned long font2;
 
@@ -56,6 +58,9 @@ bool ESP::CreateBox(C_BaseEntity* p, int& x, int& y, int& w, int& h)
 
 	Vector mins, maxs;
 	modelinfo->GetModelRenderBounds(model, mins, maxs);
+
+	if (p->IsDucked())
+		maxs.z -= 16.f;
 
 	int screenw, screeh;
 	engineclient->GetScreenSize(screenw, screeh);
@@ -145,41 +150,29 @@ void ESP::Invoke()
 				{
 					int addy = 0;
 				
-					//for (int i = 0; i < 3; i++)
-					for (int i = 0; i < 1; i++)
+					for (int i = 0; i < 2; i++)
 					{
-						/*
-						float thing;
+						matsystemsurface->SetTextPos(x + w + 3, y - 2 + addy);
 
 						if (i == 0)
-							thing = p->LowerBodyYaw();
-						else if (i == 1)
-							thing = player.resolverinfo.eye.y;
-						else if (i == 2)
 						{
-							float diff = p->LowerBodyYaw() - player.resolverinfo.eye.y;
-							diff = clamp(normalize(diff), -180.f, 180.f);
-
-							thing = std::abs(diff);
+							if (player.resolverinfo.fakerecord.first == REAL)
+								matsystemsurface->DrawPrintText(L"R", std::wcslen(L"R"));
+							else if (player.resolverinfo.fakerecord.first == FAKE)
+								matsystemsurface->DrawPrintText(L"F", std::wcslen(L"F"));
+							else if (player.resolverinfo.fakerecord.first == UNDETERMINED)
+								matsystemsurface->DrawPrintText(L"U", std::wcslen(L"U"));
 						}
+						else if (i == 1)
+						{
+							auto size = player.backtrackinfo.ticks.size();
 
-						wchar_t wname[128];
-						MultiByteToWideChar(CP_UTF8, 0, std::to_string((int)thing).c_str(), -1, wname, 128);
+							wchar_t wname[128];
+							MultiByteToWideChar(CP_UTF8, 0, std::to_string(size).c_str(), -1, wname, 128);
 
-						matsystemsurface->SetTextPos(x + w + 3, y - 2 + addy);
-						matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
-
-						matsystemsurface->GetTextSize(font, wname, tw, th);
-						*/
-
-						matsystemsurface->SetTextPos(x + w + 3, y - 2 + addy);
-
-						if (player.resolverinfo.fakerecord.first == REAL)
-							matsystemsurface->DrawPrintText(L"R", std::wcslen(L"R"));
-						else if (player.resolverinfo.fakerecord.first == FAKE)
-							matsystemsurface->DrawPrintText(L"F", std::wcslen(L"F"));
-						else if (player.resolverinfo.fakerecord.first == UNDETERMINED)
-							matsystemsurface->DrawPrintText(L"U", std::wcslen(L"U"));
+							matsystemsurface->SetTextPos(x + w + 3, y - 2 + addy);
+							matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
+						}
 
 						matsystemsurface->GetTextSize(font, wname, tw, th);
 						addy += (th / 2) + 2;

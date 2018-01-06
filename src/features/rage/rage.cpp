@@ -30,6 +30,78 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 		}
 
 		/*
+		Vector head = aimbot.GetHitbox(p, 0);
+		if (!head.IsZero() && aimbot.IsVisible(p, head))
+		{
+			aimbot.CalculateAngle(head, ang);
+		
+			return true;
+		}
+		*/
+
+		/*
+		Vector head = aimbot.GetHitbox(p, 0);
+		if (!head.IsZero() && !aimbot.IsVisible(p, head) && target.backtrackinfo.ticks.size() > 1)
+		{
+			auto& last = target.backtrackinfo.ticks.front();
+
+			for (auto& tick : target.backtrackinfo.ticks)
+			{
+				if (tick == last && aimbot.IsVisible(p, tick.head))
+				{
+					aimbot.CalculateAngle(last.head, ang);
+					backtrack.BacktrackToTick(cmd, last);
+
+					return true;
+				}
+
+				if (aimbot.IsVisible(p, tick.head))
+					break;
+			}
+		}
+		*/
+
+		/*
+		auto& sim = target.backtrackinfo.FindTick(p, p->GetSimulationTime());
+		//cvar->ConsoleColorPrintf("sim:" + std::to_string(p->GetSimulationTime()) + "\n");
+		auto& first = target.backtrackinfo.ticks.back();
+		auto& last = target.backtrackinfo.ticks.front();
+		if (first && last && sim && aimbot.IsVisible(p, sim.head))
+		{	
+			if (TIME_TO_TICKS(first.time - last.time) == 15)
+			{
+				cvar->ConsoleColorPrintf(std::to_string(TIME_TO_TICKS(first.time - last.time)) + "\n");
+
+				aimbot.CalculateAngle(sim.head, ang);
+				backtrack.BacktrackToTick(cmd, sim);
+
+				return true;
+			}
+		}
+		*/
+
+		//cmd->buttons &= ~IN_ATTACK;
+
+		//for (auto& tick : target.backtrackinfo.ticks)
+		//if (target.backtrackinfo.ticks.size() > 2)
+		//{
+		//	auto& last = target.backtrackinfo.FindTick(p, p->GetSimulationTime());
+			//auto& last = target.backtrackinfo.ticks.front();
+		//	auto& first = target.backtrackinfo.ticks.back();
+		//	if (last && first)
+		//	{
+		//		if (aimbot.IsVisible(p, last.head) && !aimbot.IsVisible(p, first.head))
+		//		{
+		//			aimbot.CalculateAngle(last.head, ang);
+		//			backtrack.BacktrackToTick(cmd, last);
+		//
+		//			return true;
+		//		}
+				//}
+		//	}
+		//}
+
+		/*
 		Hitboxes hitboxes;
 		if (aimbot.GetHitboxes(p, hitboxes))
 		{
@@ -65,6 +137,10 @@ void Rage::Invoke()
 		cmd->buttons |= IN_ATTACK;
 
 		aimbot.MovementFix();
+	}
+	else if (aimbot.CanShoot() && cmd->buttons & IN_ATTACK)
+	{
+		aimbot.NoRecoil();
 	}
 	else
 	{

@@ -3,7 +3,7 @@
 class IClientNetworkable
 {
 public:
-	ClientClass * GetClientClass()
+	ClientClass* GetClientClass()
 	{
 		return getvfunc<ClientClass*(__thiscall*)(void*)>(this, 2)(this);
 	}
@@ -15,6 +15,17 @@ public:
 
 class IClientRenderable
 {
+protected:
+	template <typename T>
+	T Get(uint offset)
+	{
+		return *(T*)(this + offset);
+	}
+	template <typename T>
+	void Set(const T& what, uint offset)
+	{
+		*(T*)(this + offset) = what;
+	}
 public:
 	const model_t* GetModel()
 	{
@@ -28,10 +39,21 @@ public:
 	{
 		return getvfunc<void(__thiscall*)(void*, Vector&, Vector&)>(this, 17)(this, mins, maxs);
 	}
+	// todo: change this from hardcoded
+	void SetBoneArrayForWrite(VMatrix* bones)
+	{
+		Set(bones, 0x2694);
+	}
+	// todo: change this from hardcoded
+	VMatrix* GetBoneArrayForWrite()
+	{
+		return Get<VMatrix*>(0x2694);
+	}
 };
 
 class C_BaseCombatWeapon;
 class IClientEntityList;
+class IPlayerAnimState;
 
 extern IClientEntityList* entitylist;
 extern CEngineClient* engineclient;
@@ -39,15 +61,34 @@ extern CEngineClient* engineclient;
 class C_BaseEntity
 {
 protected:
-	template <typename T>
-	T GetNetVar(const char* name)
-	{
-		int offset = netvars.Get(name, GetNetworkable()->GetClientClass()->m_pRecvTable);
-		return *(T*)(this + offset);
-	}
 	int GetOffset(const char* name)
 	{
 		return netvars.Get(name, GetNetworkable()->GetClientClass()->m_pRecvTable);
+	}
+	template <typename T>
+	T GetNetVar(const char* name)
+	{
+		return *(T*)(this + GetOffset(name));
+	}
+	template <typename T>
+	T Get(uint offset)
+	{
+		return *(T*)(this + offset);
+	}
+	template <typename T>
+	void Set(const T& what, uint offset)
+	{
+		*(T*)(this + offset) = what;
+	}
+	template <typename T, typename B>
+	void Set(const T& what, uint offset, uint size)
+	{
+		std::memcpy(this + offset, what, sizeof(B) * size);
+	}
+	template <typename T, typename B>
+	void Get(const T& what, uint offset, uint size)
+	{
+		std::memcpy(what, this + offset, sizeof(B) * size);
 	}
 public:
 	const unsigned long& GetRefEHandle()
@@ -69,6 +110,66 @@ public:
 	Vector& GetAbsOrigin()
 	{
 		return getvfunc<Vector&(__thiscall*)(void*)>(this, 10)(this);
+	}
+	Angle& GetAbsAngles()
+	{
+		return getvfunc<Angle&(__thiscall*)(void*)>(this, 11)(this);
+	}
+	void GetPoseParameters(float* poses)
+	{
+		//auto hdr = GetModelPtr()->studio;
+
+		Get<float*, float>(poses, GetOffset("m_flPoseParameter"), 24/*hdr->numlocalposeparameters*/);
+	}
+	CUtlVector<C_AnimationLayer>& GetAnimLayers()
+	{
+		return *Get<CUtlVector<C_AnimationLayer>*>(GetOffset("m_bSuppressAnimSounds") + 0x36);
+	}
+	bool IsDucked()
+	{
+		return GetNetVar<int>("m_fFlags") & IN_DUCK;
+	}
+	using SetAbsOriginType = void(__thiscall*)(C_BaseEntity*, const Vector&);
+	void SetAbsOrigin(const Vector& vec)
+	{
+		static SetAbsOriginType SetAbsOriginFn = nullptr;
+		if (!SetAbsOriginFn)
+			SetAbsOriginFn = reinterpret_cast<SetAbsOriginType>(SigScan("55 8B EC 83 E4 F8 51 53 56 57 8B F1", "client.dll"));
+
+		SetAbsOriginFn(this, vec);
+	}
+	using SetAbsAnglesType = void(__thiscall*)(C_BaseEntity*, const Angle&);
+	void SetAbsAngles(const Angle& ang)
+	{
+		static SetAbsAnglesType SetAbsAnglesFn = nullptr;
+		if (!SetAbsAnglesFn)
+			SetAbsAnglesFn = (SetAbsAnglesType)(SigScan("55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1", "client.dll"));
+
+		SetAbsAnglesFn(this, ang);
+	}
+	void SetPoseParameters(float* poses)
+	{
+		//auto hdr = GetModelPtr()->studio;
+
+		Set<float*, float>(poses, GetOffset("m_flPoseParameter"), 24/*hdr->numlocalposeparameters*/);
+	}
+	void SetAnimLayers(CUtlVector<C_AnimationLayer>& memes)
+	{
+		GetAnimLayers() = memes;
+	}
+	void StandardBlendingRules(CStudioHdr* hdr, Vector* pos, Quaternion* q, float time, int bonemask)
+	{
+ 		getvfunc<void(__thiscall*)(void*, CStudioHdr*, Vector*, Quaternion*, float, int)>(this, 200)(this, hdr, pos, q, time, bonemask);
+	}
+	void BuildTransformations(CStudioHdr* hdr, Vector* pos, Quaternion* q, const VMatrix& cameratransform, int bonemask, byte* computed)
+	{
+		ZeroMemory(computed, 0x100);
+
+		return getvfunc<void(__thiscall*)(void*, CStudioHdr*, Vector*, Quaternion*, const VMatrix&, int, byte*)>(this, 184)(this, hdr, pos, q, cameratransform, bonemask, computed);
+	}
+	CStudioHdr* GetModelPtr()
+	{
+		return Get<CStudioHdr*>(GetOffset("m_bSuppressAnimSounds") + 0x2);
 	}
 	bool IsDormant()
 	{
@@ -116,7 +217,7 @@ public:
 	}
 	void SetViewAngle(const Angle& ang)
 	{
-		*(Angle*)(this + GetOffset("deadflag") + 0x4) = ang;
+		Set<Angle>(ang, GetOffset("deadflag") + 0x4);
 	}
 	C_BaseCombatWeapon* GetWeapon()
 	{
@@ -130,14 +231,24 @@ public:
 	{
 		return GetNetVar<float>("m_flSimulationTime");
 	}
-	inline bool SetupBones(VMatrix* bones, float time = 0.f)
+	// todo: change this from hardcoded
+	inline ptr GetPVSFlag()
 	{
-		auto old = *(ptr*)(this + 0x270);
-		*(ptr*)(this + 0x270) = 0;
+		return Get<ptr>(0x270);
+	}
+	// todo: change this from hardcoded
+	inline void SetPVSFlag(ptr flag)
+	{
+		Set<ptr>(flag, 0x270);
+	}
+	inline bool SetupBones(VMatrix* bones, float time = 0.f, int _bones = MAXSTUDIOBONES, int _flag = BONE_USED_BY_HITBOX)
+	{
+		auto old = GetPVSFlag();
+		SetPVSFlag(0);
 
 		auto ret = GetRenderable()->SetupBones(bones, time);
 
-		*(ptr*)(this + 0x270) = old;
+		SetPVSFlag(old);
 
 		return ret;
 	}
@@ -179,6 +290,6 @@ public:
 	}
 	void SetEyeAngle(const Angle& ang)
 	{
-		*(Angle*)(this + GetOffset("m_angEyeAngles[0]")) = ang;
+		Set(ang, GetOffset("m_angEyeAngles[0]"));
 	}
 };

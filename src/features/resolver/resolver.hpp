@@ -16,8 +16,11 @@ typedef std::pair<FakeType, std::deque<float>> FakeRecord;
 
 struct ResolverInfo
 {
+	ResolverInfo() { fakerecord.first = UNDETERMINED; }
+
 	FakeRecord fakerecord;
 	Angle eye;
+	Angle absang;
 	float lby = 0.f;
 };
 

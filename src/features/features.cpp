@@ -9,13 +9,13 @@ void Features::Init()
 {
 	auto& features = BaseFeature::GetFeatures();
 
-	for (auto& feature : features)
-		feature->Init();
-
 	std::sort(features.begin(), features.end(), [](BaseFeature* a, BaseFeature* b)
 	{
 		return a->GetPriority() < b->GetPriority();
 	});
+
+	for (auto& feature : features)
+		feature->Init();
 }
 
 void Features::Invoke(HookType type)

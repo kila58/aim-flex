@@ -59,10 +59,18 @@ void PlayerManager::Invoke()
 			if (!engineclient->GetPlayerInfo(i, &info))
 				continue;
 
-			// todo: maybe use Distance2DSqr? (it will produce massive numbers, needs benchmark)
 			if (!PlayerExists(info.userID))
-				players.emplace_back(i, info.userID, p, lporigin.Distance(p->GetAbsOrigin()));
+				players.emplace_back(i, info.userID, p);
 		}
+	}
+
+	// todo: maybe use Distance2DSqr? (it will produce massive numbers, needs benchmark)
+	for (auto& player : players)
+	{
+		player.compare = lporigin.Distance(player.ent->GetAbsOrigin());
+		player.animationlayers = player.ent->GetAnimLayers();
+		player.ent->GetPoseParameters(player.poses);
+		player.resolverinfo.absang = player.ent->GetAbsAngles();
 	}
 
 	std::sort(players.begin(), players.end(), [](const Player& a, const Player& b)

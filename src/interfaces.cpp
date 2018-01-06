@@ -37,13 +37,13 @@ bool Interfaces::Init()
 	if (!(eventmanager = GetInterface<IGameEventListener2*>("engine.dll", "GAMEEVENTSMANAGER002")))
 		return false;
 
-	if (!(clientmode = **(ClientModeShared***)(getvfunc(client, 10) + 5)))
+	if (!(clientmode = **(ClientModeShared***)(getvfunc(client, 10) + 0x5)))
 		return false;
 
-	if (!(globals = **(CGlobalVarsBase***)(getvfunc(client, 11) + 10)))
+	if (!(globals = **(CGlobalVarsBase***)(getvfunc(client, 11) + 0xA)))
 		return false;
 
-	if (!(cmdinput = *(CInput**)(getvfunc(client, 15) + 1)))
+	if (!(cmdinput = *(CInput**)(getvfunc(client, 15) + 0x1)))
 		return false;
 
 	return true;

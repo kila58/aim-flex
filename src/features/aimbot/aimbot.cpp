@@ -5,6 +5,7 @@
 #include "../rage/rage.hpp"
 #include "../legit/legit.hpp"
 #include "../prediction/prediction.hpp"
+#include "../playermanager/playermanager.hpp"
 
 void Aimbot::Init()
 {
@@ -28,20 +29,108 @@ void Aimbot::Invoke()
 	Clamp();
 }
 
-static Vector empty(0, 0, 0);
-Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
+bool Aimbot::SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones)
 {
-	const model_t* model = p->GetModel();
-	if (!model)
-		return empty;
+	IClientRenderable* renderable = p->GetRenderable();
+	if (!renderable)
+		return false;
 
-	studiohdr_t* hdr = modelinfo->GetStudiomodel(model);
+	CStudioHdr* hdr = p->GetModelPtr();
 	if (!hdr)
-		return empty;
+		return false;
 
-	VMatrix bones[128];
-	if (!p->SetupBones(bones, globals->curtime))
-		return empty;
+	VMatrix* backup_matrix = renderable->GetBoneArrayForWrite();
+	if (!backup_matrix)
+		return false;
+
+	auto& player = playermanager.GetPlayer(p);
+	if (!player)
+		return false;
+
+	auto old = p->GetPVSFlag();
+	p->SetPVSFlag(0);
+
+	Vector origin = p->GetOrigin();
+	Angle angles = player.resolverinfo.absang;
+
+	Vector backup_absorigin = p->GetAbsOrigin();
+	Angle backup_absangles = p->GetAbsAngles();
+
+	float backup_poses[24];
+	p->GetPoseParameters(backup_poses);
+
+	auto backup_layers = p->GetAnimLayers();
+
+	VMatrix cameratransform;
+	AngleMatrix(backup_absangles, origin, cameratransform);
+
+	float* poses_uninterp = player.poses;
+	auto layers_uninterp = player.animationlayers;
+
+	p->SetAbsOrigin(origin);
+	p->SetAbsAngles(angles);
+	p->SetPoseParameters(poses_uninterp);
+	p->SetAnimLayers(layers_uninterp);
+
+	Vector pos[128];
+	Quaternion q[128];
+
+	p->StandardBlendingRules(hdr, pos, q, predict.pred_time, bonemask | 0x80000);
+
+	renderable->SetBoneArrayForWrite(bones);
+
+	byte computed[0x100];
+	p->BuildTransformations(hdr, pos, q, cameratransform, bonemask | 0x80000, computed);
+
+	renderable->SetBoneArrayForWrite(backup_matrix);
+
+	p->SetAbsOrigin(backup_absorigin);
+	p->SetAbsAngles(backup_absangles);
+	p->SetPoseParameters(backup_poses);
+	p->SetAnimLayers(backup_layers);
+
+	p->SetPVSFlag(old);
+
+	return true;
+}
+
+static Vector empty(0, 0, 0);
+Vector Aimbot::GetHitbox(C_BaseEntity* p, int index, bool interpolated)
+{
+	static const model_t* model;
+	static studiohdr_t* hdr;
+	static VMatrix bones_interp[128];
+	static VMatrix bones_uninterp[128];
+	static bool setupbones_interp = false;
+	static bool setupbones_uninterp = false;
+	if (lastplayer != p)
+	{
+		model = p->GetModel();
+		if (!model)
+			return empty;
+
+		hdr = p->GetModelPtr()->studio;
+		if (!hdr)
+			return empty;
+
+		setupbones_interp = false;
+		setupbones_uninterp = false;
+	}
+
+	if (interpolated && !setupbones_interp)
+	{
+		if (!p->SetupBones(bones_interp, globals->curtime))
+			return empty;
+
+		setupbones_interp = true;
+	}
+	else if (!setupbones_uninterp)
+	{
+		if (!SetupBones(p, BONE_USED_BY_HITBOX, bones_uninterp))
+			return empty;
+
+		setupbones_uninterp = true;
+	}
 
 	mstudiobbox_t* hitbox = hdr->GetHitbox(index, 0);
 	if (!hitbox || hitbox->bone > 128 || hitbox->bone < 0 || hitbox->group > 7)
@@ -50,8 +139,19 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index)
 	float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
 
 	Vector min, max;
-	VectorTransform(hitbox->bbmin - mod, bones[hitbox->bone], min);
-	VectorTransform(hitbox->bbmax + mod, bones[hitbox->bone], max);
+
+	if (interpolated)
+	{
+		VectorTransform(hitbox->bbmin - mod, bones_interp[hitbox->bone], min);
+		VectorTransform(hitbox->bbmax + mod, bones_interp[hitbox->bone], max);
+	}
+	else
+	{
+		VectorTransform(hitbox->bbmin - mod, bones_uninterp[hitbox->bone], min);
+		VectorTransform(hitbox->bbmax + mod, bones_uninterp[hitbox->bone], max);
+	}
+
+	lastplayer = p;
 
 	return (min + max) * 0.5f;
 }

@@ -1,9 +1,14 @@
 #pragma once
 
+#include <array>
+
 #include "../features.hpp"
 
 #include "../backtrack/backtrack.hpp"
 #include "../resolver/resolver.hpp"
+
+#include "../../sdk/IPlayerAnimState.hpp"
+#include "../../sdk/CUtlVector.hpp"
 
 class C_BaseEntity;
 
@@ -11,7 +16,7 @@ struct Player
 {
 public:
 	Player() : index(-1) {}
-	Player(int index, int userid, C_BaseEntity* ent, float compare) : index(index), userid(userid), ent(ent), compare(compare) {}
+	Player(int index, int userid, C_BaseEntity* ent) : index(index), userid(userid), ent(ent) {}
 
 	friend bool operator==(const Player& first, int userid) { return first.userid == userid; }
 	friend bool operator==(int userid, const Player& second) { return userid == second.userid; }
@@ -24,6 +29,8 @@ public:
 	float compare;
 	BacktrackInfo backtrackinfo;
 	ResolverInfo resolverinfo;
+	CUtlVector<C_AnimationLayer> animationlayers;
+	float poses[24];
 };
 
 class PlayerManager : public BaseFeature

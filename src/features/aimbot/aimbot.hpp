@@ -33,8 +33,9 @@ public:
 	Aimbot() : BaseFeature(CREATEMOVE, 3u) {}
 
 	void Init();
+	bool SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones);
 	void Invoke();
-	Vector GetHitbox(C_BaseEntity* p, int index);
+	Vector GetHitbox(C_BaseEntity* p, int index, bool interpolated = true);
 	Vector GetBodyAim(C_BaseEntity* p);
 	bool GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes);
 	void CalculateAngle(const Vector& pos, Angle& out);
@@ -48,3 +49,4 @@ public:
 };
 
 extern Aimbot aimbot;
+extern bool HandleBoneSeteupmem(C_BaseEntity * target, Angle ang, int boneMask, VMatrix* boneOut);

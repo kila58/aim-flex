@@ -13,8 +13,13 @@ void __fastcall Paint(void* instance, void*, int mode)
 {
 	original_function(instance, mode);
 
-	static auto StartDrawing = (DrawingType)(SigScan("55 8B EC 83 E4 C0 83 EC 38", "vguimatsurface.dll"));
-	static auto FinishDrawing = (DrawingType)(SigScan("8B 0D ? ? ? ? 56 C6 05", "vguimatsurface.dll"));
+	static DrawingType StartDrawing = nullptr;
+	if (!StartDrawing)
+		StartDrawing = (DrawingType)(SigScan("55 8B EC 83 E4 C0 83 EC 38", "vguimatsurface.dll"));
+
+	static DrawingType FinishDrawing = nullptr;
+	if (!FinishDrawing)
+		FinishDrawing = (DrawingType)(SigScan("8B 0D ? ? ? ? 56 C6 05", "vguimatsurface.dll"));
 
 	if (mode & PAINT_UIPANELS)
 	{
