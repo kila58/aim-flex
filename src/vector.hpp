@@ -354,85 +354,39 @@ inline void VectorAngles(const Vector& vec, Angle& angles)
 	angles.y = Rad2Deg(atan2(vec.y, vec.x));
 }
 
-#define SMALL_NUM   0.00000001 // anything that avoids division overflow
-#define dot(u,v)   ((u).x * (v).x + (u).y * (v).y + (u).z * (v).z)
-#define norm(v)    sqrt(dot(v,v))  // norm = length of  vector
-#define absolute(x)     ((x) >= 0 ? (x) : -(x))   //  absolute value
-
-// todo: replace this with sphere intersection and add regular obb intersection
-inline float dist_Segment_to_Segment(Vector s1, Vector s2, Vector k1, Vector k2)
+inline bool DoesIntersectCapsule(Vector start, Vector dir, Vector min, Vector max, float radius)
 {
-	Vector   u = s2 - s1;
-	Vector   v = k2 - k1;
-	Vector   w = s1 - k1;
-	float    a = dot(u, u);
-	float    b = dot(u, v);
-	float    c = dot(v, v);
-	float    d = dot(u, w);
-	float    e = dot(v, w);
-	float    D = a * c - b * b;
-	float    sc, sN, sD = D;
-	float    tc, tN, tD = D;
+	Vector delta = (max - min);
+	delta.NormalizeInPlace();
 
-	if (D < SMALL_NUM) {
-		sN = 0.0;
-		sD = 1.0;
-		tN = e;
-		tD = c;
-	}
-	else {
-		sN = (b*e - c * d);
-		tN = (a*e - b * d);
-		if (sN < 0.0) {
-			sN = 0.0;
-			tN = e;
-			tD = c;
-		}
-		else if (sN > sD) {
-			sN = sD;
-			tN = e + b;
-			tD = c;
-		}
-	}
+	std::deque<Vector> spheres;
 
-	if (tN < 0.0) {
-		tN = 0.0;
+	spheres.push_back(min);
 
-		if (-d < 0.0)
-			sN = 0.0;
-		else if (-d > a)
-			sN = sD;
-		else {
-			sN = -d;
-			sD = a;
-		}
-	}
-	else if (tN > tD) {
-		tN = tD;
+	for (int i = 1; i < std::floor(min.Distance(max)); i++)
+		spheres.push_back(min + delta * i);
 
-		if ((-d + b) < 0.0)
-			sN = 0;
-		else if ((-d + b) > a)
-			sN = sD;
-		else {
-			sN = (-d + b);
-			sD = a;
-		}
+	spheres.push_back(max);
+
+	for (auto& s : spheres)
+	{
+		Vector end = start + (dir * 8192);
+
+		Vector line_delta = end - start;
+		Vector center_delta = s - start;
+
+		float c1 = center_delta.Dot(line_delta);
+		float c2 = line_delta.Dot(line_delta);
+		float b = c1 / c2;
+
+		Vector pb = start + line_delta * b;
+
+		Vector diff = s - pb;
+
+		float distance = sqrt(diff.Dot(diff));
+
+		return distance <= radius && distance > 0;
 	}
 
-	sc = (absolute(sN) < SMALL_NUM ? 0.0f : sN / sD);
-	tc = (absolute(tN) < SMALL_NUM ? 0.0f : tN / tD);
-
-	Vector  dP = w + (u * sc) - (v * tc);
-
-	return norm(dP);
-}
-
-// https://www.unknowncheats.me/forum/counterstrike-global-offensive/161306-efficient-ray-capsule-intersection-algorithm.html
-inline bool DoesIntersectCapsule(Vector eyePos, Vector myDir, Vector capsuleA, Vector capsuleB, float radius)
-{
-	Vector end = eyePos + (myDir * 8192);
-	auto dist = dist_Segment_to_Segment(eyePos, end, capsuleA, capsuleB);
-
-	return dist < radius;
+	return false;
 }

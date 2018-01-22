@@ -18,7 +18,7 @@ bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 	{
 		C_BaseEntity* p = target.ent;
 
-		/*for (auto& tick : target.backtrackinfo.ticks)
+		for (auto& tick : target.backtrackinfo.ticks)
 		{
 			if (aimbot.IsVisible(p, tick.hitboxinfo.head))
 			{
@@ -29,7 +29,7 @@ bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 
 				return true;
 			}
-		}*/
+		}
 
 		/*
 		Vector head = aimbot.GetHitbox(p, 0);
@@ -105,7 +105,7 @@ bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 		//	}
 		//}
 
-		Hitboxes hitboxes;
+		/*Hitboxes hitboxes;
 		if (aimbot.GetHitboxes(p, hitboxes))
 		{
 			for (auto& hitbox : hitboxes)
@@ -128,7 +128,7 @@ bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 					return true;
 				}
 			}
-		}
+		}*/
 	}
 
 	return false;

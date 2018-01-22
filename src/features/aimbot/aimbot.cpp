@@ -167,17 +167,15 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index, bool interpolated)
 	if (!hitbox || hitbox->bone > 128 || hitbox->bone < 0 || hitbox->group > 7)
 		return empty;
 
-	float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
-
 	if (interpolated)
 	{
-		VectorTransform(hitbox->bbmin - mod, bones_interp[hitbox->bone], mins);
-		VectorTransform(hitbox->bbmax + mod, bones_interp[hitbox->bone], maxs);
+		VectorTransform(hitbox->bbmin, bones_interp[hitbox->bone], mins);
+		VectorTransform(hitbox->bbmax, bones_interp[hitbox->bone], maxs);
 	}
 	else
 	{
-		VectorTransform(hitbox->bbmin - mod, bones_uninterp[hitbox->bone], mins);
-		VectorTransform(hitbox->bbmax + mod, bones_uninterp[hitbox->bone], maxs);
+		VectorTransform(hitbox->bbmin, bones_uninterp[hitbox->bone], mins);
+		VectorTransform(hitbox->bbmax, bones_uninterp[hitbox->bone], maxs);
 	}
 
 	lastplayer = p;
