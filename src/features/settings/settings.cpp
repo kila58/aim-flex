@@ -10,7 +10,10 @@ Settings::Settings() : BaseFeature(PAINT)
 		{"esp_enabled", true},
 		{"esp_antiaiminfo", true},
 		{"legit_enabled", false},
-		{"rage_enabled", true}
+		{"rage_enabled", true},
+		// todo: we should be able to fit multiple values inside an object, add to Get
+		{"rage_hitchance", true},
+		{"rage_hitchance_value", 100.f},
 	};
 }
 

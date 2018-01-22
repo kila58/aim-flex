@@ -11,8 +11,17 @@ FireEventClientSideType original_function;
 
 void __fastcall FireEventClientSide(void* instance, void*, IGameEvent* event)
 {
-	if (event->GetName() == "player_death")
+	std::string name = event->GetName();
+
+	if (name == "player_death")
 		playermanager.RemovePlayer(event->GetInt("userid"));
+	else if (name == "player_connect")
+		playermanager.AddDormantPlayer(event->GetInt("userid"));
+	else if (name == "player_disconnect")
+	{
+		playermanager.RemovePlayer(event->GetInt("userid"));
+		playermanager.RemoveDormantPlayer(event->GetInt("userid"));
+	}
 
 	original_function(instance, event);
 }

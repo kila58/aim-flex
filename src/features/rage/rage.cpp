@@ -12,24 +12,24 @@ void Rage::Init()
 
 }
 
-bool FindTarget(CUserCmd* cmd, Angle& ang)
+bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 {
 	for (auto& target : playermanager.GetPlayers())
 	{
 		C_BaseEntity* p = target.ent;
 
-		/*
 		for (auto& tick : target.backtrackinfo.ticks)
 		{
-			if (aimbot.IsVisible(p, tick.head))
+			if (aimbot.IsVisible(p, tick.hitboxinfo.head))
 			{
-				aimbot.CalculateAngle(tick.head, ang);
-				backtrack.BacktrackToTick(cmd, tick);
+				aimbot.CalculateAngle(tick.hitboxinfo.head, ang);
+
+				aimbot.target = p;
+				aimbot.tick = &tick;
 
 				return true;
 			}
 		}
-		*/
 
 		/*
 		Vector head = aimbot.GetHitbox(p, 0);
@@ -40,7 +40,8 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 			return true;
 		}
 		*/
-
+		
+		/*
 		Vector head = aimbot.GetHitbox(p, 0);
 		if (!head.IsZero() && !aimbot.IsVisible(p, head) && target.backtrackinfo.ticks.size() > 1)
 		{
@@ -51,7 +52,9 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 				if (tick == last && aimbot.IsVisible(p, tick.head))
 				{
 					aimbot.CalculateAngle(last.head, ang);
-					backtrack.BacktrackToTick(cmd, last);
+
+					aimbot.target = p;
+					aimbot.tick = &tick;
 
 					return true;
 				}
@@ -60,6 +63,7 @@ bool FindTarget(CUserCmd* cmd, Angle& ang)
 					break;
 			}
 		}
+		*/
 
 		/*
 		auto& sim = target.backtrackinfo.FindTick(p, p->GetSimulationTime());
@@ -131,12 +135,19 @@ void Rage::Invoke()
 	Angle ang;
 	if (aimbot.CanShoot() && FindTarget(cmd, ang))
 	{
-		cmd->viewangles = ang;
-		aimbot.NoRecoil();
+		//if (false)
+		if (aimbot.HitChance(aimbot.target, ang))
+		{
+			backtrack.BacktrackToTick(cmd, *aimbot.tick);
 
-		cmd->buttons |= IN_ATTACK;
+			cmd->viewangles = ang;
+			aimbot.NoRecoil();
 
-		aimbot.MovementFix();
+			if (aimbot.CanShoot())
+				cmd->buttons |= IN_ATTACK;
+
+			aimbot.MovementFix();
+		}
 	}
 	else if (aimbot.CanShoot() && cmd->buttons & IN_ATTACK)
 	{
@@ -144,7 +155,7 @@ void Rage::Invoke()
 	}
 	else
 	{
-		//antiaim.Invoke();
+		antiaim.Invoke();
 
 		aimbot.MovementFix();
 	}

@@ -215,7 +215,7 @@ void ESP::Invoke()
 
 			for (auto& tick : p.backtrackinfo.ticks)
 			{
-				Vector center = tick.head;
+				Vector center = tick.hitboxinfo.head;
 				Vector screen;
 
 				if (WorldToScreen(center, screen) && prev)

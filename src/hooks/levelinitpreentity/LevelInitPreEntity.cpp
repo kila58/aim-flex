@@ -13,6 +13,9 @@ void __fastcall LevelInitPreEntity(void* instance, void*, const char* newmap)
 {
 	playermanager.ClearPlayers();
 
+	// joining new map or server, populate when ready
+	playermanager.SetPopulated(false);
+
 	original_function(instance, newmap);
 }
 

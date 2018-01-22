@@ -4,6 +4,9 @@
 
 #include "../backtrack/backtrack.hpp"
 
+Player::Player(int index, int userid, C_BaseEntity* ent)
+	: index(index), userid(userid), ent(ent), dormantplayer(playermanager.GetDormantPlayer(userid)) {};
+
 bool InvalidPlayer(int i, C_BaseEntity* p, C_BaseEntity* lp)
 {
 	if (!p)
@@ -41,6 +44,9 @@ void PlayerManager::Invoke()
 	if (stage != FRAME_NET_UPDATE_POSTDATAUPDATE_START)
 		return;
 
+	if (!populated)
+		PopulateDormantPlayers();
+
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 	Vector lporigin = lp->GetAbsOrigin();
 
@@ -60,7 +66,9 @@ void PlayerManager::Invoke()
 				continue;
 
 			if (!PlayerExists(info.userID))
+			{
 				players.emplace_back(i, info.userID, p);
+			}
 		}
 	}
 
@@ -68,9 +76,8 @@ void PlayerManager::Invoke()
 	for (auto& player : players)
 	{
 		player.compare = lporigin.Distance(player.ent->GetAbsOrigin());
-		player.animationlayers = player.ent->GetAnimLayers();
-		player.ent->GetPoseParameters(player.poses);
 		player.resolverinfo.absang = player.ent->GetAbsAngles();
+		player.resolverinfo.eye = player.ent->GetEyeAngle();
 	}
 
 	std::sort(players.begin(), players.end(), [](const Player& a, const Player& b)
@@ -113,6 +120,26 @@ Player& PlayerManager::GetPlayer(int uid)
 	return players[std::distance(players.begin(), it)];
 }
 
+DormantPlayer* PlayerManager::GetDormantPlayer(int uid)
+{
+	if (dormantplayers.empty())
+		return nullptr;
+
+	auto it = std::find(dormantplayers.begin(), dormantplayers.end(), uid);
+
+	if (it == dormantplayers.end())
+		return nullptr;
+
+	return &dormantplayers[std::distance(dormantplayers.begin(), it)];
+}
+
+bool PlayerManager::DormantPlayerExists(int uid)
+{
+	auto it = std::find(dormantplayers.begin(), dormantplayers.end(), uid);
+
+	return (it != dormantplayers.end());
+}
+
 Player& PlayerManager::GetPlayer(C_BaseEntity* player)
 {
 	if (players.empty())
@@ -133,6 +160,61 @@ Player& PlayerManager::GetPlayer(C_BaseEntity* player)
 void PlayerManager::ClearPlayers()
 {
 	players.clear();
+	dormantplayers.clear();
+}
+
+void PlayerManager::AddDormantPlayer(int uid)
+{
+	if (!DormantPlayerExists(uid))
+		dormantplayers.emplace_back(uid);
+}
+
+void PlayerManager::RemoveDormantPlayer(int uid)
+{
+	std::experimental::erase_if(dormantplayers, [&uid](const DormantPlayer& ply)
+	{
+		return ply.userid == uid;
+	});
+}
+
+void PlayerManager::ResetDormantPlayer(int uid)
+{
+	//auto dormantplayer = GetDormantPlayer(uid);
+	//if (dormantplayer && dormantplayer->animstate)
+	//	animations.ResetAnimationState(dormantplayer->animstate);
+}
+
+bool InvalidDormantPlayer(int i, C_BaseEntity* p, player_info_t& info)
+{
+	if (!p)
+		return true;
+
+	if (!engineclient->GetPlayerInfo(i, &info))
+		return true;
+
+	if (info.ishltv)
+		return true;
+
+	return false;
+}
+
+void PlayerManager::PopulateDormantPlayers()
+{
+	for (int i = 1; i <= globals->maxClients; i++)
+	{
+		auto p = entitylist->GetClientEntity(i);
+
+		static player_info_t info;
+		if (!InvalidDormantPlayer(i, p, info))
+			AddDormantPlayer(info.userID);
+	}
+
+	SetPopulated(true);
+}
+
+void PlayerManager::SetPopulated(bool setpopulated)
+{
+	populated = setpopulated;
 }
 
 void PlayerManager::Destroy()

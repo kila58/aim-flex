@@ -14,3 +14,5 @@ IGameEventListener2* eventmanager;
 ClientModeShared* clientmode;
 CGlobalVarsBase* globals;
 CInput* cmdinput;
+CClientState* cl;
+IMemAlloc* g_pMemAlloc;

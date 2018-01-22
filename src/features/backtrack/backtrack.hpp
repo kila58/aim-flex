@@ -1,26 +1,30 @@
 #pragma once
 
+#include "../../aim-flex.hpp"
+
 #include "../features.hpp"
 
-#include "../../angle.hpp"
-#include "../../vector.hpp"
-
-class CUserCmd;
-class C_BaseEntity;
+struct HitboxInfo
+{
+	Vector head;
+	Vector mins;
+	Vector maxs;
+	float radius;
+};
 
 struct Tick
 {
 	Tick() {}
-	Tick(float time, float curtime, Vector head, int tickcount) : time(time), curtime(curtime), head(head), tickcount(tickcount) {}
+	Tick(float time, HitboxInfo hitboxinfo)
+		: time(time), hitboxinfo(hitboxinfo), tickcount(globals->tickcount) {}
 
 	friend bool operator==(const Tick& first, const Tick& second) { return first.time == second.time; }
 	friend bool operator==(const Tick& first, float sim) { return first.time == sim; }
-	operator bool() const { return curtime != 0.f; }
+	operator bool() const { return time != 0.f; }
 
-	float curtime = 0.f;
-	float time;
+	float time = 0.f;
 	int tickcount;
-	Vector head;
+	HitboxInfo hitboxinfo;
 };
 
 class BacktrackInfo
@@ -29,6 +33,15 @@ public:
 	std::deque<Tick> ticks;
 
 	Tick& FindTick(C_BaseEntity* p, float simulation);
+};
+
+class Animations
+{
+public:
+	void CreateAnimationState(CCSGOPlayerAnimState* state, C_BaseEntity* player);
+	void UpdateAnimationState(CCSGOPlayerAnimState* state, Angle ang);
+	void UpdateServerAnimations();
+	void PVSFix();
 };
 
 class Backtrack : public BaseFeature
@@ -45,3 +58,4 @@ public:
 };
 
 extern Backtrack backtrack;
+extern Animations animations;

@@ -4,6 +4,7 @@
 
 #include <functional>
 
+// note: std::function uses fat memory
 using FunctionType = std::function<void()>;
 
 class Input : public BaseFeature

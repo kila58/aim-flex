@@ -8,6 +8,8 @@
 class C_BaseEntity;
 class CUserCmd;
 class C_BaseCombatWeapon;
+struct mstudiobbox_t;
+struct Tick;
 
 struct Hitbox
 {
@@ -29,24 +31,35 @@ private:
 	Angle before;
 	CUserCmd* cmd;
 	C_BaseCombatWeapon* weapon;
+	mstudiobbox_t* hitbox;
+	VMatrix bones_interp[128];
+	alignas(16) VMatrix bones_uninterp[128];
+	Vector mins;
+	Vector maxs;
 public:
 	Aimbot() : BaseFeature(CREATEMOVE, 5u) {}
 
 	void Init();
 	bool SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones);
+	bool HitChance(C_BaseEntity* target, const Angle& ang);
 	void Invoke();
 	Vector GetHitbox(C_BaseEntity* p, int index, bool interpolated = true);
+	float GetRadius();
+	void GetMatrix(bool interpolated, VMatrix* matrix);
+	void GetHitboxBounds(Vector& mins, Vector& maxs);
 	Vector GetBodyAim(C_BaseEntity* p);
 	bool GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes);
 	void CalculateAngle(const Vector& pos, Angle& out);
-	bool IsVisible(C_BaseEntity* p, const Vector& pos);
+	bool IsVisible(C_BaseEntity* p, const Vector& pos, int tracetype = 0, bool checkfraction = true);
 	void MovementFix();
 	bool CanShoot();
 	void NoRecoil();
 	void Clamp();
 	void End();
 	void Destroy();
+
+	C_BaseEntity* target;
+	Tick* tick;
 };
 
 extern Aimbot aimbot;
-extern bool HandleBoneSeteupmem(C_BaseEntity * target, Angle ang, int boneMask, VMatrix* boneOut);

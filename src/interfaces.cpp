@@ -46,6 +46,12 @@ bool Interfaces::Init()
 	if (!(cmdinput = *(CInput**)(getvfunc(client, 15) + 0x1)))
 		return false;
 
+	if (!(cl = *(CClientState**)(getvfunc(engineclient, 12) + 0x10)))
+		return false;
+
+	if (!(g_pMemAlloc = *(IMemAlloc**)GetProcAddress(GetModuleHandleA("tier0.dll"), "g_pMemAlloc")))
+		return false;
+
 	return true;
 }
 
@@ -60,7 +66,7 @@ public:
 };
 
 template<typename T>
-T Interfaces::GetInterface(const char* module, const std::string& name)
+T Interfaces::GetInterface(const char* module, const std::string_view& name)
 {
 	static ptr CreateInterface = (ptr)GetProcAddress(GetModuleHandle(module), "CreateInterface");
 

@@ -6,6 +6,7 @@
 #include "../legit/legit.hpp"
 #include "../prediction/prediction.hpp"
 #include "../playermanager/playermanager.hpp"
+#include "../settings/settings.hpp"
 
 void Aimbot::Init()
 {
@@ -44,11 +45,8 @@ bool Aimbot::SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones)
 		return false;
 
 	auto& player = playermanager.GetPlayer(p);
-	if (!player)
+	if (!player || !player.dormantplayer->animstate)
 		return false;
-
-	auto old = p->GetPVSFlag();
-	p->SetPVSFlag(0);
 
 	Vector origin = p->GetOrigin();
 	Angle angles = player.resolverinfo.absang;
@@ -56,15 +54,13 @@ bool Aimbot::SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones)
 	Vector backup_absorigin = p->GetAbsOrigin();
 	Angle backup_absangles = p->GetAbsAngles();
 
-	float backup_poses[24];
-	p->GetPoseParameters(backup_poses);
-
+	auto backup_poses = p->GetPoseParameters();
 	auto backup_layers = p->GetAnimLayers();
 
-	VMatrix cameratransform;
+	alignas(16) VMatrix cameratransform;
 	AngleMatrix(backup_absangles, origin, cameratransform);
 
-	float* poses_uninterp = player.poses;
+	auto poses_uninterp = player.poses;
 	auto layers_uninterp = player.animationlayers;
 
 	p->SetAbsOrigin(origin);
@@ -75,11 +71,11 @@ bool Aimbot::SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones)
 	Vector pos[128];
 	Quaternion q[128];
 
-	p->StandardBlendingRules(hdr, pos, q, predict.pred_time, bonemask | 0x80000);
+	p->StandardBlendingRules(hdr, pos, q, globals->curtime, bonemask | 0x80000);
 
 	renderable->SetBoneArrayForWrite(bones);
 
-	byte computed[0x100];
+	byte computed[0x100] = {};
 	p->BuildTransformations(hdr, pos, q, cameratransform, bonemask | 0x80000, computed);
 
 	renderable->SetBoneArrayForWrite(backup_matrix);
@@ -89,9 +85,46 @@ bool Aimbot::SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones)
 	p->SetPoseParameters(backup_poses);
 	p->SetAnimLayers(backup_layers);
 
-	p->SetPVSFlag(old);
-
 	return true;
+}
+
+bool Aimbot::HitChance(C_BaseEntity* target, const Angle& ang)
+{
+	Vector forward, right, up;
+	AngleVectors(ang, forward, right, up);
+
+	int max = 256;
+	int hits = 0;
+	int min = (int)(max * (settings.Get<float>("rage_hitchance_value") / 100.f));
+
+	lp->GetWeapon()->UpdateAccuracyPenalty();
+
+	for (int i = 0; i < max; i++)
+	{
+		RandomSeed(i + 1);
+
+		float inaccuracy = RandomFloat(0.f, 1.f) * weapon->GetInaccuracy();
+		float spread = RandomFloat(0.f, 1.f) * weapon->GetSpread();
+
+		float pi1 = RandomFloat(0.f, 2.f * pi);
+		float pi2 = RandomFloat(0.f, 2.f * pi);
+
+		float spreadx = cos(pi1) * inaccuracy + cos(pi1) * spread;
+		float spready = sin(pi2) * inaccuracy + sin(pi2) * spread;
+
+		Vector dir = forward + (right * -spreadx) + (up * -spready);
+
+		if (DoesIntersectCapsule(lpeyepos, dir, tick->hitboxinfo.mins, tick->hitboxinfo.maxs, tick->hitboxinfo.radius))
+			hits++;
+
+		if (hits >= min)
+			return true;
+
+		if (((max - i) + hits) < min)
+			break;
+	}
+
+	return false;
 }
 
 static Vector empty(0, 0, 0);
@@ -99,8 +132,6 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index, bool interpolated)
 {
 	static const model_t* model;
 	static studiohdr_t* hdr;
-	static VMatrix bones_interp[128];
-	static VMatrix bones_uninterp[128];
 	static bool setupbones_interp = false;
 	static bool setupbones_uninterp = false;
 	if (lastplayer != p)
@@ -132,28 +163,45 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index, bool interpolated)
 		setupbones_uninterp = true;
 	}
 
-	mstudiobbox_t* hitbox = hdr->GetHitbox(index, 0);
+	hitbox = hdr->GetHitbox(index, 0);
 	if (!hitbox || hitbox->bone > 128 || hitbox->bone < 0 || hitbox->group > 7)
 		return empty;
 
 	float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
 
-	Vector min, max;
-
 	if (interpolated)
 	{
-		VectorTransform(hitbox->bbmin - mod, bones_interp[hitbox->bone], min);
-		VectorTransform(hitbox->bbmax + mod, bones_interp[hitbox->bone], max);
+		VectorTransform(hitbox->bbmin - mod, bones_interp[hitbox->bone], mins);
+		VectorTransform(hitbox->bbmax + mod, bones_interp[hitbox->bone], maxs);
 	}
 	else
 	{
-		VectorTransform(hitbox->bbmin - mod, bones_uninterp[hitbox->bone], min);
-		VectorTransform(hitbox->bbmax + mod, bones_uninterp[hitbox->bone], max);
+		VectorTransform(hitbox->bbmin - mod, bones_uninterp[hitbox->bone], mins);
+		VectorTransform(hitbox->bbmax + mod, bones_uninterp[hitbox->bone], maxs);
 	}
 
 	lastplayer = p;
 
-	return (min + max) * 0.5f;
+	return (mins + maxs) * 0.5f;
+}
+
+void Aimbot::GetMatrix(bool interpolated, VMatrix* matrix)
+{
+	if (!hitbox)
+		return;
+
+	matrix = interpolated ? &bones_interp[hitbox->bone] : &bones_uninterp[hitbox->bone];
+}
+
+void Aimbot::GetHitboxBounds(Vector& mins, Vector& maxs)
+{
+	mins = this->mins;
+	maxs = this->maxs;
+}
+
+float Aimbot::GetRadius()
+{
+	return hitbox->m_flRadius;
 }
 
 Vector Aimbot::GetBodyAim(C_BaseEntity* p)
@@ -212,7 +260,7 @@ void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
 	VectorAngles(pos - lpeyepos, out);
 }
 
-bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos)
+bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos, int tracetype, bool checkfraction)
 {
 	static CTraceFilterDouble filter;
 	static trace_t trace;
@@ -220,10 +268,18 @@ bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos)
 
 	ray.Init(lpeyepos, pos);
 	filter.pSkip1 = lp;
-	filter.pSkip2 = p;
+
+	if (checkfraction)
+		filter.pSkip2 = p;
+
+	filter.type = TraceType_t(tracetype);
 	enginetrace->TraceRay(ray, 0x46004003, &filter, &trace);
 
-	return (trace.m_pEnt == p || trace.fraction == 1);
+	bool ret = trace.m_pEnt == p;
+	if (checkfraction && trace.fraction == 1.f)
+		ret = true;
+
+	return ret;
 }
 
 void Aimbot::MovementFix()
@@ -254,7 +310,7 @@ bool Aimbot::CanShoot()
 	if (act == ACT_RESET || act == ACT_VM_DRAW || act == ACT_VM_RELOAD)
 		return false;
 
-	if (lp->GetNextPrimaryAttack(weapon) > predict.pred_time)
+	if (lp->GetNextPrimaryAttack(weapon) > globals->curtime)
 		return false;
 
 	return true;
@@ -283,6 +339,9 @@ void Aimbot::End()
 	lpeyepos = empty;
 	before = Angle(0, 0, 0);
 	weapon = nullptr;
+	hitbox = nullptr;
+	target = nullptr;
+	tick = nullptr;
 }
 
 void Aimbot::Destroy()

@@ -6,7 +6,7 @@ class Interfaces
 {
 public:
 	bool Init();
-	template<typename T> T GetInterface(const char* module, const std::string& name);
+	template<typename T> T GetInterface(const char* module, const std::string_view& name);
 };
 
 extern Interfaces interfaces;

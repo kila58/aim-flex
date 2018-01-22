@@ -1,5 +1,6 @@
 #pragma once
 
+// todo: alignas? aren't these VectorAligned
 struct Ray_t
 {
 	Vector m_Start;
@@ -98,10 +99,11 @@ public:
 
 	TraceType_t GetTraceType() const
 	{
-		return TRACE_EVERYTHING;
+		return type;
 	}
 
 	void* pSkip;
+	TraceType_t type = TRACE_EVERYTHING;
 };
 
 class CTraceFilterDouble : public ITraceFilter
@@ -109,25 +111,33 @@ class CTraceFilterDouble : public ITraceFilter
 public:
 	bool ShouldHitEntity(void* pEntityHandle, int contentsMask)
 	{
+		if (!pSkip2)
+			return !(pEntityHandle == pSkip1);
+
 		return !(pEntityHandle == pSkip1 || pEntityHandle == pSkip2);
 	}
 
 	TraceType_t GetTraceType() const
 	{
-		return TRACE_EVERYTHING;
+		return type;
 	}
 
 	void* pSkip1;
 	void* pSkip2;
+	TraceType_t type = TRACE_EVERYTHING;
 };
 
 
 class IEngineTrace
 {
 public:
-	void TraceRay(const Ray_t& ray, unsigned int fMask, ITraceFilter* filter, trace_t* trace)
+	void ClipRayToEntity(const Ray_t& ray, unsigned int mask, C_BaseEntity* ent, trace_t* trace)
 	{
-		return getvfunc<void(__thiscall*)(void*, const Ray_t&, unsigned int, ITraceFilter*, trace_t*)>(this, 5)(this, ray, fMask, filter, trace);
+		return getvfunc<void(__thiscall*)(void*, const Ray_t&, unsigned int, C_BaseEntity*, trace_t*)>(this, 3)(this, ray, mask, ent, trace);
+	}
+	void TraceRay(const Ray_t& ray, unsigned int mask, ITraceFilter* filter, trace_t* trace)
+	{
+		return getvfunc<void(__thiscall*)(void*, const Ray_t&, unsigned int, ITraceFilter*, trace_t*)>(this, 5)(this, ray, mask, filter, trace);
 	}
 };
 

@@ -2,13 +2,20 @@
 
 #pragma warning(disable : 4244)
 
+#ifndef NOMINMAX 
+	#define NOMINMAX 
+#endif
+
 #include <Windows.h>
 #include <cctype>
 #include <algorithm>
 #include <deque>
+#include <array>
 #include <experimental/deque>
 #include <string>
+#include <string_view>
 #include <numeric>
+#include <memory>
 
 #include "definitions.hpp"
 #include "color.hpp"
@@ -40,6 +47,8 @@
 #include "sdk/INetChannel.hpp"
 #include "sdk/IGameEvent.hpp"
 #include "sdk/CInput.hpp"
+#include "sdk/CClientState.hpp"
+#include "sdk/IMemAlloc.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;
@@ -55,3 +64,5 @@ extern IGameEventListener2* eventmanager;
 extern ClientModeShared* clientmode;
 extern CGlobalVarsBase* globals;
 extern CInput* cmdinput;
+extern CClientState* cl;
+extern IMemAlloc* g_pMemAlloc;

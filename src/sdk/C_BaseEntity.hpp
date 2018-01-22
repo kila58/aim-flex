@@ -57,6 +57,7 @@ class IPlayerAnimState;
 
 extern IClientEntityList* entitylist;
 extern CEngineClient* engineclient;
+extern CGlobalVarsBase* globals;
 
 class C_BaseEntity
 {
@@ -69,6 +70,11 @@ protected:
 	T GetNetVar(const char* name)
 	{
 		return *(T*)(this + GetOffset(name));
+	}
+	template <typename T>
+	void SetNetVar(const char* name, const T& what)
+	{
+		*(T*)(this + GetOffset(name)) = what;
 	}
 	template <typename T>
 	T Get(uint offset)
@@ -93,6 +99,7 @@ protected:
 public:
 	const unsigned long& GetRefEHandle()
 	{
+		// I think this is just (unsigned long)&this?
 		return getvfunc<const unsigned long&(__thiscall*)(void*)>(this, 2)(this);
 	}
 	inline IClientRenderable* GetRenderable()
@@ -115,15 +122,13 @@ public:
 	{
 		return getvfunc<Angle&(__thiscall*)(void*)>(this, 11)(this);
 	}
-	void GetPoseParameters(float* poses)
+	PoseArray GetPoseParameters()
 	{
-		//auto hdr = GetModelPtr()->studio;
-
-		Get<float*, float>(poses, GetOffset("m_flPoseParameter"), 24/*hdr->numlocalposeparameters*/);
+		return GetNetVar<PoseArray>("m_flPoseParameter");
 	}
-	CUtlVector<C_AnimationLayer>& GetAnimLayers()
+	AnimLayerVec GetAnimLayers()
 	{
-		return *Get<CUtlVector<C_AnimationLayer>*>(GetOffset("m_bSuppressAnimSounds") + 0x36);
+		return Get<AnimLayerVec>(GetOffset("m_bSuppressAnimSounds") + 0x36);
 	}
 	bool IsDucked()
 	{
@@ -147,13 +152,11 @@ public:
 
 		SetAbsAnglesFn(this, ang);
 	}
-	void SetPoseParameters(float* poses)
+	void SetPoseParameters(PoseArray poses)
 	{
-		//auto hdr = GetModelPtr()->studio;
-
-		Set<float*, float>(poses, GetOffset("m_flPoseParameter"), 24/*hdr->numlocalposeparameters*/);
+		SetNetVar<PoseArray>("m_flPoseParameter", poses);
 	}
-	void SetAnimLayers(CUtlVector<C_AnimationLayer>& memes)
+	void SetAnimLayers(AnimLayerVec& memes)
 	{
 		GetAnimLayers() = memes;
 	}
@@ -163,8 +166,6 @@ public:
 	}
 	void BuildTransformations(CStudioHdr* hdr, Vector* pos, Quaternion* q, const VMatrix& cameratransform, int bonemask, byte* computed)
 	{
-		ZeroMemory(computed, 0x100);
-
 		return getvfunc<void(__thiscall*)(void*, CStudioHdr*, Vector*, Quaternion*, const VMatrix&, int, byte*)>(this, 184)(this, hdr, pos, q, cameratransform, bonemask, computed);
 	}
 	CStudioHdr* GetModelPtr()
@@ -232,25 +233,19 @@ public:
 		return GetNetVar<float>("m_flSimulationTime");
 	}
 	// todo: change this from hardcoded
-	inline ptr GetPVSFlag()
+	void ClearOcclusionFlags()
 	{
-		return Get<ptr>(0x270);
+		Set<int>(globals->framecount, 0xA30);
+		Set<int>(0, 0xA28);
 	}
 	// todo: change this from hardcoded
-	inline void SetPVSFlag(int flag)
+	float GetSpawnTime()
 	{
-		Set<ptr>(flag, 0x270);
+		return Get<float>(0xA290);
 	}
 	inline bool SetupBones(VMatrix* bones, float time = 0.f, int _bones = MAXSTUDIOBONES, int _flag = BONE_USED_BY_HITBOX)
 	{
-		auto old = GetPVSFlag();
-		SetPVSFlag(0);
-
-		auto ret = GetRenderable()->SetupBones(bones, time);
-
-		SetPVSFlag(old);
-
-		return ret;
+		return GetRenderable()->SetupBones(bones, time);
 	}
 	inline const model_t* GetModel()
 	{

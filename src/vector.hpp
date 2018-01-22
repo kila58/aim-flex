@@ -2,6 +2,7 @@
 
 typedef float VMatrix[3][4];
 static const float pi = 3.14159265358979323846f;
+static const float epsilon = 1.401298e-45f;
 
 class Quaternion
 {
@@ -23,6 +24,8 @@ public:
 	Vector operator-(const Vector&) const;
 	Vector& operator-=(const Vector&);
 	Vector operator-(const float) const;
+	Vector operator/(const float) const;
+	Vector& operator/=(const float);
 	Vector operator*(const float) const;
 	Vector& operator*=(const float);
 	Vector operator*(const Vector&) const;
@@ -39,6 +42,8 @@ public:
 	float Distance2D(const Vector&) const;
 	float Distance2DSqr(const Vector&) const;
 	float Dot(const Vector&) const;
+	float Normalize();
+	float NormalizeInPlace();
 	Vector Rotate(const Angle&) const;
 };
 
@@ -69,6 +74,20 @@ inline Vector& Vector::operator-=(const Vector& vec)
 inline Vector Vector::operator-(const float f) const
 {
 	return Vector(x - f, y - f, z - f);
+}
+
+inline Vector Vector::operator/(const float f) const
+{
+	return Vector(x / (f + epsilon), y / (f + epsilon), z / (f + epsilon));
+}
+
+inline Vector& Vector::operator/=(const float f)
+{
+	x /= f + epsilon;
+	y /= f + epsilon;
+	z /= f + epsilon;
+
+	return *this;
 }
 
 inline Vector Vector::operator*(const float f) const
@@ -147,6 +166,35 @@ inline float Vector::Distance2DSqr(const Vector& vec) const
 inline float Vector::Dot(const Vector& vec) const
 {
 	return x * vec.x + y * vec.y + z * vec.z;
+}
+
+inline float Vector::Normalize()
+{
+	float l = Length();
+	float m = 1.0f / (l + epsilon);
+
+	x *= m;
+	y *= m;
+	z *= m;
+
+	return l;
+}
+
+inline float VectorNormalize(Vector& v)
+{
+	float l = v.Length();
+
+	if (l != 0.0f)
+		v /= l;
+	else
+		v.x = v.y = 0.0f; v.z = 1.0f;
+
+	return l;
+}
+
+inline float Vector::NormalizeInPlace()
+{
+	return VectorNormalize(*this);
 }
 
 void inline SinCos(float radians, float& sine, float& cosine)
@@ -231,6 +279,43 @@ inline void AngleMatrix(const Angle& angle, const Vector& origin, VMatrix& matri
 	matrix[2][3] = origin[2];
 }
 
+inline void AngleVectors(const Angle& angles, Vector& forward)
+{
+	float sp, sy, cp, cy;
+
+	SinCos(Deg2Rad(angles.p), sp, cp);
+	SinCos(Deg2Rad(angles.y), sy, cy);
+
+	forward.x = cp * cy;
+	forward.y = cp * sy;
+	forward.z = -sp;
+	forward.Normalize();
+}
+
+inline void AngleVectors(const Angle& angles, Vector& forward, Vector& right, Vector& up)
+{
+	float sp, sy, sr, cp, cy, cr;
+
+	SinCos(Deg2Rad(angles.p), sp, cp);
+	SinCos(Deg2Rad(angles.y), sy, cy);
+	SinCos(Deg2Rad(angles.r), sr, cr);
+
+	forward.x = cp * cy;
+	forward.y = cp * sy;
+	forward.z = -sp;
+	forward.Normalize();
+
+	right.x = -(sr * sp * cy) + (cr * sy);
+	right.y = -(sr * sp * sy) + -(cr * cy);
+	right.z = -(sr * cp);
+	right.Normalize();
+
+	up.x = cr * sp * cy + -sr * -sy;
+	up.y = cr * sp * sy + -sr * cy;
+	up.z = cr * cp;
+	up.Normalize();
+}
+
 inline void VectorRotate(const Vector& in, const VMatrix& matrix, Vector& out)
 {
 	out.x = in.Dot(Vector(matrix[0][0], matrix[0][1], matrix[0][2]));
@@ -267,4 +352,87 @@ inline void VectorAngles(const Vector& vec, Angle& angles)
 {
 	angles.p = Rad2Deg(atan2(-vec.z, vec.Length2D()));
 	angles.y = Rad2Deg(atan2(vec.y, vec.x));
+}
+
+#define SMALL_NUM   0.00000001 // anything that avoids division overflow
+#define dot(u,v)   ((u).x * (v).x + (u).y * (v).y + (u).z * (v).z)
+#define norm(v)    sqrt(dot(v,v))  // norm = length of  vector
+#define absolute(x)     ((x) >= 0 ? (x) : -(x))   //  absolute value
+
+// todo: replace this with sphere intersection and add regular obb intersection
+inline float dist_Segment_to_Segment(Vector s1, Vector s2, Vector k1, Vector k2)
+{
+	Vector   u = s2 - s1;
+	Vector   v = k2 - k1;
+	Vector   w = s1 - k1;
+	float    a = dot(u, u);
+	float    b = dot(u, v);
+	float    c = dot(v, v);
+	float    d = dot(u, w);
+	float    e = dot(v, w);
+	float    D = a * c - b * b;
+	float    sc, sN, sD = D;
+	float    tc, tN, tD = D;
+
+	if (D < SMALL_NUM) {
+		sN = 0.0;
+		sD = 1.0;
+		tN = e;
+		tD = c;
+	}
+	else {
+		sN = (b*e - c * d);
+		tN = (a*e - b * d);
+		if (sN < 0.0) {
+			sN = 0.0;
+			tN = e;
+			tD = c;
+		}
+		else if (sN > sD) {
+			sN = sD;
+			tN = e + b;
+			tD = c;
+		}
+	}
+
+	if (tN < 0.0) {
+		tN = 0.0;
+
+		if (-d < 0.0)
+			sN = 0.0;
+		else if (-d > a)
+			sN = sD;
+		else {
+			sN = -d;
+			sD = a;
+		}
+	}
+	else if (tN > tD) {
+		tN = tD;
+
+		if ((-d + b) < 0.0)
+			sN = 0;
+		else if ((-d + b) > a)
+			sN = sD;
+		else {
+			sN = (-d + b);
+			sD = a;
+		}
+	}
+
+	sc = (absolute(sN) < SMALL_NUM ? 0.0f : sN / sD);
+	tc = (absolute(tN) < SMALL_NUM ? 0.0f : tN / tD);
+
+	Vector  dP = w + (u * sc) - (v * tc);
+
+	return norm(dP);
+}
+
+// https://www.unknowncheats.me/forum/counterstrike-global-offensive/161306-efficient-ray-capsule-intersection-algorithm.html
+inline bool DoesIntersectCapsule(Vector eyePos, Vector myDir, Vector capsuleA, Vector capsuleB, float radius)
+{
+	Vector end = eyePos + (myDir * 8192);
+	auto dist = dist_Segment_to_Segment(eyePos, end, capsuleA, capsuleB);
+
+	return dist < radius;
 }

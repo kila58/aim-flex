@@ -6,6 +6,7 @@
 
 #include "../../features/antiaim/antiaim.hpp"
 #include "../../features/resolver/resolver.hpp"
+#include "../../features/backtrack/backtrack.hpp"
 
 using FrameStageNotifyType = void*(__thiscall*)(void*, ClientFrameStage_t);
 FrameStageNotifyType original_function;
@@ -16,7 +17,12 @@ void __fastcall FrameStageNotify(void* instance, void*, ClientFrameStage_t stage
 	features.Invoke(FRAMESTAGENOTIFY);
 	
 	if (stage == FRAME_RENDER_START)
+	{
 		antiaim.SetThirdPersonAngle();
+		animations.PVSFix();
+	}
+	else if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
+		animations.UpdateServerAnimations();
 
 	original_function(instance, stage);
 }
