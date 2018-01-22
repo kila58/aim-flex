@@ -255,6 +255,84 @@ bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes)
 	return false;
 }
 
+bool Aimbot::MultiPoint(C_BaseEntity* p, int index, Vector& out)
+{
+	auto model = p->GetModel();
+	if (!model)
+		return false;
+
+	auto hdr = p->GetModelPtr()->studio;
+	if (!hdr)
+		return false;
+
+	static VMatrix bones[128];
+	if (!p->SetupBones(bones, globals->curtime))
+		return false;
+
+	mstudiobbox_t* hitbox = hdr->GetHitbox(index, 0);
+	if (!hitbox || hitbox->bone > 128 || hitbox->bone < 0 || hitbox->group > 7)
+		return false;
+
+	Vector min, max;
+	VectorTransform(hitbox->bbmin, bones[hitbox->bone], min);
+	VectorTransform(hitbox->bbmax, bones[hitbox->bone], max);
+
+	Vector center = (min + max) * 0.5f;
+
+	Vector delta = max - min;
+	VectorNormalize(delta);
+
+	float radius = hitbox->m_flRadius;
+
+	std::deque<Vector> spheres;
+
+	spheres.push_back(min);
+
+	for (int i = 1; i < std::floor(min.Distance(max)); i++)
+		spheres.push_back(min + delta * i);
+
+	spheres.push_back(max);
+
+	float height = radius * 2;
+
+	for (auto& s : spheres)
+	{
+		for (float z = 0; z <= height; z++)
+		{
+			float radius_mod = radius;
+
+			bool bottom = z < radius;
+			bool top = z > radius;
+
+			if (bottom || top)
+			{
+				if (!(&spheres.front() == &s || &spheres.back() == &s) && !(z == 0 || z == height))
+					continue;
+
+				float distance = bottom ? z - radius : z - (height - radius); // distance from center according to radius
+				radius_mod = sqrt((radius * radius) - (distance * distance)); // calculate chord radius modifier
+			}
+
+			for (float y = 0; y < 360; y += 10)
+			{
+				Vector forward, right, up;
+				AngleVectors(Angle(0, y, 0), forward, right, up);
+
+				Vector final = Vector(s.x, s.y, (s.z - radius) + z) + (forward * radius_mod);
+
+				if (aimbot.IsVisible(p, final))
+				{
+					out = final;
+
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
 {
 	VectorAngles(pos - lpeyepos, out);

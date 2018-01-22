@@ -49,6 +49,7 @@ public:
 	void GetHitboxBounds(Vector& mins, Vector& maxs);
 	Vector GetBodyAim(C_BaseEntity* p);
 	bool GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes);
+	bool MultiPoint(C_BaseEntity* p, int index, Vector& out);
 	void CalculateAngle(const Vector& pos, Angle& out);
 	bool IsVisible(C_BaseEntity* p, const Vector& pos, int tracetype = 0, bool checkfraction = true);
 	void MovementFix();
