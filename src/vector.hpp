@@ -385,7 +385,8 @@ inline bool DoesIntersectCapsule(Vector start, Vector dir, Vector min, Vector ma
 
 		float distance = sqrt(diff.Dot(diff));
 
-		return distance <= radius && distance > 0;
+		if (distance <= radius)
+			return true;
 	}
 
 	return false;
