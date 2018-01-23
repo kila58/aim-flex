@@ -255,32 +255,12 @@ bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes)
 
 bool Aimbot::MultiPoint(C_BaseEntity* p, int index, Vector& out)
 {
-	auto model = p->GetModel();
-	if (!model)
-		return false;
-
-	auto hdr = p->GetModelPtr()->studio;
-	if (!hdr)
-		return false;
-
-	static VMatrix bones[128];
-	if (!p->SetupBones(bones, globals->curtime))
-		return false;
-
-	mstudiobbox_t* hitbox = hdr->GetHitbox(index, 0);
-	if (!hitbox || hitbox->bone > 128 || hitbox->bone < 0 || hitbox->group > 7)
-		return false;
-
-	Vector min, max;
-	VectorTransform(hitbox->bbmin, bones[hitbox->bone], min);
-	VectorTransform(hitbox->bbmax, bones[hitbox->bone], max);
-
-	Vector center = (min + max) * 0.5f;
+	Vector min = tick->hitboxinfo.mins, max = tick->hitboxinfo.maxs;
 
 	Vector delta = max - min;
 	VectorNormalize(delta);
 
-	float radius = hitbox->m_flRadius;
+	float radius = tick->hitboxinfo.radius;
 
 	std::deque<Vector> spheres;
 
