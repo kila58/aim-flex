@@ -184,10 +184,7 @@ inline float VectorNormalize(Vector& v)
 {
 	float l = v.Length();
 
-	if (l != 0.0f)
-		v /= l;
-	else
-		v.x = v.y = 0.0f; v.z = 1.0f;
+	v /= l;
 
 	return l;
 }
