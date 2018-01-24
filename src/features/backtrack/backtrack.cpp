@@ -148,6 +148,7 @@ void Backtrack::Invoke()
 		HitboxInfo info;
 		info.head = aimbot.GetHitbox(p, 0, false);
 		aimbot.GetHitboxBounds(info.mins, info.maxs);
+		aimbot.GetHitboxBoundsNoRadius(info.minsnoradius, info.maxsnoradius);
 		info.radius = aimbot.GetRadius();
 
 		if (!info.head.IsZero())

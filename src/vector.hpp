@@ -351,7 +351,7 @@ inline void VectorAngles(const Vector& vec, Angle& angles)
 	angles.y = Rad2Deg(atan2(vec.y, vec.x));
 }
 
-inline bool DoesIntersectCapsule(Vector start, Vector dir, Vector min, Vector max, float radius)
+inline bool DoesIntersectCapsule(Vector start, Vector dir, Vector min, Vector max, float radius, float range)
 {
 	Vector delta = (max - min);
 	delta.NormalizeInPlace();
@@ -361,13 +361,13 @@ inline bool DoesIntersectCapsule(Vector start, Vector dir, Vector min, Vector ma
 	spheres.push_back(min);
 
 	for (int i = 1; i < std::floor(min.Distance(max)); i++)
-		spheres.push_back(min + delta * i);
+		spheres.push_back(min + delta * (float)i);
 
 	spheres.push_back(max);
 
 	for (auto& s : spheres)
 	{
-		Vector end = start + (dir * 8192);
+		Vector end = start + (dir * range);
 
 		Vector line_delta = end - start;
 		Vector center_delta = s - start;

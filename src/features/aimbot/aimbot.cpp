@@ -97,6 +97,8 @@ bool Aimbot::HitChance(C_BaseEntity* target, const Angle& ang)
 	int hits = 0;
 	int min = (int)(max * (settings.Get<float>("rage_hitchance_value") / 100.f));
 
+	float range = weapon->GetCSWpnData()->m_flRange;
+
 	lp->GetWeapon()->UpdateAccuracyPenalty();
 
 	for (int i = 0; i < max; i++)
@@ -114,7 +116,7 @@ bool Aimbot::HitChance(C_BaseEntity* target, const Angle& ang)
 
 		Vector dir = forward + (right * -spreadx) + (up * -spready);
 
-		if (DoesIntersectCapsule(lpeyepos, dir, tick->hitboxinfo.mins, tick->hitboxinfo.maxs, tick->hitboxinfo.radius))
+		if (DoesIntersectCapsule(lpeyepos, dir, tick->hitboxinfo.mins, tick->hitboxinfo.maxs, tick->hitboxinfo.radius, range))
 			hits++;
 
 		if (hits >= min)
@@ -167,15 +169,23 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index, bool interpolated)
 	if (!hitbox || hitbox->bone > 128 || hitbox->bone < 0 || hitbox->group > 7)
 		return empty;
 
+	float mod = hitbox->m_flRadius != -1.f ? hitbox->m_flRadius : 0.f;
+
 	if (interpolated)
 	{
-		VectorTransform(hitbox->bbmin, bones_interp[hitbox->bone], mins);
-		VectorTransform(hitbox->bbmax, bones_interp[hitbox->bone], maxs);
+		VectorTransform(hitbox->bbmin - mod, bones_interp[hitbox->bone], mins);
+		VectorTransform(hitbox->bbmax + mod, bones_interp[hitbox->bone], maxs);
+
+		VectorTransform(hitbox->bbmin, bones_interp[hitbox->bone], minsnoradius);
+		VectorTransform(hitbox->bbmax, bones_interp[hitbox->bone], maxsnoradius);
 	}
 	else
 	{
-		VectorTransform(hitbox->bbmin, bones_uninterp[hitbox->bone], mins);
-		VectorTransform(hitbox->bbmax, bones_uninterp[hitbox->bone], maxs);
+		VectorTransform(hitbox->bbmin - mod, bones_uninterp[hitbox->bone], mins);
+		VectorTransform(hitbox->bbmax + mod, bones_uninterp[hitbox->bone], maxs);
+
+		VectorTransform(hitbox->bbmin, bones_uninterp[hitbox->bone], minsnoradius);
+		VectorTransform(hitbox->bbmax, bones_uninterp[hitbox->bone], maxsnoradius);
 	}
 
 	lastplayer = p;
@@ -195,6 +205,12 @@ void Aimbot::GetHitboxBounds(Vector& mins, Vector& maxs)
 {
 	mins = this->mins;
 	maxs = this->maxs;
+}
+
+void Aimbot::GetHitboxBoundsNoRadius(Vector& mins, Vector& maxs)
+{
+	mins = this->minsnoradius;
+	maxs = this->maxsnoradius;
 }
 
 float Aimbot::GetRadius()
@@ -255,7 +271,7 @@ bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes)
 
 bool Aimbot::MultiPoint(C_BaseEntity* p, int index, Vector& out)
 {
-	Vector min = tick->hitboxinfo.mins, max = tick->hitboxinfo.maxs;
+	Vector min = tick->hitboxinfo.minsnoradius, max = tick->hitboxinfo.maxsnoradius;
 
 	Vector delta = max - min;
 	VectorNormalize(delta);

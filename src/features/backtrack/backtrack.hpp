@@ -9,6 +9,8 @@ struct HitboxInfo
 	Vector head;
 	Vector mins;
 	Vector maxs;
+	Vector minsnoradius;
+	Vector maxsnoradius;
 	float radius;
 };
 

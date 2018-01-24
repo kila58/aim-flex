@@ -36,6 +36,8 @@ private:
 	alignas(16) VMatrix bones_uninterp[128];
 	Vector mins;
 	Vector maxs;
+	Vector minsnoradius;
+	Vector maxsnoradius;
 public:
 	Aimbot() : BaseFeature(CREATEMOVE, 5u) {}
 
@@ -47,6 +49,7 @@ public:
 	float GetRadius();
 	void GetMatrix(bool interpolated, VMatrix* matrix);
 	void GetHitboxBounds(Vector& mins, Vector& maxs);
+	void GetHitboxBoundsNoRadius(Vector & mins, Vector & maxs);
 	Vector GetBodyAim(C_BaseEntity* p);
 	bool GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes);
 	bool MultiPoint(C_BaseEntity* p, int index, Vector& out);
