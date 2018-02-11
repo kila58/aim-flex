@@ -205,7 +205,7 @@ void Rage::Invoke()
 	if (aimbot.CanShoot() && FindTarget(cmd, ang))
 	{
 		//if (false)
-		if (aimbot.HitChance(aimbot.target, ang))
+		//if (aimbot.HitChance(aimbot.target, ang))
 		{
 			if (aimbot.tick)
 				backtrack.BacktrackToTick(cmd, *aimbot.tick);

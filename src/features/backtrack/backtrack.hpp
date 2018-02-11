@@ -18,8 +18,8 @@ struct HitboxInfo
 struct Tick
 {
 	Tick() {}
-	Tick(float time, HitboxInfo hitboxinfo)
-		: time(time), hitboxinfo(hitboxinfo), tickcount(globals->tickcount) {}
+	Tick(float time, HitboxInfo hitboxinfo, Vector absorigin, Angle absangle)
+		: time(time), hitboxinfo(hitboxinfo), tickcount(globals->tickcount), absorigin(absorigin), absangle(absangle) {}
 
 	friend bool operator==(const Tick& first, const Tick& second) { return first.time == second.time; }
 	friend bool operator==(const Tick& first, float sim) { return first.time == sim; }
@@ -27,6 +27,8 @@ struct Tick
 
 	float time = 0.f;
 	int tickcount;
+	Vector absorigin;
+	Angle absangle;
 	HitboxInfo hitboxinfo;
 };
 

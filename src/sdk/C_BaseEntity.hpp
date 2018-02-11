@@ -251,6 +251,10 @@ public:
 	{
 		return GetRenderable()->GetModel();
 	}
+	inline void DrawModel()
+	{
+		return getvfunc<void(__thiscall*)(void*, int, void*)>(GetRenderable(), 9)(GetRenderable(), 1, 0);
+	}
 	int GetEntryIndex()
 	{
 		return GetRefEHandle() & 0xFFF;

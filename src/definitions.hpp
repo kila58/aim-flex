@@ -12,7 +12,8 @@ enum HookType
 	PAINT = 0,
 	CREATEMOVE = 1,
 	WINDOWPROC = 2,
-	FRAMESTAGENOTIFY = 3
+	FRAMESTAGENOTIFY = 3,
+	SCENEEND = 4
 };
 
 // PaintMode_t

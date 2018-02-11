@@ -19,7 +19,7 @@ public:
 	}
 	void DrawLine(int x1, int y1, int x2, int y2)
 	{
-		return getvfunc<void(__thiscall *)(void *, int, int, int, int)>(this, 19)(this, x1, y1, x2, y2);
+		return getvfunc<void(__thiscall*)(void *, int, int, int, int)>(this, 19)(this, x1, y1, x2, y2);
 	}
 	void SetFont(unsigned long font)
 	{

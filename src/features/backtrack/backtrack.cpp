@@ -173,7 +173,7 @@ void Backtrack::Invoke()
 		info.hitbox = aimbot.GetHitboxIndex();
 
 		if (!info.head.IsZero())
-			target.backtrackinfo.ticks.emplace_back(p->GetSimulationTime(), info);
+			target.backtrackinfo.ticks.emplace_back(p->GetSimulationTime(), info, p->GetAbsOrigin(), p->GetAbsAngles());
 	}
 }
 

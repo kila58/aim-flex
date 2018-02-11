@@ -37,6 +37,15 @@ bool Interfaces::Init()
 	if (!(eventmanager = GetInterface<IGameEventManager2*>("engine.dll", "GAMEEVENTSMANAGER002")))
 		return false;
 
+	if (!(materialsystem = GetInterface<IMaterialSystem*>("materialsystem.dll", "VMaterialSystem")))
+		return false;
+
+	if (!(renderview = GetInterface<IVRenderView*>("engine.dll", "VEngineRenderView")))
+		return false;
+
+	if (!(modelrender = GetInterface<IVModelRender*>("engine.dll", "VEngineModel")))
+		return false;
+
 	if (!(clientmode = **(ClientModeShared***)(getvfunc(client, 10) + 0x5)))
 		return false;
 

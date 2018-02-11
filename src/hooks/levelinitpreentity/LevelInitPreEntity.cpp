@@ -5,6 +5,8 @@
 #include "../../features/features.hpp"
 
 #include "../../features/playermanager/playermanager.hpp"
+#include "../../features/asus/asus.hpp"
+#include "../../features/chams/chams.hpp"
 
 using LevelInitPreEntityType = void*(__thiscall*)(void*, const char* newmap);
 LevelInitPreEntityType original_function;
@@ -15,6 +17,9 @@ void __fastcall LevelInitPreEntity(void* instance, void*, const char* newmap)
 
 	// joining new map or server, populate when ready
 	playermanager.SetPopulated(false);
+
+	asus.first = true;
+	chams.Init();
 
 	original_function(instance, newmap);
 }

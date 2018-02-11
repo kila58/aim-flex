@@ -29,6 +29,7 @@
 #include "debug.hpp"
 
 #include "sdk/CUtlVector.hpp"
+#include "sdk/IAppSystem.hpp"
 #include "sdk/CEngineClient.hpp"
 #include "sdk/CEngineVGui.hpp"
 #include "sdk/CMatSystemSurface.hpp"
@@ -51,6 +52,9 @@
 #include "sdk/CInput.hpp"
 #include "sdk/CClientState.hpp"
 #include "sdk/IMemAlloc.hpp"
+#include "sdk/IMaterialSystem.hpp"
+#include "sdk/IVRenderView.hpp"
+#include "sdk/IVModelRender.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;
@@ -63,6 +67,9 @@ extern CGameMovement* gamemovement;
 extern IPrediction* prediction;
 extern IEngineTrace* enginetrace;
 extern IGameEventManager2* eventmanager;
+extern IMaterialSystem* materialsystem;
+extern IVRenderView* renderview;
+extern IVModelRender* modelrender;
 extern ClientModeShared* clientmode;
 extern CGlobalVarsBase* globals;
 extern CInput* cmdinput;
