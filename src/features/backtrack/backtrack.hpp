@@ -12,6 +12,7 @@ struct HitboxInfo
 	Vector minsnoradius;
 	Vector maxsnoradius;
 	float radius;
+	int hitbox;
 };
 
 struct Tick
@@ -56,6 +57,7 @@ public:
 	bool TickIsValid(const Tick& tick, float lerp);
 	void Invoke();
 	void BacktrackToTick(CUserCmd* cmd, const Tick& tick);
+	void BulletImpact(Vector pos, C_BaseEntity* player);
 	void Destroy();
 };
 

@@ -39,7 +39,7 @@ public:
 	friend bool operator==(const Player& first, int userid) { return first.userid == userid; }
 	friend bool operator==(int userid, const Player& second) { return userid == second.userid; }
 	friend bool operator==(const Player& first, const Player& second) { return first.userid == second.userid; }
-	operator bool() const { return index != -1; }
+	operator bool() const { return index != -1 && dormantplayer; }
 
 	int index;
 	int userid;

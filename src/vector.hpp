@@ -21,6 +21,7 @@ public:
 	float operator[](int);
 	float const operator[](int) const;
 
+	// todo: just add all of them
 	Vector operator-(const Vector&) const;
 	Vector& operator-=(const Vector&);
 	Vector operator-(const float) const;
@@ -351,11 +352,13 @@ inline void VectorAngles(const Vector& vec, Angle& angles)
 	angles.y = Rad2Deg(atan2(vec.y, vec.x));
 }
 
+
 inline bool DoesIntersectCapsule(Vector start, Vector dir, Vector min, Vector max, float radius, float range)
 {
 	Vector delta = (max - min);
 	delta.NormalizeInPlace();
 
+	// todo: why
 	std::deque<Vector> spheres;
 
 	spheres.push_back(min);

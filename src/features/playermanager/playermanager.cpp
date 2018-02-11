@@ -77,7 +77,14 @@ void PlayerManager::Invoke()
 	{
 		player.compare = lporigin.Distance(player.ent->GetAbsOrigin());
 		player.resolverinfo.absang = player.ent->GetAbsAngles();
+		
+		// if you ever need raw eye angle then add another var
 		player.resolverinfo.eye = player.ent->GetEyeAngle();
+		player.resolverinfo.eye = Angle(clamp(normalize(player.resolverinfo.eye.p), -89.f, 89.f), clamp(normalize(player.resolverinfo.eye.y), -180.f, 180.f), player.resolverinfo.eye.r);
+
+		// todo: when rapid switching between teams with no delay random player becomes invalid for 1-2 ticks?
+		if (!player.dormantplayer)
+			player.dormantplayer = playermanager.GetDormantPlayer(player.userid);
 	}
 
 	std::sort(players.begin(), players.end(), [](const Player& a, const Player& b)

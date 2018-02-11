@@ -10,7 +10,7 @@ class CRecvProxyData;
 struct RecvProp;
 
 typedef void(*RecvVarProxyFn)(const CRecvProxyData *pData, void *pStruct, void *pOut);
-typedef std::pair<RecvProp*, RecvVarProxyFn> NetPropBackup;
+using NetPropBackup = std::pair<RecvProp*, RecvVarProxyFn>;
 
 class NetVar
 {

@@ -18,18 +18,78 @@ bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 	{
 		C_BaseEntity* p = target.ent;
 
-		for (auto& tick : target.backtrackinfo.ticks)
+		// troll aim won't work right now, because of vischeck????(?????) in multipoint (add arg)?
+		/*
+		if (target.backtrackinfo.ticks.size() > 1)
 		{
-			if (aimbot.IsVisible(p, tick.hitboxinfo.head))
+			auto& last = target.backtrackinfo.ticks.front();
+
+			for (auto& tick : target.backtrackinfo.ticks)
 			{
-				aimbot.CalculateAngle(tick.hitboxinfo.head, ang);
+				Vector out;
+				if (aimbot.MultiPoint(p, tick, out))
+				{
+					if (tick == last)
+					{
+						if (aimbot.IsVisible(p, out))
+						{
+							aimbot.CalculateAngle(out, ang);
 
-				aimbot.target = p;
-				aimbot.tick = &tick;
+							aimbot.target = p;
+							aimbot.tick = &tick;
 
-				return true;
+							return true;
+						}
+					}
+
+					if (aimbot.IsVisible(p, out))
+						return false;
+				}
 			}
 		}
+		*/
+
+		for (auto& tick : target.backtrackinfo.ticks)
+		{
+			Vector out = tick.hitboxinfo.head;
+			//if (aimbot.MultiPoint(p, tick, out))
+			{
+				if (aimbot.IsVisible(p, out))
+				{
+					aimbot.CalculateAngle(out, ang);
+
+					aimbot.target = p;
+					aimbot.tick = &tick;
+
+					return true;
+				}
+			}
+		}
+
+		/*
+		//for (auto& tick : target.backtrackinfo.ticks)
+		if (false)
+		{
+			Vector out;
+
+			//benchmark.Start("Rage::FindTarget");
+			bool cont = aimbot.MultiPoint(p, 0, true, out);
+			//benchmark.End("Rage::FindTarget");
+
+			if (cont)
+			{
+				//if (aimbot.IsVisible(p, out))
+				{
+					aimbot.CalculateAngle(out, ang);
+
+					aimbot.target = p;
+					//aimbot.tick = &tick;
+
+					return true;
+				}
+			}
+		}
+		*/
 
 		/*
 		Vector head = aimbot.GetHitbox(p, 0);
@@ -105,7 +165,8 @@ bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 		//	}
 		//}
 
-		/*Hitboxes hitboxes;
+		/*
+		Hitboxes hitboxes;
 		if (aimbot.GetHitboxes(p, hitboxes))
 		{
 			for (auto& hitbox : hitboxes)
@@ -128,7 +189,8 @@ bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 					return true;
 				}
 			}
-		}*/
+		}
+		*/
 	}
 
 	return false;
@@ -145,20 +207,24 @@ void Rage::Invoke()
 		//if (false)
 		if (aimbot.HitChance(aimbot.target, ang))
 		{
-			backtrack.BacktrackToTick(cmd, *aimbot.tick);
+			if (aimbot.tick)
+				backtrack.BacktrackToTick(cmd, *aimbot.tick);
 
 			cmd->viewangles = ang;
 			aimbot.NoRecoil();
 
-			if (aimbot.CanShoot())
-				cmd->buttons |= IN_ATTACK;
+			cmd->buttons |= IN_ATTACK;
 
 			aimbot.MovementFix();
+
+			*aimbot.bsendpacket = false;
 		}
 	}
 	else if (aimbot.CanShoot() && cmd->buttons & IN_ATTACK)
 	{
 		aimbot.NoRecoil();
+
+		*aimbot.bsendpacket = false;
 	}
 	else
 	{

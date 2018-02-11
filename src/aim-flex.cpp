@@ -10,7 +10,7 @@ IVModelInfo* modelinfo;
 CGameMovement* gamemovement;
 IPrediction* prediction;
 IEngineTrace* enginetrace;
-IGameEventListener2* eventmanager;
+IGameEventManager2* eventmanager;
 ClientModeShared* clientmode;
 CGlobalVarsBase* globals;
 CInput* cmdinput;

@@ -49,6 +49,7 @@ bool Aimbot::SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones)
 		return false;
 
 	Vector origin = p->GetOrigin();
+
 	Angle angles = player.resolverinfo.absang;
 
 	Vector backup_absorigin = p->GetAbsOrigin();
@@ -58,7 +59,7 @@ bool Aimbot::SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones)
 	auto backup_layers = p->GetAnimLayers();
 
 	alignas(16) VMatrix cameratransform;
-	AngleMatrix(backup_absangles, origin, cameratransform);
+	AngleMatrix(angles, origin, cameratransform);
 
 	auto poses_uninterp = player.poses;
 	auto layers_uninterp = player.animationlayers;
@@ -116,7 +117,7 @@ bool Aimbot::HitChance(C_BaseEntity* target, const Angle& ang)
 
 		Vector dir = forward + (right * -spreadx) + (up * -spready);
 
-		if (DoesIntersectCapsule(lpeyepos, dir, tick->hitboxinfo.mins, tick->hitboxinfo.maxs, tick->hitboxinfo.radius, range))
+		if (DoesIntersectCapsule(lpeyepos, dir, tick->hitboxinfo.minsnoradius, tick->hitboxinfo.maxsnoradius, tick->hitboxinfo.radius, range))
 			hits++;
 
 		if (hits >= min)
@@ -164,6 +165,8 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index, bool interpolated)
 
 		setupbones_uninterp = true;
 	}
+
+	hitboxindex = index;
 
 	hitbox = hdr->GetHitbox(index, 0);
 	if (!hitbox || hitbox->bone > 128 || hitbox->bone < 0 || hitbox->group > 7)
@@ -215,7 +218,12 @@ void Aimbot::GetHitboxBoundsNoRadius(Vector& mins, Vector& maxs)
 
 float Aimbot::GetRadius()
 {
-	return hitbox->m_flRadius;
+	return hitbox ? hitbox->m_flRadius : 0.f;
+}
+
+int Aimbot::GetHitboxIndex()
+{
+	return hitboxindex;
 }
 
 Vector Aimbot::GetBodyAim(C_BaseEntity* p)
@@ -269,14 +277,28 @@ bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes)
 	return false;
 }
 
-bool Aimbot::MultiPoint(C_BaseEntity* p, int index, Vector& out)
+static Tick invalidtick;
+bool Aimbot::MultiPoint(C_BaseEntity* p, Tick& tick, Vector& out)
 {
-	Vector min = tick->hitboxinfo.minsnoradius, max = tick->hitboxinfo.maxsnoradius;
+	Vector min, max;
+	if (tick)
+		min = tick.hitboxinfo.minsnoradius, max = tick.hitboxinfo.maxsnoradius;
+	else
+		aimbot.GetHitboxBoundsNoRadius(min, max);
+
+	int h;
+	if (tick)
+		h = tick.hitboxinfo.hitbox;
+	else
+		h = aimbot.GetHitboxIndex();
 
 	Vector delta = max - min;
 	VectorNormalize(delta);
 
-	float radius = tick->hitboxinfo.radius;
+	float radius = tick ? tick.hitboxinfo.radius : aimbot.GetRadius();
+
+	// add scaling to a setting
+	radius = radius * 0.8f;
 
 	std::deque<Vector> spheres;
 
@@ -289,9 +311,13 @@ bool Aimbot::MultiPoint(C_BaseEntity* p, int index, Vector& out)
 
 	float height = radius * 2;
 
-	for (auto& s : spheres)
+	std::deque<Vector> positions;
+
+	for (auto it = spheres.begin(); it != spheres.end(); ++it)
 	{
-		for (float z = 0; z <= height; z++)
+		auto& s = *it;
+
+		for (float z = 0; z <= height; z += 2)
 		{
 			float radius_mod = radius;
 
@@ -300,31 +326,70 @@ bool Aimbot::MultiPoint(C_BaseEntity* p, int index, Vector& out)
 
 			if (bottom || top)
 			{
-				if (!(&spheres.front() == &s || &spheres.back() == &s) && !(z == 0 || z == height))
+				if (h == HITBOX_LEFTTRICEP || h == HITBOX_RIGHTTRICEP
+					|| (h == HITBOX_LEFTLEG || h == HITBOX_RIGHTLEG)
+					|| (h == HITBOX_LEFTFOREARM || h == HITBOX_RIGHTFOREARM))
+				{
+					auto nice = std::distance(spheres.begin(), it);
+					if (nice % 2)
+						continue;
+				}
+				else if (!(&spheres.front() == &s || &spheres.back() == &s) && !(z == 0 || z == height))
 					continue;
 
 				float distance = bottom ? z - radius : z - (height - radius); // distance from center according to radius
 				radius_mod = sqrt((radius * radius) - (distance * distance)); // calculate chord radius modifier
 			}
 
-			for (float y = 0; y < 360; y += 10)
+			Angle projection;
+			VectorAngles(s - lpeyepos, projection);
+
+			for (float y = projection.y - 90.f; y < projection.y + 90; y += 20)
 			{
 				Vector forward, right, up;
 				AngleVectors(Angle(0, y, 0), forward, right, up);
 
 				Vector final = Vector(s.x, s.y, (s.z - radius) + z) + (forward * radius_mod);
-
-				if (aimbot.IsVisible(p, final))
-				{
-					out = final;
-
-					return true;
-				}
+				positions.emplace_back(final);
 			}
 		}
 	}
 
+	// right now we are sorting by the highest, soon add feature so you can choose spot from argument in a bitwise flag
+	// also make it dynamic based on their pitch
+	// add a fraction check
+	Vector origin = p->GetAbsOrigin();
+	origin.z += 128.f;
+
+	std::sort(positions.begin(), positions.end(), [&origin](const Vector& a, const Vector& b)
+	{
+		return a.Distance(origin) < b.Distance(origin);
+	});
+
+	for (auto& pos : positions)
+	{
+		if (aimbot.IsVisible(p, pos))
+		{
+			out = pos;
+			
+			return true;
+		}
+	}
+
 	return false;
+}
+
+bool Aimbot::MultiPoint(C_BaseEntity* p, Vector& out)
+{
+	return MultiPoint(p, invalidtick, out);
+}
+
+bool Aimbot::MultiPoint(C_BaseEntity* p, int index, bool interpolated, Vector& out)
+{
+	// update min max and radius cache
+	aimbot.GetHitbox(p, index, interpolated);
+
+	return MultiPoint(p, out);
 }
 
 void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
@@ -412,7 +477,7 @@ void Aimbot::End()
 	before = Angle(0, 0, 0);
 	weapon = nullptr;
 	hitbox = nullptr;
-	target = nullptr;
+	//target = nullptr;
 	tick = nullptr;
 }
 

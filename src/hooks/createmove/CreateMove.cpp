@@ -2,7 +2,9 @@
 
 #include "../../aim-flex.hpp"
 
-#include "../../features/features.hpp"	
+#include "../../features/features.hpp"
+
+#include "../../features/aimbot/aimbot.hpp"
 
 using CreateMoveType = void*(__thiscall*)(void*, float, CUserCmd*);
 CreateMoveType original_function;
@@ -14,10 +16,13 @@ bool __fastcall CreateMove(void* instance, void*, float flInputSampleTime, CUser
 	if (!cmd->command_number)
 		return false;
 
+	aimbot.bsendpacket = (bool*)(*GetEBP() - 0x1C);
+
 	BaseFeature::SetArguments(CREATEMOVE, cmd);
 	features.Invoke(CREATEMOVE);
 
 	return false;
+	//return true;
 }
 
 void CreateMoveHook::Init()

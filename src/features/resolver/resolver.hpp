@@ -5,23 +5,10 @@
 #include "../../angle.hpp"
 #include "../../vector.hpp"
 
-enum FakeType
-{
-	UNDETERMINED = -1,
-	REAL = 0,
-	FAKE = 1
-};
-
-typedef std::pair<FakeType, std::deque<float>> FakeRecord;
-
 struct ResolverInfo
 {
-	ResolverInfo() { fakerecord.first = UNDETERMINED; }
-
-	FakeRecord fakerecord;
 	Angle eye;
 	Angle absang;
-	float lby = 0.f;
 };
 
 class Resolver : public BaseFeature

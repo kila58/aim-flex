@@ -22,6 +22,11 @@ void __fastcall FireEventClientSide(void* instance, void*, IGameEvent* event)
 		playermanager.RemovePlayer(event->GetInt("userid"));
 		playermanager.RemoveDormantPlayer(event->GetInt("userid"));
 	}
+	else if (name == "bullet_impact")
+	{
+		backtrack.BulletImpact(Vector(event->GetFloat("x"), event->GetFloat("x"), event->GetFloat("x")),
+			entitylist->GetClientEntity(engineclient->GetPlayerForUserID(event->GetInt("userid"))));
+	}
 
 	original_function(instance, event);
 }
@@ -30,10 +35,14 @@ void FireEventClientSideHook::Init()
 {
 	hook = new Hook(eventmanager, 9, &FireEventClientSide);
 	original_function = (FireEventClientSideType)hook->ReplaceVirtual();
+
+	bullet_impact = new EventListener("bullet_impact");
 }
 
 void FireEventClientSideHook::Destroy()
 {
+	delete bullet_impact;
+
 	hook->RevertVirtual();
 
 	delete hook;

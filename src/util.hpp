@@ -3,6 +3,10 @@
 #include <cmath>
 #include <Windows.h>
 
+#include <intrin.h>
+
+#include "definitions.hpp"
+
 #undef min
 #undef max
 
@@ -32,4 +36,8 @@ inline void RandomSeed(int seed)
 	static auto RandomSeedFn = (RandomSeedType)(GetProcAddress(GetModuleHandle("vstdlib.dll"), "RandomSeed"));
 
 	return RandomSeedFn(seed);
+}
+inline ptr* GetEBP()
+{
+	return (ptr*)(((char*)_AddressOfReturnAddress()) - sizeof(void*));
 }

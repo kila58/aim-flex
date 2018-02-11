@@ -37,8 +37,11 @@ public:
 	{
 		return SetTextPos((int)x, (int)y);
 	}
-	void DrawPrintText(const wchar_t* text, int textLen, int drawType = 0)
+	void DrawPrintText(const wchar_t* text, int textLen = -1, int drawType = 0)
 	{
+		if (textLen == -1)
+			textLen = std::wcslen(text);
+
 		return getvfunc<void(__thiscall*)(void*, const wchar_t*, int, int)>(this, 28)(this, text, textLen, drawType);
 	}
 	unsigned int CreateFont()

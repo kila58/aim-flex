@@ -96,5 +96,5 @@ struct CCSGOPlayerAnimState
 	char pad10[528];
 };
 
-typedef std::array<float, 24> PoseArray;
-typedef CUtlVector<C_AnimationLayer> AnimLayerVec;
+using PoseArray = std::array<float, 24>;
+using AnimLayerVec = CUtlVector<C_AnimationLayer>;

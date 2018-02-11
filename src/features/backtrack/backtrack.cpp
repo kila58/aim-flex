@@ -6,20 +6,22 @@
 #include "../aimbot/aimbot.hpp"
 #include "../prediction/prediction.hpp"
 
-using CreateAnimState_t = void(__thiscall*)(CCSGOPlayerAnimState*, C_BaseEntity*);
+#include <random>
+
+using CreateAnimStateType = void(__thiscall*)(CCSGOPlayerAnimState*, C_BaseEntity*);
 void Animations::CreateAnimationState(CCSGOPlayerAnimState* state, C_BaseEntity* player)
 {
-	static auto CreateAnimState = (CreateAnimState_t)SigScan("55 8B EC 56 8B F1 B9 ? ? ? ? C7 46", "client.dll");
+	static auto CreateAnimState = (CreateAnimStateType)SigScan("55 8B EC 56 8B F1 B9 ? ? ? ? C7 46", "client.dll");
 	if (!CreateAnimState)
 		return;
 
 	CreateAnimState(state, player);
 }
 
-typedef void(__vectorcall *fnUpdateAnimState)(PVOID, PVOID, float, float, float, PVOID);
+using UpdateAnimationStateType = void(__vectorcall*)(void*, void*, float, float, float, void*);
 void Animations::UpdateAnimationState(CCSGOPlayerAnimState* state, Angle ang)
 {
-	static auto UpdateAnimState = (fnUpdateAnimState)SigScan("55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3 0F 11 54 24", "client.dll");
+	static auto UpdateAnimState = (UpdateAnimationStateType)SigScan("55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3 0F 11 54 24", "client.dll");
 	if (!UpdateAnimState)
 		return;
 
@@ -31,6 +33,14 @@ void Animations::UpdateServerAnimations()
 	for (Player& player : playermanager.GetPlayers())
 	{
 		C_BaseEntity* p = player.ent;
+
+		if (!player.dormantplayer)
+		{
+			if (p)
+				cvar->ConsoleColorPrintf(std::string(p->GetName()) + ": is bad" + "\n");
+
+			continue;
+		}
 
 		if (!player.dormantplayer->animstate)
 		{
@@ -50,8 +60,18 @@ void Animations::UpdateServerAnimations()
 			auto backup_poses = p->GetPoseParameters();
 			auto backup_layers = p->GetAnimLayers();
 
-			UpdateAnimationState(player.dormantplayer->animstate.get(), player.resolverinfo.eye);
+			p->SetAbsOrigin(p->GetOrigin());
+			p->SetAbsAngles(player.resolverinfo.absang);
 
+			// note: you have to force eye angle or else some of the poses will start lerping between invalid angles
+			// another possible problem, when they are faking lby their body might be rotated in the wrong direction, making the head off by a little
+			// so maybe force lby (feet goal in animstate) in some situations?
+			//player.dormantplayer->animstate.get()->m_flGoalFeetYaw = p->GetEyeAngle().y;
+			//player.dormantplayer->animstate.get()->m_flCurrentFeetYaw = p->GetEyeAngle().y; //(still rotates, breaks even more)
+
+			UpdateAnimationState(player.dormantplayer->animstate.get(), p->GetEyeAngle());
+			//cvar->ConsoleColorPrintf(std::to_string(p->GetEyeAngle().y) + "\n");
+			
 			player.poses = p->GetPoseParameters();
 			player.animationlayers = p->GetAnimLayers();
 
@@ -150,6 +170,7 @@ void Backtrack::Invoke()
 		aimbot.GetHitboxBounds(info.mins, info.maxs);
 		aimbot.GetHitboxBoundsNoRadius(info.minsnoradius, info.maxsnoradius);
 		info.radius = aimbot.GetRadius();
+		info.hitbox = aimbot.GetHitboxIndex();
 
 		if (!info.head.IsZero())
 			target.backtrackinfo.ticks.emplace_back(p->GetSimulationTime(), info);
@@ -159,6 +180,17 @@ void Backtrack::Invoke()
 void Backtrack::BacktrackToTick(CUserCmd* cmd, const Tick& tick)
 {
 	cmd->tick_count = TIME_TO_TICKS(tick.time + GetLerpTime());
+}
+
+void Backtrack::BulletImpact(Vector pos, C_BaseEntity* player)
+{
+	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+
+	if (lp && player == lp && aimbot.target)
+	{
+		auto& target = playermanager.GetPlayer(aimbot.target);
+		auto& info = target.resolverinfo;
+	}
 }
 
 void Backtrack::Destroy()

@@ -8,6 +8,7 @@ public:
 
 	float p, y, r;
 
+	// todo: just add all of them
 	Angle operator-(const Angle&) const;
 	Angle& operator-=(const Angle&);
 	Angle operator-(const float) const;

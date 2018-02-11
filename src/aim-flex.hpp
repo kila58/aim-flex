@@ -25,6 +25,8 @@
 #include "vector.hpp"
 #include "util.hpp"
 #include "netvar.hpp"
+#include "benchmark.hpp"
+#include "debug.hpp"
 
 #include "sdk/CUtlVector.hpp"
 #include "sdk/CEngineClient.hpp"
@@ -60,7 +62,7 @@ extern IVModelInfo* modelinfo;
 extern CGameMovement* gamemovement;
 extern IPrediction* prediction;
 extern IEngineTrace* enginetrace;
-extern IGameEventListener2* eventmanager;
+extern IGameEventManager2* eventmanager;
 extern ClientModeShared* clientmode;
 extern CGlobalVarsBase* globals;
 extern CInput* cmdinput;

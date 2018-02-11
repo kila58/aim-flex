@@ -13,7 +13,7 @@ Settings::Settings() : BaseFeature(PAINT)
 		{"rage_enabled", true},
 		// todo: we should be able to fit multiple values inside an object, add to Get
 		{"rage_hitchance", true},
-		{"rage_hitchance_value", 100.f},
+		{"rage_hitchance_value", 78.f},
 	};
 }
 

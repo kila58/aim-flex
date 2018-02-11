@@ -38,14 +38,9 @@ void Input::Invoke()
 
 bool Input::KeyDown(int key)
 {
-	try
+	if (keys.find(key) != keys.end())
 	{
-		if (bool ret = keys[key])
-			return ret;
-	}
-	catch (...)
-	{
-		return false;
+		return keys[key];
 	}
 
 	return false;

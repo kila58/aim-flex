@@ -38,6 +38,7 @@ private:
 	Vector maxs;
 	Vector minsnoradius;
 	Vector maxsnoradius;
+	int hitboxindex;
 public:
 	Aimbot() : BaseFeature(CREATEMOVE, 5u) {}
 
@@ -47,12 +48,15 @@ public:
 	void Invoke();
 	Vector GetHitbox(C_BaseEntity* p, int index, bool interpolated = true);
 	float GetRadius();
+	int GetHitboxIndex();
 	void GetMatrix(bool interpolated, VMatrix* matrix);
 	void GetHitboxBounds(Vector& mins, Vector& maxs);
 	void GetHitboxBoundsNoRadius(Vector & mins, Vector & maxs);
 	Vector GetBodyAim(C_BaseEntity* p);
 	bool GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes);
-	bool MultiPoint(C_BaseEntity* p, int index, Vector& out);
+	bool MultiPoint(C_BaseEntity* p, Tick& tick, Vector& out);
+	bool MultiPoint(C_BaseEntity* p, Vector& out);
+	bool MultiPoint(C_BaseEntity* p, int index, bool interpolated, Vector& out);
 	void CalculateAngle(const Vector& pos, Angle& out);
 	bool IsVisible(C_BaseEntity* p, const Vector& pos, int tracetype = 0, bool checkfraction = true);
 	void MovementFix();
@@ -64,6 +68,7 @@ public:
 
 	C_BaseEntity* target;
 	Tick* tick;
+	bool* bsendpacket;
 };
 
 extern Aimbot aimbot;
