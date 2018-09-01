@@ -6,6 +6,7 @@
 
 void Chams::Init()
 {
+	/*
 	mat = materialsystem->FindMaterial("vgui/white_additive", "Model texture");
 
 	mat->SetMaterialVarFlag(MATERIAL_VAR_ADDITIVE, false);
@@ -13,6 +14,7 @@ void Chams::Init()
 	mat->SetMaterialVarFlag(MATERIAL_VAR_VERTEXALPHA, false);
 	mat->SetMaterialVarFlag(MATERIAL_VAR_NOFOG, true);
 	mat->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
+	*/
 }
 
 bool Chams::InvalidPlayerChams(int i, C_BaseEntity* p, C_BaseEntity* lp)
@@ -33,6 +35,9 @@ bool Chams::InvalidPlayerChams(int i, C_BaseEntity* p, C_BaseEntity* lp)
 
 void Chams::Invoke()
 {
+	if (true)
+		return;
+
 	drawing = true;
 
 	if (mat)
@@ -63,7 +68,7 @@ void Chams::Invoke()
 					mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
 
 					renderview->SetBlend(0.9f);
-					renderview->SetColor(0, 0, 0);
+					renderview->SetColor(0.f, 0.f, 0.f);
 
 					p->DrawModel();
 				}
@@ -79,9 +84,9 @@ void Chams::Invoke()
 			mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
 
 			if (team)
-				renderview->SetColor(0, 100, 255);
+				renderview->SetColor(0.f, 100.f, 255.f);
 			else
-				renderview->SetColor(255, 46, 0);
+				renderview->SetColor(255.f, 46.f, 0.f);
 
 			p->DrawModel();
 
@@ -89,13 +94,13 @@ void Chams::Invoke()
 			mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
 
 			if (team)
-				renderview->SetColor(46, 255, 46);
+				renderview->SetColor(46.f, 255.f, 46.f);
 			else
-				renderview->SetColor(255, 201, 0);
+				renderview->SetColor(255.f, 201.f, 0.f);
 
 			p->DrawModel();
 		}
-		
+
 		modelrender->ForcedMaterialOverride(0);
 	}
 
@@ -104,7 +109,8 @@ void Chams::Invoke()
 
 void Chams::Destroy()
 {
-
+	// need to use g_pMemAlloc
+	//delete mat;
 }
 
 Chams chams;

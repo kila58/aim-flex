@@ -44,6 +44,18 @@ public:
 
 		return getvfunc<void(__thiscall*)(void*, const wchar_t*, int, int)>(this, 28)(this, text, textLen, drawType);
 	}
+	void DrawPrintText(const std::string& text)
+	{
+		int len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.c_str(), text.size(), NULL, 0);
+		
+		if (!len)
+			return;
+
+		std::wstring str(len, 0);
+		MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.c_str(), text.size(), str.data(), str.size());
+
+		DrawPrintText(str.c_str());
+	}
 	unsigned int CreateFont()
 	{
 		return getvfunc<unsigned int(__thiscall*)(void*)>(this, 71)(this);
@@ -55,6 +67,18 @@ public:
 	void GetTextSize(unsigned long font, const wchar_t* text, int& wide, int& tall)
 	{
 		return getvfunc<void(__thiscall*)(void*, unsigned long, const wchar_t*, int&, int&)>(this, 79)(this, font, text, wide, tall);
+	}
+	void GetTextSize(unsigned long font, const std::string& text, int& wide, int& tall)
+	{
+		int len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.c_str(), text.size(), NULL, 0);
+
+		if (!len)
+			return;
+
+		std::wstring str(len, 0);
+		MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.c_str(), text.size(), str.data(), str.size());
+
+		GetTextSize(font, str.c_str(), wide, tall);
 	}
 };
 

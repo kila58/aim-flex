@@ -22,6 +22,6 @@ void ESP::PlayerWeapon()
 		//else
 			matsystemsurface->SetTextPos(x + w / 2 - tw / 2, y + h + 1);
 
-		matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
+		matsystemsurface->DrawPrintText(wname);
 	}
 }

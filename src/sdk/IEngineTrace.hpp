@@ -141,6 +141,79 @@ public:
 	}
 };
 
+#include "../features/debug/debug.hpp"
+
+class IEngineTrace;
+extern IEngineTrace* enginetrace;
+
+inline bool DoesIntersectCapsule(Vector start, Vector dir, Vector min, Vector max, float radius, float range)
+{
+	auto lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+
+	if (!lp)
+		return false;
+
+	Vector delta = (max - min);
+	delta.NormalizeInPlace();
+
+	// todo: why
+	std::deque<Vector> spheres;
+
+	spheres.push_back(min);
+
+	for (int i = 1; i < std::floor(min.Distance(max)); i++)
+		spheres.push_back(min + delta * (float)i);
+
+	spheres.push_back(max);
+
+	for (auto& s : spheres)
+	{
+		Vector end = start + (dir * range);
+
+		//debug << (end.Distance2D(start)) << "\n";
+
+		Vector line_delta = end - start;
+		Vector center_delta = s - start;
+
+		float c1 = center_delta.Dot(line_delta);
+		float c2 = line_delta.Dot(line_delta);
+		float b = c1 / c2;
+
+		//debug << "b: " << b << "\n";
+
+		Vector pb = start + line_delta * b;
+
+		debug.AddBox(pb);
+
+		//debug << "pb: " << pb.x << ", " << pb.y << ", " << pb.z << "\n";
+
+		Vector diff = s - pb;
+
+		float distance = sqrt(diff.Dot(diff));
+
+		if (distance <= radius)
+		{
+			static CTraceFilterDouble filter;
+			static trace_t trace;
+			static Ray_t ray;
+
+			ray.Init(start, pb);
+			filter.pSkip1 = lp;
+
+			//if (checkfraction)
+			//	filter.pSkip2 = p;
+
+			filter.type = TRACE_EVERYTHING;
+			enginetrace->TraceRay(ray, 0x46004003, &filter, &trace);
+
+			if (/*trace.m_pEnt && */trace.fraction >= 0.70f)
+				return true;
+		}
+	}
+
+	return false;
+}
+
 #define	CONTENTS_EMPTY			0		// No contents
 
 #define	CONTENTS_SOLID			0x1		// an eye is never valid in a solid

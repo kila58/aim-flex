@@ -139,7 +139,7 @@ public:
 	{
 		static SetAbsOriginType SetAbsOriginFn = nullptr;
 		if (!SetAbsOriginFn)
-			SetAbsOriginFn = reinterpret_cast<SetAbsOriginType>(SigScan("55 8B EC 83 E4 F8 51 53 56 57 8B F1", "client.dll"));
+			SetAbsOriginFn = reinterpret_cast<SetAbsOriginType>(SigScan("55 8B EC 83 E4 F8 51 53 56 57 8B F1", "client_panorama.dll"));
 
 		SetAbsOriginFn(this, vec);
 	}
@@ -148,7 +148,7 @@ public:
 	{
 		static SetAbsAnglesType SetAbsAnglesFn = nullptr;
 		if (!SetAbsAnglesFn)
-			SetAbsAnglesFn = (SetAbsAnglesType)(SigScan("55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1", "client.dll"));
+			SetAbsAnglesFn = (SetAbsAnglesType)(SigScan("55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1", "client_panorama.dll"));
 
 		SetAbsAnglesFn(this, ang);
 	}

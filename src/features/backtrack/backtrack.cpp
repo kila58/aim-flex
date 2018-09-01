@@ -11,7 +11,7 @@
 using CreateAnimStateType = void(__thiscall*)(CCSGOPlayerAnimState*, C_BaseEntity*);
 void Animations::CreateAnimationState(CCSGOPlayerAnimState* state, C_BaseEntity* player)
 {
-	static auto CreateAnimState = (CreateAnimStateType)SigScan("55 8B EC 56 8B F1 B9 ? ? ? ? C7 46", "client.dll");
+	static auto CreateAnimState = (CreateAnimStateType)SigScan("55 8B EC 56 8B F1 B9 ? ? ? ? C7 46", "client_panorama.dll");
 	if (!CreateAnimState)
 		return;
 
@@ -21,7 +21,7 @@ void Animations::CreateAnimationState(CCSGOPlayerAnimState* state, C_BaseEntity*
 using UpdateAnimationStateType = void(__vectorcall*)(void*, void*, float, float, float, void*);
 void Animations::UpdateAnimationState(CCSGOPlayerAnimState* state, Angle ang)
 {
-	static auto UpdateAnimState = (UpdateAnimationStateType)SigScan("55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3 0F 11 54 24", "client.dll");
+	static auto UpdateAnimState = (UpdateAnimationStateType)SigScan("55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3 0F 11 54 24", "client_panorama.dll");
 	if (!UpdateAnimState)
 		return;
 
@@ -145,7 +145,7 @@ bool Backtrack::TickIsValid(const Tick& tick, float lerp)
 	correct += lerp;
 
 	float sv_maxunlag = cvar->FindVar("sv_maxunlag")->value<float>();
-	correct = clamp(correct, 0.f, sv_maxunlag);
+	correct = std::clamp(correct, 0.f, sv_maxunlag);
 
 	float delta = correct - (globals->curtime - tick.time);
 

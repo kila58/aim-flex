@@ -37,7 +37,7 @@ void AntiAim::SetThirdPersonAngle()
 {
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 
-	if (lp && lp->IsAlive() && cmdinput->m_fCameraInThirdPerson)
+	if (lp && lp->IsAlive() && (*(bool*)((uintptr_t)cmdinput + 0xA5)))
 	{
 		lp->SetViewAngle(fake);
 	}

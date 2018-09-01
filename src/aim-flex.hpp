@@ -16,6 +16,9 @@
 #include <string_view>
 #include <numeric>
 #include <memory>
+#include <utility>
+#include <optional>
+#include <mutex>
 
 #include "definitions.hpp"
 #include "color.hpp"
@@ -26,7 +29,7 @@
 #include "util.hpp"
 #include "netvar.hpp"
 #include "benchmark.hpp"
-#include "debug.hpp"
+#include "features/debug/debug.hpp"
 
 #include "sdk/CUtlVector.hpp"
 #include "sdk/IAppSystem.hpp"

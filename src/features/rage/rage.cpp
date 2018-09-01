@@ -201,36 +201,39 @@ void Rage::Invoke()
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 	auto cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
 
-	Angle ang;
-	if (aimbot.CanShoot() && FindTarget(cmd, ang))
+	if (false)
 	{
-		//if (false)
-		//if (aimbot.HitChance(aimbot.target, ang))
+		Angle ang;
+		if (aimbot.CanShoot() && FindTarget(cmd, ang))
 		{
-			if (aimbot.tick)
-				backtrack.BacktrackToTick(cmd, *aimbot.tick);
+			//if (false)
+			//if (aimbot.HitChance(aimbot.target, ang))
+			{
+				if (aimbot.tick)
+					backtrack.BacktrackToTick(cmd, *aimbot.tick);
 
-			cmd->viewangles = ang;
+				cmd->viewangles = ang;
+				aimbot.NoRecoil();
+
+				cmd->buttons |= IN_ATTACK;
+
+				aimbot.MovementFix();
+
+				*aimbot.bsendpacket = false;
+			}
+		}
+		else if (aimbot.CanShoot() && cmd->buttons & IN_ATTACK)
+		{
 			aimbot.NoRecoil();
-
-			cmd->buttons |= IN_ATTACK;
-
-			aimbot.MovementFix();
 
 			*aimbot.bsendpacket = false;
 		}
-	}
-	else if (aimbot.CanShoot() && cmd->buttons & IN_ATTACK)
-	{
-		aimbot.NoRecoil();
+		else
+		{
+			//antiaim.Invoke();
 
-		*aimbot.bsendpacket = false;
-	}
-	else
-	{
-		antiaim.Invoke();
-
-		aimbot.MovementFix();
+			aimbot.MovementFix();
+		}
 	}
 }
 

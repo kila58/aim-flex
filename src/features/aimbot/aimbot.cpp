@@ -30,6 +30,7 @@ void Aimbot::Invoke()
 	Clamp();
 }
 
+// need to feed traces new setupbones info as well...
 bool Aimbot::SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones)
 {
 	IClientRenderable* renderable = p->GetRenderable();
@@ -116,6 +117,7 @@ bool Aimbot::HitChance(C_BaseEntity* target, const Angle& ang)
 		float spready = sin(pi2) * inaccuracy + sin(pi2) * spread;
 
 		Vector dir = forward + (right * -spreadx) + (up * -spready);
+		Vector end = lpeyepos + (dir * range);
 
 		if (DoesIntersectCapsule(lpeyepos, dir, tick->hitboxinfo.minsnoradius, tick->hitboxinfo.maxsnoradius, tick->hitboxinfo.radius, range))
 			hits++;
@@ -425,8 +427,8 @@ void Aimbot::MovementFix()
 	float speed = move.Length2D();
 
 	Angle view = cmd->viewangles;
-	view.p = clamp(view.p, -89.f, 89.f);
-	view.y = clamp(normalize(view.y), -180.f, 180.f);
+	view.p = std::clamp(view.p, -89.f, 89.f);
+	view.y = std::clamp(normalize(view.y), -180.f, 180.f);
 
 	float yaw = Rad2Deg(atan2(move.y, move.x));
 	yaw = Deg2Rad(view.y - before.y + yaw);
@@ -462,8 +464,8 @@ void Aimbot::Clamp()
 {
 	if (cmd)
 	{
-		cmd->viewangles.p = clamp(cmd->viewangles.p, -89.f, 89.f);
-		cmd->viewangles.y = clamp(normalize(cmd->viewangles.y), -180.f, 180.f);
+		cmd->viewangles.p = std::clamp(cmd->viewangles.p, -89.f, 89.f);
+		cmd->viewangles.y = std::clamp(normalize(cmd->viewangles.y), -180.f, 180.f);
 		cmd->viewangles.r = 0.f;
 	}
 }

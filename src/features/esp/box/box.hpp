@@ -18,11 +18,11 @@ bool ESP::CreateBox(C_BaseEntity* p, int& x, int& y, int& w, int& h)
 	if (!model)
 		return false;
 
-	Vector mins, maxs;
-	modelinfo->GetModelRenderBounds(model, mins, maxs);
+	Vector mins = p->GetMins(), maxs = p->GetMaxs();
+	//modelinfo->GetModelRenderBounds(model, mins, maxs);
 
-	if (p->IsDucked())
-		maxs.z -= 16.f;
+	//if (p->IsDucked())
+	//	maxs.z -= 16.f;
 
 	int screenw, screeh;
 	engineclient->GetScreenSize(screenw, screeh);

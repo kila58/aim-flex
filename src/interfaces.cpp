@@ -13,10 +13,10 @@ bool Interfaces::Init()
 	if (!(matsystemsurface = GetInterface<CMatSystemSurface*>("vguimatsurface.dll", "VGUI_Surface")))
 		return false;
 
-	if (!(entitylist = GetInterface<IClientEntityList*>("client.dll", "VClientEntityList")))
+	if (!(entitylist = GetInterface<IClientEntityList*>("client_panorama.dll", "VClientEntityList")))
 		return false;
 
-	if (!(client = GetInterface<CHLClient*>("client.dll", "VClient")))
+	if (!(client = GetInterface<CHLClient*>("client_panorama.dll", "VClient")))
 		return false;
 
 	if (!(cvar = GetInterface<ICVar*>("vstdlib.dll", "VEngineCvar")))
@@ -25,10 +25,10 @@ bool Interfaces::Init()
 	if (!(modelinfo = GetInterface<IVModelInfo*>("engine.dll", "VModelInfoClient")))
 		return false;
 
-	if (!(gamemovement = GetInterface<CGameMovement*>("client.dll", "GameMovement")))
+	if (!(gamemovement = GetInterface<CGameMovement*>("client_panorama.dll", "GameMovement")))
 		return false;
 
-	if (!(prediction = GetInterface<IPrediction*>("client.dll", "VClientPrediction")))
+	if (!(prediction = GetInterface<IPrediction*>("client_panorama.dll", "VClientPrediction")))
 		return false;
 
 	if (!(enginetrace = GetInterface<IEngineTrace*>("engine.dll", "EngineTraceClient")))
@@ -52,8 +52,11 @@ bool Interfaces::Init()
 	if (!(globals = **(CGlobalVarsBase***)(getvfunc(client, 11) + 0xA)))
 		return false;
 
-	if (!(cmdinput = *(CInput**)(getvfunc(client, 15) + 0x1)))
+	if (!(cmdinput = (CInput*)SigScan("B9 ? ? ? ? F3 0F 11 04 24 FF 50 10", "client_panorama.dll") + 0x1))
 		return false;
+
+	//if (!(cmdinput = *(CInput**)(getvfunc(client, 15) + 0x1)))
+	//	return false;
 
 	if (!(cl = *(CClientState**)(getvfunc(engineclient, 12) + 0x10)))
 		return false;

@@ -15,7 +15,7 @@ public:
 	void Invoke();
 	void Destroy();
 public:
-	IMaterial* mat;
+	IMaterial * mat;
 	bool drawing = false;
 };
 

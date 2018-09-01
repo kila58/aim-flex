@@ -1,5 +1,6 @@
 #pragma once
 
+// todo:: big ez func for the largeeeeeeeeeeeeee wchar DrAwPrIntTeXt
 void ESP::PlayerText()
 {
 	matsystemsurface->SetFont(font);
@@ -11,5 +12,5 @@ void ESP::PlayerText()
 	matsystemsurface->GetTextSize(font, wname, tw, th);
 
 	matsystemsurface->SetTextPos(x + w / 2 - tw / 2, y - th - 2);
-	matsystemsurface->DrawPrintText(wname, std::wcslen(wname));
+	matsystemsurface->DrawPrintText(wname);
 }

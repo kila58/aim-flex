@@ -13,21 +13,33 @@ void __fastcall DrawModelExecute(void* instance, void*, void *state, const Model
 {
 	// todo: fix this (rendering multiple times extra from DrawModel call)
 
-	//if (!chams.drawing)
+	//C_BaseEntity* p = (C_BaseEntity*)entitylist->GetClientEntity(info.entity_index);
+
+	//if (!p)
 		original_function(instance, state, info, bonetoworld);
+
+	//return;
 }
 
 void DrawModelExecuteHook::Init()
 {
-	hook = new Hook(modelrender, 21, &DrawModelExecute);
-	original_function = (DrawModelExecuteType)hook->ReplaceVirtual();
+	if (chams.mat)
+	{
+		hook = new Hook(modelrender, 21, &DrawModelExecute);
+		original_function = (DrawModelExecuteType)hook->ReplaceVirtual();
+
+		debug << "nibber\n";
+	}
 }
 
 void DrawModelExecuteHook::Destroy()
 {
-	hook->RevertVirtual();
+	if (hook)
+	{
+		hook->RevertVirtual();
 
-	delete hook;
+		delete hook;
+	}
 }
 
 DrawModelExecuteHook drawmodelexecute_hook;

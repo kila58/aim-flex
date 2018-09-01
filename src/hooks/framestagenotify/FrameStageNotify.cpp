@@ -18,7 +18,7 @@ void __fastcall FrameStageNotify(void* instance, void*, ClientFrameStage_t stage
 	
 	if (stage == FRAME_RENDER_START)
 	{
-		antiaim.SetThirdPersonAngle();
+		//antiaim.SetThirdPersonAngle();
 		animations.PVSFix();
 	}
 	else if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
@@ -29,7 +29,7 @@ void __fastcall FrameStageNotify(void* instance, void*, ClientFrameStage_t stage
 
 void FrameStageNotifyHook::Init()
 {
-	hook = new Hook(client, 36, &FrameStageNotify);
+	hook = new Hook(client, 37, &FrameStageNotify);
 	original_function = (FrameStageNotifyType)hook->ReplaceVirtual();
 }
 

@@ -4,7 +4,6 @@
 
 #include <psapi.h>
 #include <string>
-#include <vector>
 #include <algorithm>
 
 std::string HexToBytes(std::string hex)

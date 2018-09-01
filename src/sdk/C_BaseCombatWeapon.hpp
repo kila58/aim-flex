@@ -4,11 +4,10 @@ struct FileWeaponInfo_t;
 
 class C_BaseCombatWeapon : public C_BaseEntity
 {
-
 public:
 	FileWeaponInfo_t* GetCSWpnData()
 	{
-		return getvfunc<FileWeaponInfo_t*(__thiscall*)(void*)>(this, 446)(this);
+		return getvfunc<FileWeaponInfo_t*(__thiscall*)(void*)>(this, 444)(this);
 	}
 	int GetAmmo()
 	{
@@ -20,15 +19,15 @@ public:
 	}
 	void UpdateAccuracyPenalty()
 	{
-		return getvfunc<void(__thiscall*)(void*)>(this, 470)(this);
+		return getvfunc<void(__thiscall*)(void*)>(this, 468)(this);
 	}
 	float GetInaccuracy()
 	{
-		return getvfunc<float(__thiscall*)(void*)>(this, 469)(this);
+		return getvfunc<float(__thiscall*)(void*)>(this, 467)(this);
 	}
 	float GetSpread()
 	{
-		return getvfunc<float(__thiscall*)(void*)>(this, 439)(this);
+		return getvfunc<float(__thiscall*)(void*)>(this, 436)(this);
 	}
 };
 
