@@ -17,14 +17,18 @@ void Aimbot::Invoke()
 {
 	lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 
-	if (lp->IsAlive())
+	cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
+	before = cmd->viewangles;
+
+	if (lp && lp->IsAlive())
 	{
 		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
-		cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
-		before = cmd->viewangles;
 		weapon = lp->GetWeapon();
 
-		rage.Invoke();
+		if (settings.Get<bool>("rage_enabled"))
+			rage.Invoke();
+		else if (settings.Get<bool>("legit_enabled"))
+			legit.Invoke();
 	}
 
 	Clamp();
@@ -46,7 +50,7 @@ bool Aimbot::SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones)
 		return false;
 
 	auto& player = playermanager.GetPlayer(p);
-	if (!player || !player.dormantplayer->animstate)
+	if (!player/*|| !player.dormantplayer->animstate*/)
 		return false;
 
 	Vector origin = p->GetOrigin();
@@ -99,7 +103,10 @@ bool Aimbot::HitChance(C_BaseEntity* target, const Angle& ang)
 	int hits = 0;
 	int min = (int)(max * (settings.Get<float>("rage_hitchance_value") / 100.f));
 
-	float range = weapon->GetCSWpnData()->m_flRange;
+	if (!weapon)
+		return false;
+
+	float range = weapon->GetCSWpnData()->flRange;
 
 	lp->GetWeapon()->UpdateAccuracyPenalty();
 
@@ -239,7 +246,7 @@ Vector Aimbot::GetBodyAim(C_BaseEntity* p)
 	return origin;
 }
 
-bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes)
+bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes, std::deque<int> selected)
 {
 	static const model_t* model;
 	static studiohdr_t* hdr;
@@ -251,17 +258,30 @@ bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes)
 		if (!model)
 			return false;
 
-		hdr = modelinfo->GetStudiomodel(model);
+		hdr = p->GetModelPtr()->studio;
 		if (!hdr)
 			return false;
 	}
 
-	for (int h = 0; h < hdr->GetHitboxCount(0); h++)
+	if (selected.size() > 0)
 	{
-		Vector pos = GetHitbox(p, h);
+		for (auto& h : selected)
+		{
+			Vector pos = GetHitbox(p, h);
 
-		if (!pos.IsZero())
-			hitboxes.emplace_back(pos, h);
+			if (!pos.IsZero())
+				hitboxes.emplace_back(pos, h);
+		}
+	}
+	else
+	{
+		for (int h = 0; h < hdr->GetHitboxCount(0); h++)
+		{
+			Vector pos = GetHitbox(p, h);
+
+			if (!pos.IsZero())
+				hitboxes.emplace_back(pos, h);
+		}
 	}
 
 	if (!hitboxes.empty())
@@ -319,7 +339,7 @@ bool Aimbot::MultiPoint(C_BaseEntity* p, Tick& tick, Vector& out)
 	{
 		auto& s = *it;
 
-		for (float z = 0; z <= height; z += 2)
+		for (float z = 0; z <= height; z++)
 		{
 			float radius_mod = radius;
 
@@ -353,6 +373,8 @@ bool Aimbot::MultiPoint(C_BaseEntity* p, Tick& tick, Vector& out)
 
 				Vector final = Vector(s.x, s.y, (s.z - radius) + z) + (forward * radius_mod);
 				positions.emplace_back(final);
+
+				debug.AddBox(final, true);
 			}
 		}
 	}
@@ -401,7 +423,7 @@ void Aimbot::CalculateAngle(const Vector& pos, Angle& out)
 
 bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos, int tracetype, bool checkfraction)
 {
-	static CTraceFilterDouble filter;
+	static CTraceFilterSkipTwoEntities filter;
 	static trace_t trace;
 	static Ray_t ray;
 
@@ -421,20 +443,43 @@ bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos, int tracetype, bool c
 	return ret;
 }
 
+Vector last_origin(0, 0, 0);
+
 void Aimbot::MovementFix()
 {
+	if (!lp)
+		return;
+
 	Vector move(cmd->move.x, cmd->move.y, 0);
 	float speed = move.Length2D();
+
+	//auto velocity = lp->GetVelocity().Length2D();
+
+	if (last_origin.x != 0)
+	{
+		Vector Difference = lp->GetAbsOrigin() - last_origin;
+		float Speed = Difference.Length();
+	
+		//debug << "speed: " << speed << "\n";
+		//debug << "Speed: " << (Speed * 115.384615385) << "\n";
+	}
 
 	Angle view = cmd->viewangles;
 	view.p = std::clamp(view.p, -89.f, 89.f);
 	view.y = std::clamp(normalize(view.y), -180.f, 180.f);
 
 	float yaw = Rad2Deg(atan2(move.y, move.x));
+	//debug << view.y - before.y + yaw << "\n";
+
 	yaw = Deg2Rad(view.y - before.y + yaw);
 
 	cmd->move.x = cos(yaw) * speed;
 	cmd->move.y = sin(yaw) * speed;
+
+	//debug << "cmd->move.x: " << (int)cmd->move.x << "\n";
+	//debug << "cmd->move.y: " << (int)cmd->move.y << "\n";
+
+	last_origin = lp->GetAbsOrigin();
 }
 
 bool Aimbot::CanShoot()

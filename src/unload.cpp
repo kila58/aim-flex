@@ -1,12 +1,14 @@
 #include "aim-flex.hpp"
 
+#include "init.hpp"
+
 #include "unload.hpp"
 
 #include "features/input/input.hpp"
 
 #include "hooks/hooks.hpp"
 
-void Unload::Poll(HMODULE module, bool force)
+void Unload::Poll(DLLInfo* info, bool force)
 {
 	if (!force)
 	{
@@ -19,6 +21,9 @@ void Unload::Poll(HMODULE module, bool force)
 	features.Destroy();
 
 	Sleep(100);
+	
+	HMODULE module = info->module;
+	delete info;
 
 	FreeLibraryAndExitThread(module, NULL);
 }

@@ -29,7 +29,7 @@ public:
 
 	void Init();
 	void Invoke();
-	void AddBox(const Vector& pos);
+	void AddBox(const Vector & pos, bool called_multiple_times = false);
 	template<typename T> Debug& operator<<(T val)
 	{
 		stream << val;

@@ -6,6 +6,7 @@
 	#define NOMINMAX 
 #endif
 
+#define _WINSOCKAPI_
 #include <Windows.h>
 #include <cctype>
 #include <algorithm>

@@ -35,13 +35,16 @@ void DropdownTab::Draw()
 	matsystemsurface->SetTextColor(Color(136, 136, 136));
 	matsystemsurface->SetFont(GetSmallFont());
 
-	std::string status = "(" + ref_to_setting[3].get<std::string>() + ")";
+	if (ref_to_setting[3] != json::value_t::null)
+	{
+		std::string status = "(" + ref_to_setting[3].get<std::string>() + ")";
 
-	int tw2, th2;
-	matsystemsurface->GetTextSize(GetSmallFont(), status, tw2, th2);
+		int tw2, th2;
+		matsystemsurface->GetTextSize(GetSmallFont(), status, tw2, th2);
 
-	matsystemsurface->SetTextPos(x + basetab::tab_title_left_pad + tw + basetab::tab_title_left_pad, y + (basetab::tab_h / 2) - (th2 / 2));
-	matsystemsurface->DrawPrintText(status);
+		matsystemsurface->SetTextPos(x + basetab::tab_title_left_pad + tw + basetab::tab_title_left_pad, y + (basetab::tab_h / 2) - (th2 / 2));
+		matsystemsurface->DrawPrintText(status);
+	}
 
 	DrawArrow();
 }

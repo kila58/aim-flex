@@ -15,7 +15,10 @@ void Features::Init()
 	});
 
 	for (auto& feature : features)
-		feature->Init();
+	{
+		if (!feature->ShouldSkipInit())
+			feature->Init();
+	}
 }
 
 void Features::Invoke(HookType type)

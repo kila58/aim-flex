@@ -9,6 +9,7 @@
 #include "../elements/dropdown.hpp"
 #include "../elements/dropdown_option.hpp"
 #include "../elements/slider.hpp"
+#include "../elements/keypicker.hpp"
 
 struct IndexedTab
 {
@@ -28,7 +29,7 @@ struct IndexedTabList
 	uint current_index = 1;
 	json& ref_to_settings;
 
-	void AddTab(std::string& title, bool has_sublist, json& ref_to_setting, tab_type type = type_basetab)
+	void AddTab(const std::string& title, bool has_sublist, json& ref_to_setting, tab_type type = type_basetab)
 	{
 		index_counter++;
 
@@ -49,6 +50,9 @@ struct IndexedTabList
 		case type_slider:
 			list.emplace_back(index_counter, new SliderTab(title, has_sublist, ref_to_setting));
 			break;
+		case type_keypicker:
+			list.emplace_back(index_counter, new KeyPickerTab(title, has_sublist, ref_to_setting));
+			break;
 		}
 	}
 };
@@ -58,7 +62,9 @@ json& json_placeholder = json();
 class TabLists
 {
 private:
-	std::once_flag flag;
+	// mapper doesn't resolve std::once_flag, so we just use a bool
+	//std::once_flag flag;
+	bool once = false;
 	std::map<uint, IndexedTabList> lists;
 	uint sublevel_counter = 0;
 	int x = 0, y = 540;
@@ -70,34 +76,44 @@ public:
 
 		lists.emplace(sublevel_counter, IndexedTabList(sublevel_counter, settings));
 
-		for (auto it = settings.begin(); it != settings.end(); ++it)
+		for (auto& tab : settings.items())
 		{
 			if (current_sublevel == 1)
-				lists.at(sublevel_counter).AddTab(it.key(), true, it.value());
+				lists.at(sublevel_counter).AddTab(tab.key(), true, tab.value());
 			else
 			{
+				std::string name = tab.value()[1].get<std::string>();
+
+				// [json.exception.parse_error.112] parse error at 240: error reading CBOR; last byte: 0x1C 
+				if (name == "a")
+					continue;
+
 				tab_type type = type_basetab;
 				bool use_superclass = false;
 
-				if (it.value()[2].is_boolean())
+				if (tab.value()[2].is_boolean())
 				{
 					type = type_toggletab;
 				}
-				else if (it.value()[2].is_array())
+				else if (tab.value()[2].is_array())
 				{
 					type = type_dropdown;
 				}
-				else if (it.value()[2].is_null())
+				else if (tab.value()[2].is_null())
 				{
 					type = type_dropdown_option;
 					use_superclass = true;
 				}
-				else if (it.value()[3].is_number())
+				else if (tab.value()[3].is_number())
 				{
 					type = type_slider;
 				}
+				else if (tab.value()[2].is_number())
+				{
+					type = type_keypicker;
+				}
 
-				lists.at(sublevel_counter).AddTab(it.value()[1].get<std::string>(), it.value()[2].is_structured(), use_superclass ? super_class : it.value(), type);
+				lists.at(sublevel_counter).AddTab(name, tab.value()[2].is_structured(), use_superclass ? super_class : tab.value(), type);
 			}
 		}
 	}
@@ -151,7 +167,8 @@ public:
 	}
 	void Think()
 	{
-		std::call_once(flag, [&]()
+		//std::call_once(flag, [&]()
+		if (!once)
 		{
 			input.OnKey(VK_DOWN, [this]()
 			{
@@ -195,7 +212,7 @@ public:
 				auto& current_tab = current_tab_list.list.at(current_index - 1);
 				if (!current_tab.tab->IsMenuOpen())
 					return;
-				
+
 				current_tab.tab->OnPressedRight();
 
 				if (current_tab.tab->HasSublist())
@@ -243,7 +260,7 @@ public:
 					// std::experimental::erase_if?
 					for (auto it = lists.begin(); it != lists.end(); )
 					{
-						if ((*it).second.sublevel > new_sublevel)
+						if (it->second.sublevel > new_sublevel)
 						{
 							it = lists.erase(it);
 
@@ -257,7 +274,10 @@ public:
 					sublevel_counter = new_sublevel;
 				}
 			});
-		});
+
+			once = true;
+		}
+		//});
 	}
 	void Draw()
 	{
@@ -270,14 +290,20 @@ public:
 
 		y = (sh / 3);
 
-		for (auto& indexed_tab_list : lists)
+		for (auto it = lists.begin(); it != lists.end(); ++it)
 		{
+			auto& indexed_tab_list = *it;
+
 			uint list_size = indexed_tab_list.second.list.size();
 			uint sublevel = indexed_tab_list.second.sublevel;
 			uint current_index = indexed_tab_list.second.current_index;
 
 			x = sublevel * (basetab::tab_w - 1)
 				- (basetab::tab_w - 1); // ignore space for first sublevel
+
+			if (sublevel != 1)
+				y += std::prev(it)->second.current_index * (final_tab_height)
+				- final_tab_height; // ignore space for first sublevel
 
 			DrawShadow(list_size, sublevel);
 

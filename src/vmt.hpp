@@ -4,6 +4,11 @@
 
 inline ptr getvfunc(void* table, size_t index)
 {
+	if (!table)
+	{
+		MessageBoxA(NULL, "kll sellf", "kill self", NULL);
+	}
+
 	return ((*(ptr**)table)[index]);
 }
 

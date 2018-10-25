@@ -4,6 +4,8 @@
 
 #include "../settings/settings.hpp"
 #include "../playermanager/playermanager.hpp"
+#include "../input/input.hpp"
+#include "../prediction/prediction.hpp"
 
 #include "../aimbot/aimbot.hpp"
 
@@ -41,13 +43,22 @@ bool ESP::InvalidPlayerESP(int i, C_BaseEntity* p, C_BaseEntity* lp)
 
 void ESP::Invoke()
 {
+	if (input.KeyDownOnce(settings.Get<int>("esp_toggle_key")))
+		settings.Set<bool>("esp_enabled", !settings.Get<bool>("esp_enabled"));
+
+	lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
+	if (!lp)
+		return;
+
+	//if (AreArgumentsSet(CREATEMOVE))
+	//	gamemove.RenderMove(lp, GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0), 8);
+
 	bool antiaiminfo = settings.Get<bool>("esp_antiaiminfo");
 
 	if (settings.Get<bool>("esp_enabled") && engineclient->IsInGame())
 	{
 		matsystemsurface->SetTextColor(Color(255, 255, 255));
 
-		lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 		Vector lpeyepos = lp->GetAbsOrigin() + lp->GetEyeOffset();
 
 		for (int i = 1; i <= globals->maxClients; i++)

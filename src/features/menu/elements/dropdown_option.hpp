@@ -6,7 +6,7 @@ private:
 	tab_type type = type_dropdown_option;
 	json& ref_to_super_setting;
 public:
-	DropdownOptionTab(std::string name, bool has_sublist, json& ref_to_super_setting) : BaseTab(name, has_sublist), ref_to_super_setting(ref_to_super_setting) {}
+	DropdownOptionTab(const std::string& name, bool has_sublist, json& ref_to_super_setting) : BaseTab(name, has_sublist), ref_to_super_setting(ref_to_super_setting) {}
 
 	bool FindSettingFromTitle();
 	void Draw();
@@ -65,7 +65,10 @@ void DropdownOptionTab::Draw()
 
 void DropdownOptionTab::OnPressedRight()
 {
-	auto& set_option = ref_to_super_setting[3];
+	if (ref_to_super_setting[3] != json::value_t::null)
+	{
+		auto& set_option = ref_to_super_setting[3];
 
-	set_option = GetTitle();
+		set_option = GetTitle();
+	}
 }

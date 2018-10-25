@@ -46,6 +46,7 @@ public:
 	void CreateAnimationState(CCSGOPlayerAnimState* state, C_BaseEntity* player);
 	void UpdateAnimationState(CCSGOPlayerAnimState* state, Angle ang);
 	void UpdateServerAnimations();
+	void FixAnimations();
 	void PVSFix();
 };
 

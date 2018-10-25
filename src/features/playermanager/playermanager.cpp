@@ -2,6 +2,8 @@
 
 #include "../../aim-flex.hpp"
 
+#include "../settings/settings.hpp"
+
 #include "../backtrack/backtrack.hpp"
 
 Player::Player(int index, int userid, C_BaseEntity* ent)
@@ -26,8 +28,14 @@ bool InvalidPlayer(int i, C_BaseEntity* p, C_BaseEntity* lp)
 	if (!p->IsAlive())
 		return true;
 
-	if (p->GetTeam() == lp->GetTeam())
-		return true;
+	bool legit_enabled = settings.Get<bool>("legit_enabled");
+	bool legit_team_enabled = settings.Get<bool>("legit_team_enabled");
+
+	if (!(legit_enabled && legit_team_enabled))
+	{
+		if (p->GetTeam() == lp->GetTeam())
+			return true;
+	}
 
 	return false;
 }
@@ -48,7 +56,22 @@ void PlayerManager::Invoke()
 		PopulateDormantPlayers();
 
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
-	Vector lporigin = lp->GetAbsOrigin();
+	if (!lp/* && !lp->IsAlive()*/)
+		return;
+	
+	Vector lporigin(0, 0, 0);
+	if (lp->IsAlive())
+	{
+		// not abs cuz crash?
+		lporigin = lp->GetOrigin();
+
+		if (lporigin.IsZero())
+		{
+			//MessageBoxA(NULL, "??? the weird crash ???", "??? the weird crash ???", NULL);
+
+			return;
+		}
+	}
 
 	std::experimental::erase_if(players, [&lp](const Player& ply)
 	{
@@ -72,10 +95,25 @@ void PlayerManager::Invoke()
 		}
 	}
 
+	bool legit_enabled = settings.Get<bool>("legit_enabled");
+
 	// todo: maybe use Distance2DSqr? (it will produce massive numbers, needs benchmark)
 	for (auto& player : players)
 	{
-		player.compare = lporigin.Distance(player.ent->GetAbsOrigin());
+		if (legit_enabled)
+		{
+			Vector pos_diff = (player.ent->GetAbsOrigin() - lporigin);
+			Angle current_angle;
+			VectorAngles(pos_diff, current_angle);
+
+			Angle ang;
+			engineclient->GetViewAngles(ang);
+
+			player.compare = CalculateFOV(ang, current_angle);
+		}
+		else
+			player.compare = lporigin.Distance(player.ent->GetAbsOrigin());
+
 		player.resolverinfo.absang = player.ent->GetAbsAngles();
 		
 		// if you ever need raw eye angle then add another var

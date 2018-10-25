@@ -6,7 +6,7 @@ WNDPROC original_function;
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	if (handle == GetFocus())
+	//if (handle == GetFocus())
 	{
 		BaseFeature::SetArguments(WINDOWPROC, handle, msg, wparam, lparam);
 		features.Invoke(WINDOWPROC);

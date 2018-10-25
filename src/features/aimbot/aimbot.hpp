@@ -5,6 +5,8 @@
 #include "../../angle.hpp"
 #include "../../vector.hpp"
 
+#include <array>
+
 class C_BaseEntity;
 class CUserCmd;
 class C_BaseCombatWeapon;
@@ -53,7 +55,7 @@ public:
 	void GetHitboxBounds(Vector& mins, Vector& maxs);
 	void GetHitboxBoundsNoRadius(Vector & mins, Vector & maxs);
 	Vector GetBodyAim(C_BaseEntity* p);
-	bool GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes);
+	bool GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes, std::deque<int> selected = {});
 	bool MultiPoint(C_BaseEntity* p, Tick& tick, Vector& out);
 	bool MultiPoint(C_BaseEntity* p, Vector& out);
 	bool MultiPoint(C_BaseEntity* p, int index, bool interpolated, Vector& out);

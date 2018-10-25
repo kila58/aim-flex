@@ -6,7 +6,7 @@ private:
 	tab_type type = type_toggletab;
 	json& ref_to_setting;
 public:
-	ToggleTab(std::string name, bool has_sublist, json& ref_to_setting) : BaseTab(name, has_sublist), ref_to_setting(ref_to_setting) {}
+	ToggleTab(const std::string& name, bool has_sublist, json& ref_to_setting) : BaseTab(name, has_sublist), ref_to_setting(ref_to_setting) {}
 
 	void Draw();
 	void OnPressedRight();

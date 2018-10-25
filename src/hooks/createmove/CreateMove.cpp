@@ -4,6 +4,8 @@
 
 #include "../../features/features.hpp"
 
+#include "../../features/strafe/strafe.hpp"
+
 #include "../../features/aimbot/aimbot.hpp"
 
 using CreateMoveType = void*(__thiscall*)(void*, float, CUserCmd*);
@@ -14,15 +16,19 @@ bool __fastcall CreateMove(void* instance, void*, float flInputSampleTime, CUser
 	original_function(instance, flInputSampleTime, cmd);
 
 	if (!cmd->command_number)
-		return false;
+		return true;
 
 	aimbot.bsendpacket = (bool*)(*GetEBP() - 0x1C);
+	strafe.bsendpacket = (bool*)(*GetEBP() - 0x1C);
 
-	BaseFeature::SetArguments(CREATEMOVE, cmd);
+	// arg 1 (#2) is hook ret
+	BaseFeature::SetArguments(CREATEMOVE, cmd, true, flInputSampleTime);
 	features.Invoke(CREATEMOVE);
 
-	return false;
-	//return true;
+	//debug << "CreateMove cmd->move.x: " << (int)cmd->move.x << "\n";
+	//debug << "CreateMove cmd->move.y: " << (int)cmd->move.y << "\n";
+
+	return BaseFeature::GetArg<bool>(BaseFeature::GetArguments(CREATEMOVE), 1);;
 }
 
 void CreateMoveHook::Init()

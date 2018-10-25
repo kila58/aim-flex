@@ -18,7 +18,7 @@ public:
 
 	float x, y, z;
 
-	float operator[](int);
+	float& operator[](int);
 	float const operator[](int) const;
 
 	// todo: just add all of them
@@ -33,22 +33,27 @@ public:
 	Vector operator+(const Vector&) const;
 	Vector& operator+=(const Vector&);
 	Vector operator+(const float) const;
+	bool operator==(const Vector&) const;
+
+	void Init(const float, const float, const float);
 
 	bool IsZero() const;
 
 	float Length() const;
 	float Length2D() const;
+	float LengthSqr() const;
 	float Length2DSqr() const;
 	float Distance(const Vector&) const;
 	float Distance2D(const Vector&) const;
 	float Distance2DSqr(const Vector&) const;
+	Vector Cross(const Vector&) const;
 	float Dot(const Vector&) const;
 	float Normalize();
 	float NormalizeInPlace();
 	Vector Rotate(const Angle&) const;
 };
 
-inline float Vector::operator[](int index)
+inline float& Vector::operator[](int index)
 {
 	return ((float*)this)[index];
 }
@@ -129,6 +134,18 @@ inline Vector Vector::operator+(const float f) const
 	return Vector(x + f, y + f, z + f);
 }
 
+inline bool Vector::operator==(const Vector& vec) const
+{
+	return vec.x == x && vec.y == y && vec.z == z;
+}
+
+inline void Vector::Init(const float x, const float y, const float z)
+{
+	this->x = x;
+	this->x = y;
+	this->z = y;
+}
+
 inline bool Vector::IsZero() const
 {
 	return (x == 0.f && y == 0.f && z == 0.f);
@@ -142,6 +159,11 @@ inline float Vector::Length() const
 inline float Vector::Length2D() const
 {
 	return std::sqrt((x * x) + (y * y));
+}
+
+inline float Vector::LengthSqr() const
+{
+	return ((x * x) + (y * y) + (z * z));
 }
 
 inline float Vector::Length2DSqr() const
@@ -162,6 +184,11 @@ inline float Vector::Distance2D(const Vector& vec) const
 inline float Vector::Distance2DSqr(const Vector& vec) const
 {
 	return (*this - vec).Length2DSqr();
+}
+
+inline Vector Vector::Cross(const Vector& vec) const
+{
+	return (*this) * (vec);
 }
 
 inline float Vector::Dot(const Vector& vec) const
@@ -350,4 +377,14 @@ inline void VectorAngles(const Vector& vec, Angle& angles)
 {
 	angles.p = Rad2Deg(atan2(-vec.z, vec.Length2D()));
 	angles.y = Rad2Deg(atan2(vec.y, vec.x));
+}
+
+inline float CalculateFOV(Angle viewang, Angle aimang)
+{
+	Vector ang, aim, r, u;
+
+	AngleVectors(viewang, aim, r, u);
+	AngleVectors(aimang, ang, r, u);
+
+	return Rad2Deg(acos(aim.Dot(ang) / (aim.Dot(aim))));
 }

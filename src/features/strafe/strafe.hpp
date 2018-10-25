@@ -10,6 +10,8 @@ public:
 	void Init();
 	void Invoke();
 	void Destroy();
+
+	bool* bsendpacket;
 };
 
 extern Strafe strafe;

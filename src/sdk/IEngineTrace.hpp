@@ -21,7 +21,23 @@ struct Ray_t
 		m_Start = start;
 		m_Delta = end - start;
 		m_IsRay = true;
-		m_IsSwept = true;
+		m_IsSwept = (m_Delta.LengthSqr() != 0);
+	}
+	void Init(Vector const& start, Vector const& end, Vector const& mins, Vector const& maxs)
+	{
+		m_Delta = end - start;
+
+		m_pWorldAxisTransform = NULL;
+		m_IsSwept = (m_Delta.LengthSqr() != 0);
+
+		m_Extents = maxs - mins;
+		m_Extents *= 0.5f;
+		m_IsRay = (m_Extents.LengthSqr() < 1e-6);
+
+		m_StartOffset = mins + maxs;
+		m_StartOffset *= 0.5f;
+		m_Start = start + m_StartOffset;
+		m_StartOffset *= -1.0f;
 	}
 };
 
@@ -88,7 +104,6 @@ public:
 	virtual TraceType_t	GetTraceType() const = 0;
 };
 
-
 class CTraceFilter : public ITraceFilter
 {
 public:
@@ -99,14 +114,47 @@ public:
 
 	TraceType_t GetTraceType() const
 	{
-		return type;
+		return TRACE_EVERYTHING;
 	}
 
 	void* pSkip;
 	TraceType_t type = TRACE_EVERYTHING;
 };
 
-class CTraceFilterDouble : public ITraceFilter
+typedef bool(*ShouldHitFunc_t)(void *pHandleEntity, int contentsMask);
+
+class CTraceFilterSimple : public CTraceFilter
+{
+public:
+	CTraceFilterSimple(const void *passentity, int collisionGroup, ShouldHitFunc_t pExtraShouldHitCheckFn = NULL) :
+		m_pPassEnt(passentity), m_collisionGroup(collisionGroup), m_pExtraShouldHitCheckFunction(pExtraShouldHitCheckFn) {};
+
+	bool ShouldHitEntity(void* pEntityHandle, int contentsMask)
+	{
+		return !(pEntityHandle == m_pPassEnt);
+	}
+
+	virtual void SetPassEntity(const void *pPassEntity) 
+	{ 
+		m_pPassEnt = pPassEntity; 
+	}
+
+	virtual void SetCollisionGroup(int iCollisionGroup) 
+	{ 
+		m_collisionGroup = iCollisionGroup;
+	}
+
+	const void* GetPassEntity(void)
+	{
+		return m_pPassEnt;
+	}
+private:
+	const void *m_pPassEnt;
+	int m_collisionGroup;
+	ShouldHitFunc_t m_pExtraShouldHitCheckFunction;
+};
+
+class CTraceFilterSkipTwoEntities : public ITraceFilter
 {
 public:
 	bool ShouldHitEntity(void* pEntityHandle, int contentsMask)
@@ -183,7 +231,7 @@ inline bool DoesIntersectCapsule(Vector start, Vector dir, Vector min, Vector ma
 
 		Vector pb = start + line_delta * b;
 
-		debug.AddBox(pb);
+		//debug.AddBox(pb);
 
 		//debug << "pb: " << pb.x << ", " << pb.y << ", " << pb.z << "\n";
 
@@ -193,7 +241,7 @@ inline bool DoesIntersectCapsule(Vector start, Vector dir, Vector min, Vector ma
 
 		if (distance <= radius)
 		{
-			static CTraceFilterDouble filter;
+			static CTraceFilterSkipTwoEntities filter;
 			static trace_t trace;
 			static Ray_t ray;
 
@@ -206,7 +254,9 @@ inline bool DoesIntersectCapsule(Vector start, Vector dir, Vector min, Vector ma
 			filter.type = TRACE_EVERYTHING;
 			enginetrace->TraceRay(ray, 0x46004003, &filter, &trace);
 
-			if (/*trace.m_pEnt && */trace.fraction >= 0.70f)
+			debug << trace.fraction << "\n";
+
+			if (/*trace.m_pEnt && */trace.fraction >= 0.90f)
 				return true;
 		}
 	}

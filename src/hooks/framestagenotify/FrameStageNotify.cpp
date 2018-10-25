@@ -18,11 +18,19 @@ void __fastcall FrameStageNotify(void* instance, void*, ClientFrameStage_t stage
 	
 	if (stage == FRAME_RENDER_START)
 	{
-		//antiaim.SetThirdPersonAngle();
+		antiaim.SetThirdPersonAngle();
 		animations.PVSFix();
 	}
 	else if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
-		animations.UpdateServerAnimations();
+	{
+		animations.FixAnimations();
+	}
+
+	// todo: fix this or find an alternate method, 
+	// Exception thrown at 0x27B62EF6 (client_panorama.dll) in csgo.exe: 0xC0000005: Access violation reading location 0x00000258.
+	// crashes in UpdateAnimationState
+	//else if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
+	//	animations.UpdateServerAnimations();
 
 	original_function(instance, stage);
 }

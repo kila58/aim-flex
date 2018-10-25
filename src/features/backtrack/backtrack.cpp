@@ -13,7 +13,11 @@ void Animations::CreateAnimationState(CCSGOPlayerAnimState* state, C_BaseEntity*
 {
 	static auto CreateAnimState = (CreateAnimStateType)SigScan("55 8B EC 56 8B F1 B9 ? ? ? ? C7 46", "client_panorama.dll");
 	if (!CreateAnimState)
+	{
+		debug << "!CreateAnimState\n";
+
 		return;
+	}
 
 	CreateAnimState(state, player);
 }
@@ -23,9 +27,115 @@ void Animations::UpdateAnimationState(CCSGOPlayerAnimState* state, Angle ang)
 {
 	static auto UpdateAnimState = (UpdateAnimationStateType)SigScan("55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3 0F 11 54 24", "client_panorama.dll");
 	if (!UpdateAnimState)
-		return;
+	{
+		debug << "!UpdateAnimState\n";
 
-	UpdateAnimState(state, NULL, NULL, ang.y, ang.p, NULL);
+		return;
+	}
+
+	if (!state)
+		MessageBoxA(NULL, "commit food eat", "commit food eat", NULL);
+
+	__asm
+	{
+		mov ecx, state
+
+		movss xmm1, dword ptr[ang + 4]
+		movss xmm2, dword ptr[ang]
+
+		call UpdateAnimState
+	}
+
+	//UpdateAnimState(state, NULL, NULL, ang.y, ang.p, NULL);
+}
+
+// temporary solution, need to fix UpdateServerAnimations. this is using interpolated animations i think so bad.
+void Animations::FixAnimations()
+{
+	for (Player& player : playermanager.GetPlayers())
+	{
+		C_BaseEntity* p = player.ent;
+
+		if (!player.dormantplayer)
+		{
+			if (p)
+				cvar->ConsoleColorPrintf(std::string(p->GetName()) + ": is bad" + "\n");
+
+			continue;
+		}
+
+		if (!(p && p->IsAlive()))
+			continue;
+
+		//Vector backup_absorigin = p->GetAbsOrigin();
+		//if (backup_absorigin.IsZero())
+		//	continue;
+
+		//Angle backup_absangles = p->GetAbsAngles();
+
+		auto backup_poses = p->GetPoseParameters();
+		auto backup_layers = p->GetAnimLayers();
+
+		//p->SetAbsOrigin(p->GetOrigin());
+		//p->SetAbsAngles(player.resolverinfo.absang);
+
+		// hey nOX FIX THIS
+		//p->UpdateClientSideAnimation();
+
+		player.poses = p->GetPoseParameters();
+		player.animationlayers = p->GetAnimLayers();
+
+		p->SetPoseParameters(backup_poses);
+		p->SetAnimLayers(backup_layers);
+
+		//p->SetAbsOrigin(backup_absorigin);
+		//p->SetAbsAngles(backup_absangles);
+
+		//p->UpdateClientSideAnimation();
+
+		/*
+		float backup_curtime = globals->curtime;
+		float backup_frametime = globals->frametime;
+
+		//static auto host_timescale = cvar->FindVar("host_timescale");
+		float host_timescale = cvar->FindVar("host_timescale")->value<float>();
+
+		globals->curtime = p->GetOldSimulationTime() + globals->interval_per_tick;
+		globals->frametime = globals->interval_per_tick * host_timescale;
+
+		CCSGOPlayerAnimState* state = p->GetAnimationState();
+		if (state)
+			state->m_iLastClientSideAnimationUpdateFramecount = globals->framecount - 1;
+
+		Vector backup_absorigin = p->GetAbsOrigin();
+		Angle backup_absangles = p->GetAbsAngles();
+
+		auto backup_poses = p->GetPoseParameters();
+		auto backup_layers = p->GetAnimLayers();
+
+		p->SetAbsOrigin(p->GetOrigin());
+		p->SetAbsAngles(player.resolverinfo.absang);
+
+		p->SetClientSideAnimation(true);
+		
+		p->UpdateClientSideAnimation();
+
+		player.poses = p->GetPoseParameters();
+		player.animationlayers = p->GetAnimLayers();
+
+		p->SetClientSideAnimation(false);
+
+		// restore
+		p->SetPoseParameters(backup_poses);
+		p->SetAnimLayers(backup_layers);
+
+		p->SetAbsOrigin(backup_absorigin);
+		p->SetAbsAngles(backup_absangles);
+
+		globals->curtime = backup_curtime;
+		globals->frametime = backup_frametime;
+		*/
+	}
 }
 
 void Animations::UpdateServerAnimations()

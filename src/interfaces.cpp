@@ -52,7 +52,7 @@ bool Interfaces::Init()
 	if (!(globals = **(CGlobalVarsBase***)(getvfunc(client, 11) + 0xA)))
 		return false;
 
-	if (!(cmdinput = (CInput*)SigScan("B9 ? ? ? ? F3 0F 11 04 24 FF 50 10", "client_panorama.dll") + 0x1))
+	if (!(cmdinput = *(CInput**)(SigScan("B9 ? ? ? ? F3 0F 11 04 24 FF 50 10", "client_panorama.dll") + 0x1)))
 		return false;
 
 	//if (!(cmdinput = *(CInput**)(getvfunc(client, 15) + 0x1)))

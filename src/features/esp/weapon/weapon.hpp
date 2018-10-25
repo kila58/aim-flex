@@ -10,7 +10,7 @@ void ESP::PlayerWeapon()
 	{
 		int tw, th;
 
-		std::string name = std::string(weapon->GetCSWpnData()->szClassName).substr(7);
+		std::string name = std::string(weapon->GetCSWpnData()->consoleName).substr(7);
 
 		wchar_t wname[128];
 		MultiByteToWideChar(CP_UTF8, 0, name.c_str(), -1, wname, 128);

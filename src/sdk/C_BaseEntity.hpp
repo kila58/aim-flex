@@ -116,6 +116,15 @@ public:
 	}
 	Vector& GetAbsOrigin()
 	{
+		static Vector empty_vec(0, 0, 0);
+
+		if (!this)
+		{
+			MessageBoxA(NULL, "fokin naughty", "mate", NULL);
+
+			return empty_vec;
+		}
+
 		return getvfunc<Vector&(__thiscall*)(void*)>(this, 10)(this);
 	}
 	Angle& GetAbsAngles()
@@ -152,6 +161,18 @@ public:
 
 		SetAbsAnglesFn(this, ang);
 	}
+	CCSGOPlayerAnimState* GetAnimationState()
+	{
+		return Get<CCSGOPlayerAnimState*>(GetOffset("m_bIsScoped") - 0xA);
+	}
+	void UpdateClientSideAnimation()
+	{
+		return getvfunc<void(__thiscall*)(void*)>(this, 218)(this);
+	}
+	void SetClientSideAnimation(bool what)
+	{
+		Set<bool>(what, GetOffset("m_bClientSideAnimation"));
+	}
 	void SetPoseParameters(PoseArray poses)
 	{
 		SetNetVar<PoseArray>("m_flPoseParameter", poses);
@@ -172,9 +193,23 @@ public:
 	{
 		return Get<CStudioHdr*>(GetOffset("m_bSuppressAnimSounds") + 0x2);
 	}
+	// this is being goofy for some reason
 	bool IsDormant()
 	{
+		return Get<bool>(0xE9);
+
+		/*
+		auto networkable = GetNetworkable();
+	
+		if (!networkable)
+		{
+			MessageBoxA(NULL, "!networkable", "!networkable", NULL);
+
+			return true;
+		}
+
 		return GetNetworkable()->IsDormant();
+		*/
 	}
 	bool IsAlive()
 	{
@@ -192,11 +227,11 @@ public:
 	{
 		return GetNetVar<int>("m_fFlags") & FL_ONGROUND;
 	}
-	Vector GetMins()
+	Vector OBBMins()
 	{
 		return GetNetVar<Vector>("m_vecMins");
 	}
-	Vector GetMaxs()
+	Vector OBBMaxs()
 	{
 		return GetNetVar<Vector>("m_vecMaxs");
 	}
@@ -231,6 +266,10 @@ public:
 	float GetSimulationTime()
 	{
 		return GetNetVar<float>("m_flSimulationTime");
+	}
+	float GetOldSimulationTime()
+	{
+		return Get<float>(GetOffset("m_flSimulationTime") + 0x4);
 	}
 	// todo: change this from hardcoded
 	void ClearOcclusionFlags()
@@ -290,5 +329,17 @@ public:
 	void SetEyeAngle(const Angle& ang)
 	{
 		Set(ang, GetOffset("m_angEyeAngles[0]"));
+	}
+	float GetStepSize()
+	{
+		return GetNetVar<float>("m_flStepSize");
+	}
+	float GetMaxSpeed()
+	{
+		return GetNetVar<float>("m_flMaxSpeed");
+	}
+	int GetShotsFired()
+	{
+		return GetNetVar<int>("m_iShotsFired");
 	}
 };

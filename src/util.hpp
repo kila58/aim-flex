@@ -36,3 +36,24 @@ inline ptr* GetEBP()
 {
 	return (ptr*)(((char*)_AddressOfReturnAddress()) - sizeof(void*));
 }
+template<class Rng>
+class Reverse
+{
+	Rng& object;
+public:
+	Reverse(Rng& object) noexcept : object(object) {}
+
+	auto begin() const noexcept
+	{
+		return std::make_reverse_iterator(std::end(object));
+	}
+
+	auto end() const noexcept
+	{
+		return std::make_reverse_iterator(std::begin(object));
+	}
+};
+inline float lerp_axis(float a, float b, float f)
+{
+	return a + f * normalize(b - a);
+}

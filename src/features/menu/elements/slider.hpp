@@ -6,7 +6,7 @@ private:
 	tab_type type = type_slider;
 	json& ref_to_setting;
 public:
-	SliderTab(std::string name, bool has_sublist, json& ref_to_setting) : BaseTab(name, has_sublist), ref_to_setting(ref_to_setting) {}
+	SliderTab(const std::string& name, bool has_sublist, json& ref_to_setting) : BaseTab(name, has_sublist), ref_to_setting(ref_to_setting) {}
 
 	void Draw();
 	void OnPressedRight();
@@ -41,13 +41,40 @@ void SliderTab::Draw()
 	int min = ref_to_setting[3];
 	int max = ref_to_setting[4];
 
-	std::string status = "(" + std::to_string(value) + ")";
-
+	std::string symbol = ref_to_setting[5];
 	int tw2, th2;
-	matsystemsurface->GetTextSize(GetSmallFont(), status, tw2, th2);
 
-	matsystemsurface->SetTextPos(x + basetab::tab_title_left_pad + tw + basetab::tab_title_left_pad, y + (basetab::tab_h / 2) - (th2 / 2));
-	matsystemsurface->DrawPrintText(status);
+	/*
+	debug << symbol << "\n";
+
+	if (symbol == "a")
+	{
+		std::string to_convert = std::to_string(value);
+		int len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, to_convert.c_str(), to_convert.size(), NULL, 0);
+
+		if (!len)
+			return;
+
+		std::wstring str(len, 0);
+		MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, to_convert.c_str(), to_convert.size(), str.data(), str.size());
+
+		std::wstring status = L"(" + str + L"\u00B0" + L")";
+
+		matsystemsurface->GetTextSize(GetSmallFont(), status.c_str(), tw2, th2);
+
+		matsystemsurface->SetTextPos(x + basetab::tab_title_left_pad + tw + basetab::tab_title_left_pad, y + (basetab::tab_h / 2) - (th2 / 2));
+		matsystemsurface->DrawPrintText(status.c_str());
+	}
+	else
+	*/
+	{
+		std::string status = "(" + std::to_string(value) + symbol + ")";
+
+		matsystemsurface->GetTextSize(GetSmallFont(), status, tw2, th2);
+
+		matsystemsurface->SetTextPos(x + basetab::tab_title_left_pad + tw + basetab::tab_title_left_pad, y + (basetab::tab_h / 2) - (th2 / 2));
+		matsystemsurface->DrawPrintText(status);
+	}
 
 	matsystemsurface->SetDrawColor(Color(0, 0, 0));
 
@@ -67,6 +94,9 @@ void SliderTab::Draw()
 	matsystemsurface->DrawLine(start_slider_x, start_slider_y + 2, end_slider_x, end_slider_y + 2);
 
 	int bar_width = end_slider_x - start_slider_x;
+
+	if (min == 1)
+		min = 0;
 
 	int width = (int)((std::clamp((float)value / (float)max, (float)min, (float)max)) * 
 		(bar_width - 2)); // clip front and end 1px for outline

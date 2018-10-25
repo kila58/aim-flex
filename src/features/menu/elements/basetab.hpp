@@ -16,7 +16,8 @@ enum tab_type
 	type_toggletab,
 	type_dropdown,
 	type_dropdown_option,
-	type_slider
+	type_slider,
+	type_keypicker
 };
 
 class BaseTab
@@ -28,7 +29,7 @@ protected:
 	bool has_sublist = false;
 	tab_type type = type_basetab;
 public:
-	BaseTab(std::string& name, bool has_sublist) : name(name), has_sublist(has_sublist) {}
+	BaseTab(const std::string& name, bool has_sublist) : name(name), has_sublist(has_sublist) {}
 
 	inline std::pair<int, int> GetPosition() const
 	{

@@ -4,8 +4,8 @@
 
 #include "../playermanager/playermanager.hpp"
 #include "../aimbot/aimbot.hpp"
-#include "../prediction/prediction.hpp"
 #include "../antiaim/antiaim.hpp"
+#include "../settings/settings.hpp"
 
 void Rage::Init()
 {
@@ -52,17 +52,18 @@ bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 		for (auto& tick : target.backtrackinfo.ticks)
 		{
 			Vector out = tick.hitboxinfo.head;
-			//if (aimbot.MultiPoint(p, tick, out))
+			
+			if (settings.Get<bool>("rage_multipoint_enabled"))
+				aimbot.MultiPoint(p, tick, out);
+
+			if (aimbot.IsVisible(p, out))
 			{
-				if (aimbot.IsVisible(p, out))
-				{
-					aimbot.CalculateAngle(out, ang);
+				aimbot.CalculateAngle(out, ang);
 
-					aimbot.target = p;
-					aimbot.tick = &tick;
+				aimbot.target = p;
+				aimbot.tick = &tick;
 
-					return true;
-				}
+				return true;
 			}
 		}
 
@@ -200,41 +201,48 @@ void Rage::Invoke()
 {
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 	auto cmd = GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0);
+	auto frametime = GetArg<float>(GetArguments(CREATEMOVE), 2);
 
-	if (false)
+	Angle ang;
+	if (lp && aimbot.CanShoot() && FindTarget(cmd, ang))
 	{
-		Angle ang;
-		if (aimbot.CanShoot() && FindTarget(cmd, ang))
+		bool hitchance_pass = true;
+
+		if (settings.Get<bool>("rage_hitchance_enabled"))
+			hitchance_pass = aimbot.HitChance(aimbot.target, ang);
+
+		if (hitchance_pass)
 		{
-			//if (false)
-			//if (aimbot.HitChance(aimbot.target, ang))
-			{
-				if (aimbot.tick)
-					backtrack.BacktrackToTick(cmd, *aimbot.tick);
+			if (aimbot.tick)
+				backtrack.BacktrackToTick(cmd, *aimbot.tick);
 
-				cmd->viewangles = ang;
-				aimbot.NoRecoil();
+			cmd->viewangles = ang;
+			if (!settings.Get<bool>("rage_silent_enabled"))
+				engineclient->SetViewAngles(ang);
 
-				cmd->buttons |= IN_ATTACK;
-
-				aimbot.MovementFix();
-
-				*aimbot.bsendpacket = false;
-			}
-		}
-		else if (aimbot.CanShoot() && cmd->buttons & IN_ATTACK)
-		{
 			aimbot.NoRecoil();
+
+			cmd->buttons |= IN_ATTACK;
+
+			aimbot.MovementFix();
 
 			*aimbot.bsendpacket = false;
 		}
-		else
-		{
-			//antiaim.Invoke();
-
-			aimbot.MovementFix();
-		}
 	}
+	else if (aimbot.CanShoot() && cmd->buttons & IN_ATTACK)
+	{
+		aimbot.NoRecoil();
+
+		*aimbot.bsendpacket = false;
+	}
+	else
+	{
+		antiaim.Invoke();
+
+		aimbot.MovementFix();
+	}
+
+	BaseFeature::SetArguments(CREATEMOVE, cmd, false, frametime);
 }
 
 void Rage::Destroy()

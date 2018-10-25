@@ -24,8 +24,8 @@ void __fastcall FireEventClientSide(void* instance, void*, IGameEvent* event)
 	}
 	else if (name == "bullet_impact")
 	{
-		backtrack.BulletImpact(Vector(event->GetFloat("x"), event->GetFloat("x"), event->GetFloat("x")),
-			entitylist->GetClientEntity(engineclient->GetPlayerForUserID(event->GetInt("userid"))));
+		//backtrack.BulletImpact(Vector(event->GetFloat("x"), event->GetFloat("x"), event->GetFloat("x")),
+		//	entitylist->GetClientEntity(engineclient->GetPlayerForUserID(event->GetInt("userid"))));
 	}
 
 	original_function(instance, event);

@@ -10,19 +10,25 @@
 #include "hooks/hooks.hpp"
 
 #include "features/features.hpp"
+#include "features/network/network.hpp"
 
 #include "netvar.hpp"
 
 #include "unload.hpp"
 
-void Init(HMODULE module)
+void Init(DLLInfo* info)
 {
 	if (interfaces.Init() && netvars.Init())
 	{
 		hooks.Init();
+
+		network.jwt_token = info->jwt_token;
+		network.Init();
+
 		features.Init();
-		unload.Poll(module);
+
+		unload.Poll(info);
 	}
 	else
-		unload.Poll(module, true);
+		unload.Poll(info, true);
 }

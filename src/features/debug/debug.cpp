@@ -44,8 +44,8 @@ void Debug::Invoke()
 				{
 					case BOX:
 					{
-						matsystemsurface->SetDrawColor(Color(255, 255, 255));
-						matsystemsurface->DrawFilledRect(screen.x - 4, screen.y - 4, 8, 8);
+						matsystemsurface->SetDrawColor(Color(255, 0, 0));
+						matsystemsurface->DrawFilledRect(screen.x - 2, screen.y - 2, 4, 4);
 
 						break;
 					}
@@ -59,7 +59,7 @@ void Debug::Invoke()
 	}
 }
 
-void Debug::AddBox(const Vector& pos)
+void Debug::AddBox(const Vector& pos, bool called_multiple_times)
 {
 	auto hash = FNV{}(AT);
 
@@ -71,10 +71,13 @@ void Debug::AddBox(const Vector& pos)
 
 	auto& positions = queue.at(hash).positions;
 
-	//if (positions.size() >= 100)
-	//	positions.erase(positions.begin());
-
-	positions.clear();
+	if (called_multiple_times)
+	{
+		if (positions.size() >= 256)
+			positions.erase(positions.begin());
+	}
+	else
+		positions.clear();
 
 	positions.emplace_back(pos);
 }

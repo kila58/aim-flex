@@ -3,7 +3,7 @@
 class Unload
 {
 public:
-	void Poll(HMODULE module, bool force = false);
+	void Poll(DLLInfo* info, bool force = false);
 };
 
 extern Unload unload;

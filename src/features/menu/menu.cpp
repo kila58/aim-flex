@@ -3,6 +3,7 @@
 #include "../../aim-flex.hpp"
 
 #include "../input/input.hpp"
+#include "../network/network.hpp"
 
 void Menu::Init()
 {
@@ -14,6 +15,9 @@ void Menu::Init()
 	input.OnKey(VK_INSERT, [this]()
 	{
 		menu.open = !menu.open;
+
+		if (!menu.open)
+			network.Send("set_settings", settings.GetSettings());
 	});
 }
 

@@ -3,6 +3,8 @@
 #include "../../aim-flex.hpp"
 
 #include "../playermanager/playermanager.hpp"
+#include "../input/input.hpp"
+#include "../settings/settings.hpp"
 
 #include "../aimbot/aimbot.hpp"
 
@@ -13,6 +15,12 @@ void Triggerbot::Init()
 
 void Triggerbot::Invoke()
 {
+	if (true)
+		return;
+
+	if (!input.KeyDown(settings.Get<int>("legit_aimkey")))
+		return;
+
 	auto cmd = GetArg<CUserCmd*>(GetArguments(), 0);
 
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
@@ -32,7 +40,7 @@ void Triggerbot::Invoke()
 	float range = 1;
 	Vector end = lpeyepos + (forward * range);
 
-	static CTraceFilterDouble filter;
+	static CTraceFilterSkipTwoEntities filter;
 	static trace_t trace;
 	static Ray_t ray;
 

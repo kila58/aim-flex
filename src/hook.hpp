@@ -4,39 +4,55 @@
 
 #include "definitions.hpp"
 
+// meep's hook
+
+#define ushort_max (unsigned short(-1))
+
+typedef char *vtindex; // sizeof(pointer) with ability to add numbers and shit 
+#ifndef offset
+#define offset(x,y) ((char *)(x) - (char *)(y))
+#endif
+
 class Hook
 {
 private:
-	void** table;
+	vtindex *original_vt;
+	vtindex *new_vt;
+	void **hooked;
 	uint index;
-	void* new_function;
-	void* original_function;
+	void* func;
 public:
-	Hook(void* object, uint i, void* function) : index(i), table(*(void***)object), new_function(function) {}
+	Hook(void* object, uint i, void* func) : index(i), func(func)
+	{
+		original_vt = *(vtindex **)object;
+		vtindex *last_index = original_vt;
+		while (*last_index++);
 
+		unsigned int size = offset(last_index, original_vt) / sizeof(*last_index);
+
+		new_vt = new vtindex[size];
+		while (--last_index >= original_vt)
+			new_vt[offset(last_index, original_vt) / sizeof(*last_index)] = *last_index;
+
+		*(vtindex **)object = new_vt;
+
+		hooked = (void **)object;
+	}
+	vtindex &getold(unsigned short index) { return original_vt[index]; }
+	vtindex &get(unsigned short index) { return new_vt[index]; }
 	void* ReplaceVirtual()
 	{
-		DWORD original_protect;
+		get(index) = (vtindex)func;
 
-		void* function = &table[index];
-		VirtualProtect(function, sizeof(function), PAGE_READWRITE, &original_protect);
-
-		original_function = table[index];
-		table[index] = new_function;
-
-		VirtualProtect(&table[index], sizeof(function), original_protect, NULL);
-
-		return original_function;
+		return getold(index);
 	}
 	void RevertVirtual()
 	{
-		DWORD original_protect;
-
-		void* function = &table[index];
-		VirtualProtect(function, sizeof(function), PAGE_READWRITE, &original_protect);
-
-		table[index] = original_function;
-
-		VirtualProtect(&table[index], sizeof(function), original_protect, NULL);
+		get(index) = getold(index);
+	}
+	~Hook()
+	{
+		*hooked = original_vt;
+		delete[] new_vt;
 	}
 };

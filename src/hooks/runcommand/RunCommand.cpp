@@ -12,8 +12,11 @@ void __fastcall RunCommand(void* instance, void*, C_BaseEntity* player, CUserCmd
 {
 	C_BaseEntity* lp = entitylist->GetClientEntity(engineclient->GetLocalPlayer());
 
-	if (player == lp)
-		predict.movehelper = movehelper;
+	if (lp)
+	{
+		if (player == lp)
+			predict.movehelper = movehelper;
+	}
 
 	original_function(instance, player, cmd, movehelper);
 }
