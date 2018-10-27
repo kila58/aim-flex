@@ -73,8 +73,8 @@ void Animations::FixAnimations()
 
 		//Angle backup_absangles = p->GetAbsAngles();
 
-		auto backup_poses = p->GetPoseParameters();
-		auto backup_layers = p->GetAnimLayers();
+		//auto backup_poses = p->GetPoseParameters();
+		//auto backup_layers = p->GetAnimLayers();
 
 		//p->SetAbsOrigin(p->GetOrigin());
 		//p->SetAbsAngles(player.resolverinfo.absang);
@@ -85,8 +85,8 @@ void Animations::FixAnimations()
 		player.poses = p->GetPoseParameters();
 		player.animationlayers = p->GetAnimLayers();
 
-		p->SetPoseParameters(backup_poses);
-		p->SetAnimLayers(backup_layers);
+		//p->SetPoseParameters(backup_poses);
+		//p->SetAnimLayers(backup_layers);
 
 		//p->SetAbsOrigin(backup_absorigin);
 		//p->SetAbsAngles(backup_absangles);

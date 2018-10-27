@@ -125,7 +125,14 @@ public:
 			return empty_vec;
 		}
 
-		return getvfunc<Vector&(__thiscall*)(void*)>(this, 10)(this);
+		static auto getabsorigin = getvfunc(this, 10);
+		static auto getabsorigin_func = (Vector&(__thiscall*)(void*))getabsorigin;
+
+		return getabsorigin_func(this);
+
+		//auto lol = (Vector&(__thiscall*)(void*))(getabsorigin)(this);
+
+		//return getvfunc<Vector&(__thiscall*)(void*)>(this, 10)(this);
 	}
 	Angle& GetAbsAngles()
 	{
@@ -137,7 +144,9 @@ public:
 	}
 	AnimLayerVec GetAnimLayers()
 	{
-		return Get<AnimLayerVec>(GetOffset("m_bSuppressAnimSounds") + 0x36);
+		static auto m_bSuppressAnimSounds = GetOffset("m_bSuppressAnimSounds");
+
+		return Get<AnimLayerVec>(m_bSuppressAnimSounds + 0x36);
 	}
 	bool IsDucked()
 	{
@@ -163,7 +172,9 @@ public:
 	}
 	CCSGOPlayerAnimState* GetAnimationState()
 	{
-		return Get<CCSGOPlayerAnimState*>(GetOffset("m_bIsScoped") - 0xA);
+		static auto m_bIsScoped = GetOffset("m_bIsScoped");
+
+		return Get<CCSGOPlayerAnimState*>(m_bIsScoped - 0xA);
 	}
 	void UpdateClientSideAnimation()
 	{
@@ -171,7 +182,9 @@ public:
 	}
 	void SetClientSideAnimation(bool what)
 	{
-		Set<bool>(what, GetOffset("m_bClientSideAnimation"));
+		static auto m_bClientSideAnimation = GetOffset("m_bClientSideAnimation");
+
+		Set<bool>(what, m_bClientSideAnimation);
 	}
 	void SetPoseParameters(PoseArray poses)
 	{
@@ -191,7 +204,9 @@ public:
 	}
 	CStudioHdr* GetModelPtr()
 	{
-		return Get<CStudioHdr*>(GetOffset("m_bSuppressAnimSounds") + 0x2);
+		static auto m_bSuppressAnimSounds = GetOffset("m_bSuppressAnimSounds");
+
+		return Get<CStudioHdr*>(m_bSuppressAnimSounds + 0x2);
 	}
 	// this is being goofy for some reason
 	bool IsDormant()
@@ -253,7 +268,9 @@ public:
 	}
 	void SetViewAngle(const Angle& ang)
 	{
-		Set<Angle>(ang, GetOffset("deadflag") + 0x4);
+		static auto deadflag = GetOffset("deadflag");
+
+		Set<Angle>(ang, deadflag + 0x4);
 	}
 	C_BaseCombatWeapon* GetWeapon()
 	{
@@ -269,7 +286,9 @@ public:
 	}
 	float GetOldSimulationTime()
 	{
-		return Get<float>(GetOffset("m_flSimulationTime") + 0x4);
+		static auto m_flSimulationTime = GetOffset("m_flSimulationTime");
+
+		return Get<float>(m_flSimulationTime + 0x4);
 	}
 	// todo: change this from hardcoded
 	void ClearOcclusionFlags()
@@ -284,15 +303,27 @@ public:
 	}
 	inline bool SetupBones(VMatrix* bones, float time = 0.f, int _bones = MAXSTUDIOBONES, int _flag = BONE_USED_BY_HITBOX)
 	{
-		return GetRenderable()->SetupBones(bones, time);
+		auto renderable = GetRenderable();
+		if (!renderable)
+			return false;
+
+		return renderable->SetupBones(bones, time);
 	}
 	inline const model_t* GetModel()
 	{
-		return GetRenderable()->GetModel();
+		auto renderable = GetRenderable();
+		if (!renderable)
+			return nullptr;
+
+		return renderable->GetModel();
 	}
 	inline void DrawModel()
 	{
-		return getvfunc<void(__thiscall*)(void*, int, void*)>(GetRenderable(), 9)(GetRenderable(), 1, 0);
+		auto renderable = GetRenderable();
+		if (!renderable)
+			return;
+
+		return getvfunc<void(__thiscall*)(void*, int, void*)>(renderable, 9)(renderable, 1, 0);
 	}
 	int GetEntryIndex()
 	{
@@ -328,7 +359,9 @@ public:
 	}
 	void SetEyeAngle(const Angle& ang)
 	{
-		Set(ang, GetOffset("m_angEyeAngles[0]"));
+		static auto m_angEyeAngles = GetOffset("m_angEyeAngles[0]");
+
+		Set(ang, m_angEyeAngles);
 	}
 	float GetStepSize()
 	{

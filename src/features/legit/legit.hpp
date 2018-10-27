@@ -14,6 +14,7 @@ class Legit : public BaseFeature
 private:
 	float smooth_time = 0.f;
 	C_BaseEntity* last_target = nullptr;
+	int last_shotsfired = 0;
 
 	std::random_device rd;
 	std::mt19937 gen;

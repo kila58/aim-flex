@@ -71,7 +71,7 @@ public:
 	bool DormantPlayerExists(int uid);
 	Player& GetPlayer(C_BaseEntity* player);
 	void ClearPlayers();
-	void AddDormantPlayer(int uid);
+	DormantPlayer* AddDormantPlayer(int uid);
 	void RemoveDormantPlayer(int uid);
 	void ResetDormantPlayer(int uid);
 	void PopulateDormantPlayers();

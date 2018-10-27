@@ -32,16 +32,18 @@ bool Legit::FindTarget(CUserCmd* cmd, Angle& ang)
 	{
 		C_BaseEntity* p = target.ent;
 
-		Vector pos_diff = (p->GetAbsOrigin() - lpeyepos);
+		/*
+		Vector pos_diff = ((p->GetEyeOffset() + p->GetAbsOrigin()) - lpeyepos);
 		Angle current_angle;
 		VectorAngles(pos_diff, current_angle);
 
 		float diff = CalculateFOV(cmd->viewangles, current_angle);
+		*/
 
 		//debug << "diff: " << diff << "\n";
 		//debug << "fov: " << fov << "\n";
 
-		if (diff < fov || fov == 0)
+		//if (diff < fov || fov == 0)
 		{
 			Hitboxes hitboxes;
 			bool hitboxes_found = false;
@@ -61,12 +63,17 @@ bool Legit::FindTarget(CUserCmd* cmd, Angle& ang)
 				{
 					Vector& out = hitbox.center;
 
-					if (aimbot.IsVisible(p, out))
-					{
-						aimbot.CalculateAngle(out, ang);
-						aimbot.target = p;
+					aimbot.CalculateAngle(out, ang);
+					float diff = CalculateFOV(cmd->viewangles, ang - (lp->GetAimPunch() * 2));
 
-						return true;
+					if (diff < fov || fov == 0)
+					{
+						if (aimbot.IsVisible(p, out))
+						{
+							aimbot.target = p;
+
+							return true;
+						}
 					}
 				}
 			}
@@ -134,7 +141,12 @@ void Legit::Invoke()
 		Angle ang;
 		if (FindTarget(cmd, ang))
 		{
+			int shots_fired = lp->GetShotsFired();
+
 			if (last_target != aimbot.target)
+				ResetTime();
+
+			if (last_shotsfired > 0 && !(cmd->buttons & IN_ATTACK))
 				ResetTime();
 
 			Angle real_ang = cmd->viewangles;
@@ -147,7 +159,7 @@ void Legit::Invoke()
 
 			cmd->viewangles = ang;
 
-			if (lp->GetShotsFired() > 1 && weapon_type != WEAPONTYPE_PISTOL && weapon_type != WEAPONTYPE_SNIPER_RIFLE && weapon_type != WEAPONTYPE_SHOTGUN)
+			if (shots_fired > 1 && weapon_type != WEAPONTYPE_PISTOL && weapon_type != WEAPONTYPE_SNIPER_RIFLE && weapon_type != WEAPONTYPE_SHOTGUN)
 				aimbot.NoRecoil();
 
 			std::bernoulli_distribution distribution(0.1);
@@ -216,6 +228,7 @@ void Legit::Invoke()
 			cmd->viewangles.y = lerp_axis(real_ang.y, cmd->viewangles.y, smooth_time);
 
 			last_target = aimbot.target;
+			last_shotsfired = shots_fired;
 		}
 		else
 			ResetTime();

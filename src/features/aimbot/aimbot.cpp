@@ -55,10 +55,10 @@ bool Aimbot::SetupBones(C_BaseEntity* p, int bonemask, VMatrix* bones)
 
 	Vector origin = p->GetOrigin();
 
-	Angle angles = player.resolverinfo.absang;
-
 	Vector backup_absorigin = p->GetAbsOrigin();
 	Angle backup_absangles = p->GetAbsAngles();
+
+	Angle angles = backup_absangles;//player.resolverinfo.absang;
 
 	auto backup_poses = p->GetPoseParameters();
 	auto backup_layers = p->GetAnimLayers();
@@ -143,6 +143,7 @@ static Vector empty(0, 0, 0);
 Vector Aimbot::GetHitbox(C_BaseEntity* p, int index, bool interpolated)
 {
 	static const model_t* model;
+	static CStudioHdr* studio_hdr;
 	static studiohdr_t* hdr;
 	static bool setupbones_interp = false;
 	static bool setupbones_uninterp = false;
@@ -152,7 +153,11 @@ Vector Aimbot::GetHitbox(C_BaseEntity* p, int index, bool interpolated)
 		if (!model)
 			return empty;
 
-		hdr = p->GetModelPtr()->studio;
+		studio_hdr = p->GetModelPtr();
+		if (!studio_hdr)
+			return empty;
+
+		hdr = studio_hdr->studio;
 		if (!hdr)
 			return empty;
 
@@ -237,8 +242,12 @@ int Aimbot::GetHitboxIndex()
 
 Vector Aimbot::GetBodyAim(C_BaseEntity* p)
 {
+	auto renderable = p->GetRenderable();
+	if (!renderable)
+		return Vector();
+
 	Vector mins, maxs;
-	p->GetRenderable()->GetRenderBounds(mins, maxs);
+	renderable->GetRenderBounds(mins, maxs);
 
 	Vector origin = p->GetAbsOrigin();
 	origin.z += ((mins.z + maxs.z) * 0.5f);
@@ -249,6 +258,7 @@ Vector Aimbot::GetBodyAim(C_BaseEntity* p)
 bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes, std::deque<int> selected)
 {
 	static const model_t* model;
+	static CStudioHdr* studio_hdr;
 	static studiohdr_t* hdr;
 	if (lastplayer2 != p)
 	{
@@ -258,7 +268,11 @@ bool Aimbot::GetHitboxes(C_BaseEntity* p, Hitboxes& hitboxes, std::deque<int> se
 		if (!model)
 			return false;
 
-		hdr = p->GetModelPtr()->studio;
+		studio_hdr = p->GetModelPtr();
+		if (!studio_hdr)
+			return false;
+
+		hdr = studio_hdr->studio;
 		if (!hdr)
 			return false;
 	}

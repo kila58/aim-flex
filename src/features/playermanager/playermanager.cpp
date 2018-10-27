@@ -100,21 +100,24 @@ void PlayerManager::Invoke()
 	// todo: maybe use Distance2DSqr? (it will produce massive numbers, needs benchmark)
 	for (auto& player : players)
 	{
+		if (abs(player.index) > 128)
+			MessageBoxA(NULL, "sos", "sos", NULL);
+
 		if (legit_enabled)
 		{
-			Vector pos_diff = (player.ent->GetAbsOrigin() - lporigin);
+			Vector pos_diff = (player.ent->GetOrigin() - lporigin);
 			Angle current_angle;
 			VectorAngles(pos_diff, current_angle);
 
 			Angle ang;
 			engineclient->GetViewAngles(ang);
 
-			player.compare = CalculateFOV(ang, current_angle);
+			player.compare = CalculateFOV(ang, current_angle - (lp->GetAimPunch() * 2));
 		}
 		else
-			player.compare = lporigin.Distance(player.ent->GetAbsOrigin());
+			player.compare = lporigin.Distance(player.ent->GetOrigin());
 
-		player.resolverinfo.absang = player.ent->GetAbsAngles();
+		//player.resolverinfo.absang = player.ent->GetAbsAngles();
 		
 		// if you ever need raw eye angle then add another var
 		player.resolverinfo.eye = player.ent->GetEyeAngle();
@@ -122,7 +125,11 @@ void PlayerManager::Invoke()
 
 		// todo: when rapid switching between teams with no delay random player becomes invalid for 1-2 ticks?
 		if (!player.dormantplayer)
-			player.dormantplayer = playermanager.GetDormantPlayer(player.userid);
+		{
+			debug << "!player.dormantplayer" << "\n";
+
+			player.dormantplayer = playermanager.AddDormantPlayer(player.userid);
+		}
 	}
 
 	std::sort(players.begin(), players.end(), [](const Player& a, const Player& b)
@@ -208,10 +215,16 @@ void PlayerManager::ClearPlayers()
 	dormantplayers.clear();
 }
 
-void PlayerManager::AddDormantPlayer(int uid)
+DormantPlayer* PlayerManager::AddDormantPlayer(int uid)
 {
 	if (!DormantPlayerExists(uid))
 		dormantplayers.emplace_back(uid);
+	else
+	{
+		debug << "AddDormantPlayer already exists: " << uid << "\n";
+	}
+
+	return GetDormantPlayer(uid);
 }
 
 void PlayerManager::RemoveDormantPlayer(int uid)
@@ -238,7 +251,11 @@ bool InvalidDormantPlayer(int i, C_BaseEntity* p, player_info_t& info)
 		return true;
 
 	if (info.ishltv)
+	{
+		debug << std::string(info.name) << "\n";
+
 		return true;
+	}
 
 	return false;
 }

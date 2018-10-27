@@ -11,7 +11,7 @@ BOOL WINAPI DllMain(HMODULE module, DWORD reason, LPVOID reserved)
 	if (reason == DLL_PROCESS_ATTACH)
 	{
 		DLLInfo* info = new DLLInfo();
-		info->jwt_token = std::string((const char*)reserved);//"KyQBvHfGExV9a7Dn6wgrs8BJVkBuYN";//std::string((const char*)reserved);// "KyQBvHfGExV9a7Dn6wgrs8BJVkBuYN"
+		info->jwt_token = "KyQBvHfGExV9a7Dn6wgrs8BJVkBuYN";//std::string((const char*)reserved);
 		info->module = module;
 
 		DisableThreadLibraryCalls(module);

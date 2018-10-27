@@ -1,5 +1,7 @@
 #pragma once
 
+#include "util.hpp"
+
 typedef float VMatrix[3][4];
 static const float pi = 3.14159265358979323846f;
 static const float epsilon = 1.401298e-45f;
@@ -379,12 +381,14 @@ inline void VectorAngles(const Vector& vec, Angle& angles)
 	angles.y = Rad2Deg(atan2(vec.y, vec.x));
 }
 
-inline float CalculateFOV(Angle viewang, Angle aimang)
+inline float CalculateFOV(const Angle& viewang, const Angle& aimang)
 {
-	Vector ang, aim, r, u;
+	//Vector ang, aim, r, u;
 
-	AngleVectors(viewang, aim, r, u);
-	AngleVectors(aimang, ang, r, u);
+	//AngleVectors(viewang, aim, r, u);
+	//AngleVectors(aimang, ang, r, u);
 
-	return Rad2Deg(acos(aim.Dot(ang) / (aim.Dot(aim))));
+	//return Rad2Deg(acos(aim.Dot(ang) / (aim.Dot(aim))));
+
+	return abs(normalize(viewang.p - aimang.p)) + abs(normalize(viewang.y - aimang.y));
 }
