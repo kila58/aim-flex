@@ -26,6 +26,7 @@ public:
 
 	NetPropBackup old_eyeangles_pitch;
 	NetPropBackup old_eyeangles_yaw;
+	NetPropBackup old_lowerbody_yaw;
 };
 
 struct RecvProp

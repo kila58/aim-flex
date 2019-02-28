@@ -64,6 +64,12 @@ public:
 	{
 		return true;
 	}
+
+	~Network()
+	{
+		MessageBoxA(NULL, "network destructor", "", NULL);
+	}
 };
 
 extern Network network;
+ 

@@ -3,6 +3,7 @@
 #include "aim-flex.hpp"
 
 #include "hooks/netprops/m_angEyeAngles.hpp"
+#include "hooks/netprops/m_flLowerBodyYawTarget.hpp"
 
 bool NetVar::Init()
 {
@@ -10,6 +11,9 @@ bool NetVar::Init()
 		return false;
 
 	if (!HookProp("DT_CSPlayer", "m_angEyeAngles[1]", EyeAnglesYaw, old_eyeangles_yaw))
+		return false;
+
+	if (!HookProp("DT_CSPlayer", "m_flLowerBodyYawTarget", LowerBodyYaw, old_lowerbody_yaw))
 		return false;
 
 	return true;
@@ -116,6 +120,7 @@ void NetVar::Destroy()
 {
 	old_eyeangles_pitch.first->m_ProxyFn = old_eyeangles_pitch.second;
 	old_eyeangles_yaw.first->m_ProxyFn = old_eyeangles_yaw.second;
+	old_lowerbody_yaw.first->m_ProxyFn = old_lowerbody_yaw.second;
 }
 
 NetVar netvars;

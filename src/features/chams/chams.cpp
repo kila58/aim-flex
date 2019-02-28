@@ -5,6 +5,7 @@
 #include "../../features/playermanager/playermanager.hpp"
 #include "../../features/settings/settings.hpp"
 
+/*
 void Chams::Init()
 {
 	//if (!mat)
@@ -23,6 +24,21 @@ void Chams::Init()
 			mat->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
 		}
 	}
+}
+*/
+
+void Chams::Init()
+{
+	if (true)
+		return;
+
+	mat = materialsystem->FindMaterial("vgui/white_additive", "Model texture");
+
+	mat->SetMaterialVarFlag(MATERIAL_VAR_ADDITIVE, false);
+	mat->SetMaterialVarFlag(MATERIAL_VAR_VERTEXCOLOR, false);
+	mat->SetMaterialVarFlag(MATERIAL_VAR_VERTEXALPHA, false);
+	mat->SetMaterialVarFlag(MATERIAL_VAR_NOFOG, true);
+	mat->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
 }
 
 bool Chams::InvalidPlayerChams(int i, C_BaseEntity* p, C_BaseEntity* lp)
@@ -43,12 +59,15 @@ bool Chams::InvalidPlayerChams(int i, C_BaseEntity* p, C_BaseEntity* lp)
 
 void Chams::Invoke()
 {
+	if (true)
+		return;
+	
 	//Init();
 
 	drawing = true;
 
-	//if (settings.Get<bool>("visuals_enabled") && settings.Get<bool>("visuals_chams_enabled"))
-	if (false)
+	if (settings.Get<bool>("visuals_enabled") && settings.Get<bool>("visuals_chams_enabled"))
+	//if (false)
 	{
 		if (mat)
 		{

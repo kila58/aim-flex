@@ -46,6 +46,9 @@ bool Interfaces::Init()
 	if (!(modelrender = GetInterface<IVModelRender*>("engine.dll", "VEngineModel")))
 		return false;
 
+	if (!(physprops = GetInterface<IPhysicsSurfaceProps*>("vphysics.dll", "VPhysicsSurfaceProps")))
+		return false;
+
 	if (!(clientmode = **(ClientModeShared***)(getvfunc(client, 10) + 0x5)))
 		return false;
 

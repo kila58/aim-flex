@@ -20,6 +20,7 @@
 #include <utility>
 #include <optional>
 #include <mutex>
+#include <process.h>
 
 #include "definitions.hpp"
 #include "color.hpp"
@@ -59,6 +60,7 @@
 #include "sdk/IMaterialSystem.hpp"
 #include "sdk/IVRenderView.hpp"
 #include "sdk/IVModelRender.hpp"
+#include "sdk/IPhysicsSurfaceProps.hpp"
 
 extern CEngineClient* engineclient;
 extern CEngineVGui* enginevgui;
@@ -74,6 +76,7 @@ extern IGameEventManager2* eventmanager;
 extern IMaterialSystem* materialsystem;
 extern IVRenderView* renderview;
 extern IVModelRender* modelrender;
+extern IPhysicsSurfaceProps* physprops;
 extern ClientModeShared* clientmode;
 extern CGlobalVarsBase* globals;
 extern CInput* cmdinput;

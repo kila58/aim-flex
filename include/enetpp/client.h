@@ -13,6 +13,7 @@
 #include "set_current_thread_name.h"
 #include "trace_handler.h"
 #include <sstream>
+#include <process.h>
 
 namespace enetpp {
 
@@ -89,7 +90,7 @@ namespace enetpp {
 
 			autism3 = params;
 			
-			_thread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)autism1, this, NULL, NULL);
+			_thread = (HANDLE)_beginthreadex(NULL, NULL, (_beginthreadex_proc_type)autism1, this, NULL, NULL);
 		}
 
 		void disconnect() {
@@ -110,7 +111,9 @@ namespace enetpp {
 				//MessageBoxA(NULL, "closing up shop dog", "closing up shop dog", NULL);
 
 				TerminateThread(_thread, 0);
-				CloseHandle(_thread);
+				//CloseHandle(_thread);
+
+				//ExitThread(0);
 			}
 
 			destroy_all_queued_packets();

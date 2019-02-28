@@ -18,7 +18,7 @@ bool Legit::FindTarget(CUserCmd* cmd, Angle& ang)
 	if (!lp)
 		return false;
 
-	Vector lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
+	Vector lpeyepos = lp->GetEyePos();
 
 	auto weapon = lp->GetWeapon();
 	if (!weapon)

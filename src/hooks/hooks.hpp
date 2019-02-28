@@ -13,7 +13,7 @@ protected:
 	{
 		AddHook(this);
 	}
-	Hook* hook;
+	Hook* hook = nullptr;
 public:
 	static std::deque<BaseHook*> GetHooks()
 	{

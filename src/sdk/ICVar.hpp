@@ -172,6 +172,7 @@ public:
 	FnChangeCallback_t		m_fnChangeCallback;
 
 	// add int support
+
 	template<typename T>
 	T value()
 	{
@@ -179,5 +180,15 @@ public:
 		int result = (int)(xor ^ (ptr)this);
 
 		return *(T*)(&result);
+	}
+
+	int _getint()
+	{
+		return (int)(m_Value.m_nValue ^ (int)this);
+	}
+
+	int _getbool()
+	{
+		return !!_getint();
 	}
 };

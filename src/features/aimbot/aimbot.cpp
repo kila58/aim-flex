@@ -8,6 +8,8 @@
 #include "../playermanager/playermanager.hpp"
 #include "../settings/settings.hpp"
 
+#include "../../hooks/traceray/TraceRay.hpp"
+
 void Aimbot::Init()
 {
 
@@ -22,7 +24,7 @@ void Aimbot::Invoke()
 
 	if (lp && lp->IsAlive())
 	{
-		lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
+		lpeyepos = lp->GetEyePos();
 		weapon = lp->GetWeapon();
 
 		if (settings.Get<bool>("rage_enabled"))
@@ -455,6 +457,90 @@ bool Aimbot::IsVisible(C_BaseEntity* p, const Vector& pos, int tracetype, bool c
 		ret = true;
 
 	return ret;
+}
+
+void ScaleDamage(C_BaseEntity* other, trace_t ntr, float* damage, CCSWeaponData* data, float length)
+{
+	float dmg = *damage;
+
+	static float hitgroupdamagemod[] = { 1.f, 4.f, 1.f, 1.25f, 1.f, 1.f, .75f, .75f };
+	dmg *= hitgroupdamagemod[ntr.hitGroup];
+
+	dmg *= powf(data->flRangeModifier, length * 0.002f);
+
+	if (ntr.m_pEnt->GetArmor() > 0)
+	{
+		if (ntr.hitGroup == 1) // HITGROUP_HEAD
+			if (ntr.m_pEnt->HasHelmet())
+				dmg *= (data->flArmorRatio * .5f);
+			else
+				dmg *= (data->flArmorRatio * .5f);
+	}
+
+	*damage = dmg;
+}
+
+bool Aimbot::CanAutowall(C_BaseEntity* p, const Vector& pos, float& damage)
+{
+	traceray_hook.Hook();
+	bool ret = CanAutowallInternal(p, pos, damage);
+	traceray_hook.Destroy();
+
+	debug << damage << "\n";
+
+	return ret && damage > 75;
+}
+
+bool Aimbot::CanAutowallInternal(C_BaseEntity* p, const Vector& pos, float& damage)
+{
+	using HandleBulletPenetration = bool(__thiscall*)(C_BaseEntity*, float&, int&, int*, trace_t*, Vector*, float, float, float, int, int, float, int*, Vector*, float, float, float*);
+	static auto HBP = (HandleBulletPenetration)SigScan("53 8B DC 83 EC 08 83 E4 F8 83 C4 04 55 8B 6B 04 89 6C 24 04 8B EC 83 EC 78 56 8B 73 34", "client_panorama.dll");
+	if (!HBP)
+		return false;
+	//    53 8B DC 83 EC 08 83 E4 F0 83 C4 04 55 8B 6B 04 89 6C 24 04 8B EC 81 EC ? ? ? ? 56 8B 73 2C
+
+	auto data = weapon->GetCSWpnData();
+
+	Vector normal = (pos - lpeyepos);
+	normal.Normalize();
+
+	Vector start = lpeyepos;
+
+	float _damage = data->iDamage;
+
+	Ray_t ray;
+	trace_t trace;
+	CTraceFilter filter;
+	filter.pSkip = lp;
+
+	int flag = 0;
+
+	int hits = 4;
+	while (hits > 0)
+	{
+		ray.Init(start, pos);
+
+		enginetrace->TraceRay(ray, 0x4600400B, &filter, &trace);
+
+		if (trace.hitGroup != 0)
+			break;
+
+		surfacedata_t* entry = physprops->GetSurfaceData(trace.surface.surfaceProps);
+		int mat = entry->game.material;
+
+		if (HBP(lp, data->flPenetration, mat, &flag, &trace, &normal, 0.f, entry->game.penetrationmodifier, entry->game.damagemodifier, 0, 0x1002, data->flPenetration, &hits, &start, 0.f, 0.f, &_damage))
+			break;
+	}
+
+	//if (!trace.m_pEnt)
+	//	return false;
+
+	//return (trace.m_pEnt == p);
+
+	if (trace.m_pEnt)
+		ScaleDamage(p, trace, &damage, data, abs((pos - lpeyepos).Length()));
+
+	return (trace.hitGroup != 0) ? (trace.m_pEnt && trace.m_pEnt == p) : false;
 }
 
 Vector last_origin(0, 0, 0);

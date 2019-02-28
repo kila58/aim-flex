@@ -51,9 +51,14 @@ void PaintHook::Init()
 
 void PaintHook::Destroy()
 {
-	hook->RevertVirtual();
+	if (hook)
+	{
+		//MessageBoxA(NULL, "hook != null", "hook != null", NULL);
 
-	delete hook;
+		hook->RevertVirtual();
+
+		delete hook;
+	}
 }
 
 PaintHook paint_hook;

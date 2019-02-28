@@ -3,14 +3,20 @@
 class IClientNetworkable
 {
 public:
-	ClientClass* GetClientClass()
-	{
-		return getvfunc<ClientClass*(__thiscall*)(void*)>(this, 2)(this);
-	}
-	bool IsDormant()
-	{
-		return getvfunc<bool(__thiscall*)(void*)>(this, 9)(this);
-	}
+	virtual void*			 GetIClientUnknown() = 0;
+	virtual void             Release() = 0;
+	virtual ClientClass*     GetClientClass() = 0;
+	virtual void             NotifyShouldTransmit(int state) = 0;
+	virtual void             OnPreDataChanged(int updateType) = 0;
+	virtual void             OnDataChanged(int updateType) = 0;
+	virtual void             PreDataUpdate(int updateType) = 0;
+	virtual void             PostDataUpdate(int updateType) = 0;
+	virtual void             __unkn(void) = 0;
+	virtual bool             IsDormant(void) = 0;
+	virtual int              EntIndex(void) const = 0;
+	virtual void             ReceiveMessage(int classID, void* msg) = 0;
+	virtual void*            GetDataTableBasePtr() = 0;
+	virtual void			 SetDestroyedOnRecreateEntities(void) = 0;
 };
 
 class IClientRenderable
@@ -42,14 +48,14 @@ public:
 	// todo: change this from hardcoded
 	void SetBoneArrayForWrite(VMatrix* bones)
 	{
-		Set(bones, 0x2694);
+		Set(bones, 0x26A4);
 	}
 	// todo: change this from hardcoded
 	VMatrix* GetBoneArrayForWrite()
 	{
-		return Get<VMatrix*>(0x2694);
+		return Get<VMatrix*>(0x26A4);
 	}
-};
+}; 
 
 class C_BaseCombatWeapon;
 class IClientEntityList;
@@ -196,11 +202,11 @@ public:
 	}
 	void StandardBlendingRules(CStudioHdr* hdr, Vector* pos, Quaternion* q, float time, int bonemask)
 	{
- 		getvfunc<void(__thiscall*)(void*, CStudioHdr*, Vector*, Quaternion*, float, int)>(this, 200)(this, hdr, pos, q, time, bonemask);
+ 		getvfunc<void(__thiscall*)(void*, CStudioHdr*, Vector*, Quaternion*, float, int)>(this, 201)(this, hdr, pos, q, time, bonemask);
 	}
 	void BuildTransformations(CStudioHdr* hdr, Vector* pos, Quaternion* q, const VMatrix& cameratransform, int bonemask, byte* computed)
 	{
-		return getvfunc<void(__thiscall*)(void*, CStudioHdr*, Vector*, Quaternion*, const VMatrix&, int, byte*)>(this, 184)(this, hdr, pos, q, cameratransform, bonemask, computed);
+		return getvfunc<void(__thiscall*)(void*, CStudioHdr*, Vector*, Quaternion*, const VMatrix&, int, byte*)>(this, 185)(this, hdr, pos, q, cameratransform, bonemask, computed);
 	}
 	CStudioHdr* GetModelPtr()
 	{
@@ -211,7 +217,7 @@ public:
 	// this is being goofy for some reason
 	bool IsDormant()
 	{
-		return Get<bool>(0xE9);
+		return Get<bool>(0xED);
 
 		/*
 		auto networkable = GetNetworkable();
@@ -238,6 +244,27 @@ public:
 	{
 		return GetNetVar<int>("m_iHealth");
 	}
+	int GetArmor()
+	{
+		return GetNetVar<int>("m_iArmor");
+	}
+	bool IsEnemy(C_BaseEntity* g_LocalPlayer)
+	{
+		/*
+		if (InDangerzone())
+		{
+			return this->m_nSurvivalTeam() != g_LocalPlayer->m_nSurvivalTeam() || g_LocalPlayer->m_nSurvivalTeam() == -1;
+		}
+		else
+		{
+		*/
+			return GetTeam() != g_LocalPlayer->GetTeam();
+		//}
+	}
+	bool HasHelmet()
+	{
+		return GetNetVar<bool>("m_bHasHelmet");
+	}
 	bool IsOnGround()
 	{
 		return GetNetVar<int>("m_fFlags") & FL_ONGROUND;
@@ -254,9 +281,16 @@ public:
 	{
 		return GetNetVar<int>("m_nTickBase");
 	}
-	Vector GetEyeOffset()
+	//Vector GetEyeOffset()
+	//{
+	//	return GetNetVar<Vector>("m_vecViewOffset[0]");
+	//}
+	Vector GetEyePos()
 	{
-		return GetNetVar<Vector>("m_vecViewOffset[0]");
+		Vector ret;
+		getvfunc<void(__thiscall*)(void*, Vector&)>(this, 279)(this, ret);
+
+		return ret;
 	}
 	Angle GetAimPunch()
 	{

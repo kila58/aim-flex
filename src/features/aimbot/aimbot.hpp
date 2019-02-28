@@ -61,6 +61,8 @@ public:
 	bool MultiPoint(C_BaseEntity* p, int index, bool interpolated, Vector& out);
 	void CalculateAngle(const Vector& pos, Angle& out);
 	bool IsVisible(C_BaseEntity* p, const Vector& pos, int tracetype = 0, bool checkfraction = true);
+	bool CanAutowall(C_BaseEntity* p, const Vector& pos, float& damage);
+	bool CanAutowallInternal(C_BaseEntity * p, const Vector & pos, float & damage);
 	void MovementFix();
 	bool CanShoot();
 	void NoRecoil();

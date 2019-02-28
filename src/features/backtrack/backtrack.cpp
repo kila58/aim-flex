@@ -276,7 +276,7 @@ void Backtrack::Invoke()
 		C_BaseEntity* p = target.ent;
 
 		HitboxInfo info;
-		info.head = aimbot.GetHitbox(p, 0, false);
+		info.head = aimbot.GetHitbox(p, /*HITBOX_HEAD*/HITBOX_LOWERBODY, false);
 		aimbot.GetHitboxBounds(info.mins, info.maxs);
 		aimbot.GetHitboxBoundsNoRadius(info.minsnoradius, info.maxsnoradius);
 		info.radius = aimbot.GetRadius();

@@ -8,7 +8,7 @@ class C_BaseCombatWeapon : public C_BaseEntity
 public:
 	CCSWeaponData* GetCSWpnData()
 	{
-		return getvfunc<CCSWeaponData*(__thiscall*)(void*)>(this, 444)(this);
+		return getvfunc<CCSWeaponData*(__thiscall*)(void*)>(this, 448)(this);
 	}
 	int GetAmmo()
 	{
@@ -20,15 +20,15 @@ public:
 	}
 	void UpdateAccuracyPenalty()
 	{
-		return getvfunc<void(__thiscall*)(void*)>(this, 468)(this);
+		return getvfunc<void(__thiscall*)(void*)>(this, 472)(this);
 	}
 	float GetInaccuracy()
 	{
-		return getvfunc<float(__thiscall*)(void*)>(this, 467)(this);
+		return getvfunc<float(__thiscall*)(void*)>(this, 471)(this);
 	}
 	float GetSpread()
 	{
-		return getvfunc<float(__thiscall*)(void*)>(this, 436)(this);
+		return getvfunc<float(__thiscall*)(void*)>(this, 439)(this);
 	}
 	ItemDefinitionIndex GetItemDefinitionIndex()
 	{
@@ -38,59 +38,79 @@ public:
 
 enum ItemDefinitionIndex : short
 {
-	WEAPON_DEAGLE = 1,
-	WEAPON_ELITE = 2,
-	WEAPON_FIVESEVEN = 3,
-	WEAPON_GLOCK = 4,
+	WEAPON_NONE = 0,
+	WEAPON_DEAGLE,
+	WEAPON_ELITE,
+	WEAPON_FIVESEVEN,
+	WEAPON_GLOCK,
 	WEAPON_AK47 = 7,
-	WEAPON_AUG = 8,
-	WEAPON_AWP = 9,
-	WEAPON_FAMAS = 10,
-	WEAPON_G3SG1 = 11,
+	WEAPON_AUG,
+	WEAPON_AWP,
+	WEAPON_FAMAS,
+	WEAPON_G3SG1,
 	WEAPON_GALILAR = 13,
-	WEAPON_M249 = 14,
+	WEAPON_M249,
 	WEAPON_M4A1 = 16,
-	WEAPON_MAC10 = 17,
+	WEAPON_MAC10,
 	WEAPON_P90 = 19,
-	WEAPON_UMP45 = 24,
-	WEAPON_XM1014 = 25,
-	WEAPON_BIZON = 26,
-	WEAPON_MAG7 = 27,
-	WEAPON_NEGEV = 28,
-	WEAPON_SAWEDOFF = 29,
-	WEAPON_TEC9 = 30,
-	WEAPON_TASER = 31,
-	WEAPON_HKP2000 = 32,
-	WEAPON_MP7 = 33,
-	WEAPON_MP9 = 34,
-	WEAPON_NOVA = 35,
-	WEAPON_P250 = 36,
+	WEAPON_MP5SD = 23,
+	WEAPON_UMP45,
+	WEAPON_XM1014,
+	WEAPON_BIZON,
+	WEAPON_MAG7,
+	WEAPON_NEGEV,
+	WEAPON_SAWEDOFF,
+	WEAPON_TEC9,
+	WEAPON_TASER,
+	WEAPON_HKP2000,
+	WEAPON_MP7,
+	WEAPON_MP9,
+	WEAPON_NOVA,
+	WEAPON_P250,
 	WEAPON_SCAR20 = 38,
-	WEAPON_SG556 = 39,
-	WEAPON_SSG08 = 40,
-	WEAPON_KNIFE_CT = 42,
-	WEAPON_FLASHBANG = 43,
-	WEAPON_HEGRENADE = 44,
-	WEAPON_SMOKEGRENADE = 45,
-	WEAPON_MOLOTOV = 46,
-	WEAPON_DECOY = 47,
-	WEAPON_INCGRENADE = 48,
-	WEAPON_C4 = 49,
+	WEAPON_SG556,
+	WEAPON_SSG08,
+	WEAPON_KNIFEGG,
+	WEAPON_KNIFE,
+	WEAPON_FLASHBANG,
+	WEAPON_HEGRENADE,
+	WEAPON_SMOKEGRENADE,
+	WEAPON_MOLOTOV,
+	WEAPON_DECOY,
+	WEAPON_INCGRENADE,
+	WEAPON_C4,
+	WEAPON_HEALTHSHOT = 57,
 	WEAPON_KNIFE_T = 59,
-	WEAPON_M4A1_SILENCER = 60,
-	WEAPON_USP_SILENCER = 61,
+	WEAPON_M4A1_SILENCER,
+	WEAPON_USP_SILENCER,
 	WEAPON_CZ75A = 63,
-	WEAPON_REVOLVER = 64,
-	WEAPON_KNIFE_BAYONET = 500,
+	WEAPON_REVOLVER,
+	WEAPON_TAGRENADE = 68,
+	WEAPON_FISTS,
+	WEAPON_BREACHCHARGE,
+	WEAPON_TABLET = 72,
+	WEAPON_MELEE = 74,
+	WEAPON_AXE,
+	WEAPON_HAMMER,
+	WEAPON_SPANNER = 78,
+	WEAPON_KNIFE_GHOST = 80,
+	WEAPON_FIREBOMB,
+	WEAPON_DIVERSION,
+	WEAPON_FRAG_GRENADE,
+	WEAPON_BAYONET = 500,
 	WEAPON_KNIFE_FLIP = 505,
-	WEAPON_KNIFE_GUT = 506,
-	WEAPON_KNIFE_KARAMBIT = 507,
-	WEAPON_KNIFE_M9_BAYONET = 508,
-	WEAPON_KNIFE_TACTICAL = 509,
+	WEAPON_KNIFE_GUT,
+	WEAPON_KNIFE_KARAMBIT,
+	WEAPON_KNIFE_M9_BAYONET,
+	WEAPON_KNIFE_TACTICAL,
 	WEAPON_KNIFE_FALCHION = 512,
-	WEAPON_KNIFE_BOWIE = 514,
-	WEAPON_KNIFE_BUTTERFLY = 515,
-	WEAPON_KNIFE_PUSH = 516
+	WEAPON_KNIFE_SURVIVAL_BOWIE = 514,
+	WEAPON_KNIFE_BUTTERFLY,
+	WEAPON_KNIFE_PUSH,
+	WEAPON_KNIFE_URSUS = 519,
+	WEAPON_KNIFE_GYPSY_JACKKNIFE,
+	WEAPON_KNIFE_STILETTO = 522,
+	WEAPON_KNIFE_WIDOWMAKER
 };
 
 enum CSWeaponType
@@ -108,6 +128,7 @@ enum CSWeaponType
 	WEAPONTYPE_UNKNOWN
 };
 
+/*
 class CCSWeaponData
 {
 public:
@@ -224,4 +245,53 @@ public:
 	char        pad_0x0225[3];            // 0x0229
 	bool        bIsRevolver;            // 0x022C
 	bool        bCannotShootUnderwater;    // 0x0230
+};
+*/
+
+class CCSWeaponData {
+public:
+	virtual ~CCSWeaponData() {};
+
+	char*        consoleName;            // 0x0004
+	char        pad_0008[12];            // 0x0008
+	int            iMaxClip1;                // 0x0014
+	int            iMaxClip2;                // 0x0018
+	int            iDefaultClip1;            // 0x001C
+	int            iDefaultClip2;            // 0x0020
+	char        pad_0024[8];            // 0x0024
+	char*        szWorldModel;            // 0x002C
+	char*        szViewModel;            // 0x0030
+	char*        szDroppedModel;            // 0x0034
+	char        pad_0038[4];            // 0x0038
+	char*        N0000023E;                // 0x003C
+	char        pad_0040[56];            // 0x0040
+	char*        szEmptySound;            // 0x0078
+	char        pad_007C[4];            // 0x007C
+	char*        szBulletType;            // 0x0080
+	char        pad_0084[4];            // 0x0084
+	char*        szHudName;                // 0x0088
+	char*        szWeaponName;            // 0x008C
+	char        pad_0090[56];            // 0x0090
+	CSWeaponType   WeaponType;                // 0x00C8
+	char __pad4[0x4];
+	int price;
+	int reward;
+	char __pad5[0x14];
+	uint8_t full_auto;
+	char __pad6[0x3];
+	int iDamage;
+	float flArmorRatio;
+	int bullets;
+	float flPenetration;
+	char __pad7[0x8];
+	float flRange;
+	float flRangeModifier;
+	char __pad8[0x10];
+	uint8_t silencer;
+	char __pad9[0xF];
+	float max_speed;
+	float max_speed_alt;
+	char __pad10[0x4C];
+	int recoil_seed;
+	char __pad11[0x20];
 };

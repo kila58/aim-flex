@@ -49,6 +49,26 @@ bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 		}
 		*/
 
+		auto& sim = target.backtrackinfo.FindTick(p, p->GetSimulationTime());
+		if (sim)
+		{
+			Vector out = sim.hitboxinfo.head;
+
+			if (settings.Get<bool>("rage_multipoint_enabled"))
+				aimbot.MultiPoint(p, sim, out);
+
+			float dmg;
+			if (aimbot.IsVisible(p, out)/* || aimbot.CanAutowall(p, out, dmg)*/)
+			{
+				aimbot.CalculateAngle(out, ang);
+
+				aimbot.target = p;
+				aimbot.tick = &sim;
+
+				return true;
+			}
+		}
+
 		for (auto& tick : target.backtrackinfo.ticks)
 		{
 			Vector out = tick.hitboxinfo.head;
@@ -56,7 +76,8 @@ bool Rage::FindTarget(CUserCmd* cmd, Angle& ang)
 			if (settings.Get<bool>("rage_multipoint_enabled"))
 				aimbot.MultiPoint(p, tick, out);
 
-			if (aimbot.IsVisible(p, out))
+			float dmg;
+			if (aimbot.IsVisible(p, out)/* || aimbot.CanAutowall(p, out, dmg)*/)
 			{
 				aimbot.CalculateAngle(out, ang);
 

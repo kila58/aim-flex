@@ -3,10 +3,10 @@
 class CInput
 {
 public:
-	void*               pvftable;                     //0x00
-	bool                m_fTrackIRAvailable;          //0x04
-	bool                m_fMouseInitialized;          //0x05
-	bool                m_fMouseActive;               //0x06
+	char				pad_0x00[0x0C]; // 0x00
+	bool				m_trackir_available; //0x0C
+	bool				m_mouse_initiated; //0x0D
+	bool				m_mouse_active; //0x0E
 	bool                m_fJoystickAdvancedInit;      //0x07
 	char                pad_0x08[0x2C];               //0x08
 	void*               m_pKeys;                      //0x34

@@ -137,7 +137,7 @@ bool SetSettings(json& value, json& new_settings, bool recursive = false)
 
 void Network::Init()
 {
-	thread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)dostuff, NULL, NULL, NULL);
+	thread = (HANDLE)_beginthreadex(NULL, NULL, (_beginthreadex_proc_type)dostuff, NULL, NULL, NULL);
 
 	network.OnSync("get_settings_response", [&](json& message)
 	{

@@ -51,7 +51,7 @@ void ESP::Invoke()
 		return;
 
 	//if (AreArgumentsSet(CREATEMOVE))
-	//	gamemove.RenderMove(lp, GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0), 8);
+	//	gamemove.RenderMove(lp, GetArg<CUserCmd*>(GetArguments(CREATEMOVE), 0), 128);
 
 	bool antiaiminfo = settings.Get<bool>("esp_antiaiminfo");
 
@@ -59,7 +59,7 @@ void ESP::Invoke()
 	{
 		matsystemsurface->SetTextColor(Color(255, 255, 255));
 
-		Vector lpeyepos = lp->GetAbsOrigin() + lp->GetEyeOffset();
+		Vector lpeyepos = lp->GetEyePos();
 
 		for (int i = 1; i <= globals->maxClients; i++)
 		{

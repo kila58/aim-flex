@@ -59,6 +59,19 @@ struct cplane_t
 
 struct trace_t
 {
+	inline bool DidHitWorld() const
+	{
+		return m_pEnt->GetEntryIndex() == 0;
+	}
+	inline bool DidHitNonWorldEntity() const
+	{
+		return m_pEnt != NULL && !DidHitWorld();
+	}
+	inline bool DidHit() const
+	{
+		return fraction < 1 || allsolid || startSolid;
+	}
+
 	Vector start;
 	Vector end;
 	cplane_t plane;
@@ -179,14 +192,12 @@ public:
 class IEngineTrace
 {
 public:
-	void ClipRayToEntity(const Ray_t& ray, unsigned int mask, C_BaseEntity* ent, trace_t* trace)
-	{
-		return getvfunc<void(__thiscall*)(void*, const Ray_t&, unsigned int, C_BaseEntity*, trace_t*)>(this, 3)(this, ray, mask, ent, trace);
-	}
-	void TraceRay(const Ray_t& ray, unsigned int mask, ITraceFilter* filter, trace_t* trace)
-	{
-		return getvfunc<void(__thiscall*)(void*, const Ray_t&, unsigned int, ITraceFilter*, trace_t*)>(this, 5)(this, ray, mask, filter, trace);
-	}
+	virtual int   GetPointContents(const Vector& vecAbsPosition, int contentsMask = 0xFFFFFFFF, void** ppEntity = nullptr) = 0;
+	virtual int   GetPointContents_WorldOnly(const Vector& vecAbsPosition, int contentsMask = 0xFFFFFFFF) = 0;
+	virtual int   GetPointContents_Collideable(void* pCollide, const Vector& vecAbsPosition) = 0;
+	virtual void  ClipRayToEntity(const Ray_t& ray, unsigned int fMask, void* pEnt, trace_t* pTrace) = 0;
+	virtual void  ClipRayToCollideable(const Ray_t& ray, unsigned int fMask, void* pCollide, trace_t* pTrace) = 0;
+	virtual void  TraceRay(const Ray_t& ray, unsigned int fMask, ITraceFilter* pTraceFilter, trace_t* pTrace) = 0;
 };
 
 #include "../features/debug/debug.hpp"

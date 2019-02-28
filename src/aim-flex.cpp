@@ -14,6 +14,7 @@ IGameEventManager2* eventmanager;
 IMaterialSystem* materialsystem;
 IVRenderView* renderview;
 IVModelRender* modelrender;
+IPhysicsSurfaceProps* physprops;
 ClientModeShared* clientmode;
 CGlobalVarsBase* globals;
 CInput* cmdinput;

@@ -28,7 +28,7 @@ void Triggerbot::Invoke()
 	if (!lp || !lp->IsAlive())
 		return;
 
-	Vector lpeyepos = lp->GetEyeOffset() + lp->GetAbsOrigin();
+	Vector lpeyepos = lp->GetEyePos();
 	auto weapon = lp->GetWeapon();
 	if (!weapon)
 		return;
